@@ -19,6 +19,7 @@ public class QuittancePDF {
     private String cheminFichier;
     private Date dateCreation;
 
-    @OneToOne(mappedBy = "paiment")
+    @OneToOne(mappedBy = "quittancePDF") // côté inverse
     private Paiement paiement;
+
 }

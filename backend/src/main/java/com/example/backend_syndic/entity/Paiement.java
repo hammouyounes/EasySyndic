@@ -31,6 +31,7 @@ public class Paiement {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="quittancePDF_id")
     private QuittancePDF quittancePDF;
+
     @ManyToOne
     @JoinColumn(name= "user_id")
     private User user;
