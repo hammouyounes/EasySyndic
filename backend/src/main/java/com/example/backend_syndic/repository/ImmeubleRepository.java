@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ImmeubleRepository extends JpaRepository<Immeuble, Long> {
+
 }

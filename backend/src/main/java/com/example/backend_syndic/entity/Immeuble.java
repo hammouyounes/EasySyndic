@@ -17,7 +17,7 @@ public class Immeuble {
     private Long id;
     private String nom;
     private String adress;
-    private int longAppartements;
+    private int NombreAppartement;
 
     @OneToMany(mappedBy = "immeuble" , cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Appartement> appartements;
@@ -27,11 +27,11 @@ public class Immeuble {
 
     public Immeuble() {
     }
-    public Immeuble(Long id, String nom, String adress, int longAppartements) {
+    public Immeuble(Long id, String nom, String adress, int NombreAppartement) {
         this.id = id;
         this.nom = nom;
         this.adress = adress;
-        this.longAppartements = longAppartements;
+        this.NombreAppartement = NombreAppartement;
     }
 
     public Long getId() {
@@ -58,11 +58,19 @@ public class Immeuble {
         this.adress = adress;
     }
 
-    public int getLongAppartements() {
-        return longAppartements;
+    public int getNombreAppartement() {
+        return NombreAppartement;
     }
 
-    public void setLongAppartements(int longAppartements) {
-        this.longAppartements = longAppartements;
+    public void setNombreAppartement(int NombreAppartement) {
+        this.NombreAppartement = NombreAppartement;
     }
+    public List<Appartement> getAppartements() {
+        return appartements;
+    }
+
+    public void setAppartements(List<Appartement> appartements) {
+        this.appartements = appartements;
+    }
+
 }

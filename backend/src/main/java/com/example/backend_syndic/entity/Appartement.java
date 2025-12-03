@@ -68,4 +68,20 @@ public class Appartement {
     public void setSurface(double surface) {
         this.surface = surface;
     }
+
+    public Immeuble getImmeuble() {
+        return immeuble;
+    }
+
+    public void setImmeuble(Immeuble immeuble) {
+        this.immeuble = immeuble;
+    }
+
+    public List<Paiement> getPaiements() {
+        return paiements;
+    }
+
+    public void setPaiements(List<Paiement> paiements) {
+        this.paiements = paiements;
+    }
 }
