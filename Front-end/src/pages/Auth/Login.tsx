@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
-import './Register.css';
-import { FcGoogle } from 'react-icons/fc'; // Google Icon
-import { FaApple } from 'react-icons/fa';   // Apple Icon
-import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // Eye Icons
+import './Register.css'; // Reusing the same CSS file
+import { FcGoogle } from 'react-icons/fc';
+import { FaApple } from 'react-icons/fa';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
-const Register: React.FC = () => {
+const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
     email: '',
     password: '',
-    agreeToTerms: false,
   });
 
   const togglePasswordVisibility = () => {
@@ -19,16 +16,17 @@ const Register: React.FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form Submitted:', formData);
+    console.log('Login Submitted:', formData);
+    // Add your Spring Boot API login logic here
   };
 
   return (
@@ -36,12 +34,14 @@ const Register: React.FC = () => {
       <div className="register-card">
         {/* Left Side - Image Panel */}
         <div className="register-image-section">
+          {/* Note: You can change the background image in CSS specifically for this page if needed, 
+              or use inline style: style={{ backgroundImage: `url(...)` }} */}
           <div className="image-overlay">
-            <div className="brand-logo">Easy Syndic</div>
+            <div className="brand-logo">AMU</div>
             <a href="/" className="back-link">Back to website &rarr;</a>
             
             <div className="image-text">
-              <h2>Capturing Moments,<br />Creating Memories</h2>
+              <h2>Welcome Back,<br />Continue your journey</h2>
               <div className="slider-dots">
                 <span className="dot active"></span>
                 <span className="dot"></span>
@@ -54,32 +54,11 @@ const Register: React.FC = () => {
         {/* Right Side - Form Panel */}
         <div className="register-form-section">
           <div className="form-header">
-            <h2>Create an account</h2>
-            <p>Already have an account? <a href="/login">Log in</a></p>
+            <h2>Log in</h2>
+            <p>Don't have an account? <a href="/register">Create one</a></p>
           </div>
 
           <form onSubmit={handleSubmit}>
-            <div className="name-row">
-              <div className="input-group">
-                <input 
-                  type="text" 
-                  name="firstName" 
-                  placeholder="First name" 
-                  value={formData.firstName}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="input-group">
-                <input 
-                  type="text" 
-                  name="lastName" 
-                  placeholder="Last name" 
-                  value={formData.lastName}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
             <div className="input-group">
               <input 
                 type="email" 
@@ -103,24 +82,18 @@ const Register: React.FC = () => {
               </span>
             </div>
 
-            <div className="checkbox-group">
-              <label>
-                <input 
-                  type="checkbox" 
-                  name="agreeToTerms"
-                  checked={formData.agreeToTerms}
-                  onChange={handleChange}
-                />
-                <span className="checkbox-custom"></span>
-                I agree to the <a href="/terms">Terms & Conditions</a>
-              </label>
+            {/* Added Forgot Password Link */}
+            <div style={{ textAlign: 'right', marginTop: '-10px', marginBottom: '20px' }}>
+              <a href="/forgot-password" style={{ color: '#a1a1aa', fontSize: '0.85rem', textDecoration: 'none' }}>
+                Forgot Password?
+              </a>
             </div>
 
-            <button type="submit" className="submit-btn">Create account</button>
+            <button type="submit" className="submit-btn">Log in</button>
           </form>
 
           <div className="divider">
-            <span>Or register with</span>
+            <span>Or log in with</span>
           </div>
 
           <div className="social-login">
@@ -137,4 +110,4 @@ const Register: React.FC = () => {
   );
 };
 
-export default Register;
+export default Login;
