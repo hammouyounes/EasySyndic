@@ -1,10 +1,10 @@
 {
   "immeuble": [
     {
-      "id": "1",
-      "nombre_appartement": 4,
+      "nom": "Immeuble Atlas",
       "adress": "10 Rue Hassan II, Rabat",
-      "nom": "Immeuble Atlas"
+      "nombre_appartement": 4,
+      "id": "1"
     },
     {
       "id": "2",
@@ -39,12 +39,12 @@
   ],
   "appartement": [
     {
-      "id": "1",
-      "etage": 1,
       "nemuro": "A1",
+      "etage": 1,
       "surface": 80,
       "immeuble_id": 1,
-      "propretaire_id": 1
+      "propretaire_id": 1,
+      "id": "1"
     },
     {
       "id": "2",
@@ -205,6 +205,22 @@
       "surface": 120,
       "immeuble_id": "2",
       "propretaire_id": "8"
+    },
+    {
+      "id": "3aba",
+      "nemuro": "12",
+      "etage": 1,
+      "surface": 80,
+      "immeuble_id": "df29",
+      "propretaire_id": "6"
+    },
+    {
+      "id": "c608",
+      "nemuro": "C1",
+      "etage": 3,
+      "surface": 90,
+      "immeuble_id": "1",
+      "propretaire_id": "1"
     }
   ],
   "user": [

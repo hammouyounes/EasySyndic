@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Table, Button, Card, Tag, Space, Modal, Form, Input, InputNumber, Select, message } from 'antd';
-import { PlusOutlined, AppstoreOutlined, SaveOutlined } from '@ant-design/icons';
+import { PlusOutlined, AppstoreOutlined, SaveOutlined, EditOutlined } from '@ant-design/icons';
 import { 
   useGetApartmentsQuery, 
   useAddApartmentMutation, 
+  useUpdateApartmentMutation,
   useGetBuildingsQuery, 
   useGetUsersQuery 
 } from '../../features/api/apiSlice';
@@ -19,6 +20,7 @@ interface Apartment {
 
 const ApartmentList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
 
   // Fetch Data
@@ -27,25 +29,41 @@ const ApartmentList: React.FC = () => {
   const { data: users } = useGetUsersQuery({});
   
   const [addApartment] = useAddApartmentMutation();
+  const [updateApartment] = useUpdateApartmentMutation();
 
   const showModal = () => {
+    setEditingId(null);
+    form.resetFields();
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (record: Apartment) => {
+    setEditingId(record.id);
+    form.setFieldsValue(record);
     setIsModalOpen(true);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setEditingId(null);
     form.resetFields();
   };
 
   const onFinish = async (values: any) => {
     try {
-      await addApartment(values).unwrap();
-      message.success('Appartement ajouté avec succès');
+      if (editingId) {
+        await updateApartment({ id: editingId, ...values }).unwrap();
+        message.success('Appartement modifié avec succès');
+      } else {
+        await addApartment(values).unwrap();
+        message.success('Appartement ajouté avec succès');
+      }
       setIsModalOpen(false);
+      setEditingId(null);
       form.resetFields();
     } catch (error) {
       console.error("Failed to save apartment", error);
-      message.error('Erreur lors de l\'ajout de l\'appartement');
+      message.error(editingId ? 'Erreur lors de la modification' : 'Erreur lors de l\'ajout de l\'appartement');
     }
   };
 
@@ -84,6 +102,18 @@ const ApartmentList: React.FC = () => {
       title: 'Propriétaire', dataIndex: 'propretaire_id', key: 'propretaire_id',
       render: (id: number) => <span>{getUserName(id)}</span>
     },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_: any, record: Apartment) => (
+        <Button 
+          icon={<EditOutlined />} 
+          onClick={() => handleEdit(record)} 
+        >
+          Modifier
+        </Button>
+      ),
+    },
   ];
 
   return (
@@ -96,7 +126,7 @@ const ApartmentList: React.FC = () => {
       />
 
       <Modal 
-        title="Ajouter un nouvel appartement" 
+        title={editingId ? "Modifier l'appartement" : "Ajouter un nouvel appartement"} 
         open={isModalOpen} 
         onCancel={handleCancel}
         footer={null}

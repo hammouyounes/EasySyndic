@@ -17,6 +17,21 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Buildings'],
     }),
+    updateBuilding: builder.mutation({
+      query: ({ id, ...initialBuilding }) => ({
+        url: `/immeuble/${id}`,
+        method: 'PUT',
+        body: initialBuilding,
+      }),
+      invalidatesTags: ['Buildings'],
+    }),
+    deleteBuilding: builder.mutation({
+      query: (id) => ({
+        url: `/immeuble/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Buildings'],
+    }),
     getUsers: builder.query({
       query: () => '/user',
       providesTags: ['Users'],
@@ -41,14 +56,25 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Apartments'],
     }),
+    updateApartment: builder.mutation({
+      query: ({ id, ...initialApartment }) => ({
+        url: `/appartement/${id}`,
+        method: 'PUT',
+        body: initialApartment,
+      }),
+      invalidatesTags: ['Apartments', 'Buildings'], // Invalidate Buildings too as counts might change
+    }),
   }),
 });
 
 export const { 
   useGetBuildingsQuery, 
   useAddBuildingMutation,
+  useUpdateBuildingMutation,
+  useDeleteBuildingMutation,
   useGetUsersQuery,
   useAddUserMutation,
   useGetApartmentsQuery,
-  useAddApartmentMutation
+  useAddApartmentMutation,
+  useUpdateApartmentMutation
 } = apiSlice;
