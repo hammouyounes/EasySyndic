@@ -1,0 +1,380 @@
+{
+  "immeuble": [
+    {
+      "id": "1",
+      "nombre_appartement": 4,
+      "adress": "10 Rue Hassan II, Rabat",
+      "nom": "Immeuble Atlas"
+    },
+    {
+      "id": "2",
+      "nombre_appartement": 4,
+      "adress": "22 Avenue Mohammed V, Casablanca",
+      "nom": "Immeuble Ocean"
+    },
+    {
+      "id": "3",
+      "nombre_appartement": 4,
+      "adress": "5 Rue Marrakech, Fes",
+      "nom": "Immeuble Andalouse"
+    },
+    {
+      "id": "4",
+      "nombre_appartement": 4,
+      "adress": "18 Boulevard Zerktouni, Agadir",
+      "nom": "Immeuble Soleil"
+    },
+    {
+      "id": "5",
+      "nombre_appartement": 4,
+      "adress": "30 Rue Tanja, Tanger",
+      "nom": "Immeuble Détroit"
+    },
+    {
+      "id": "df29",
+      "nom": "hammou youness",
+      "adress": "Ouled berhil hay ouled belaid",
+      "nombre_appartement": 5
+    }
+  ],
+  "appartement": [
+    {
+      "id": "1",
+      "etage": 1,
+      "nemuro": "A1",
+      "surface": 80,
+      "immeuble_id": 1,
+      "propretaire_id": 1
+    },
+    {
+      "id": "2",
+      "etage": 1,
+      "nemuro": "A2",
+      "surface": 75,
+      "immeuble_id": 1,
+      "propretaire_id": 2
+    },
+    {
+      "id": "3",
+      "etage": 2,
+      "nemuro": "B1",
+      "surface": 90,
+      "immeuble_id": 1,
+      "propretaire_id": 3
+    },
+    {
+      "id": "4",
+      "etage": 2,
+      "nemuro": "B2",
+      "surface": 85,
+      "immeuble_id": 1,
+      "propretaire_id": 4
+    },
+    {
+      "id": "5",
+      "etage": 1,
+      "nemuro": "A1",
+      "surface": 70,
+      "immeuble_id": 2,
+      "propretaire_id": 5
+    },
+    {
+      "id": "6",
+      "etage": 1,
+      "nemuro": "A2",
+      "surface": 78,
+      "immeuble_id": 2,
+      "propretaire_id": 6
+    },
+    {
+      "id": "7",
+      "etage": 2,
+      "nemuro": "B1",
+      "surface": 88,
+      "immeuble_id": 2,
+      "propretaire_id": 7
+    },
+    {
+      "id": "8",
+      "etage": 2,
+      "nemuro": "B2",
+      "surface": 92,
+      "immeuble_id": 2,
+      "propretaire_id": 8
+    },
+    {
+      "id": "9",
+      "etage": 1,
+      "nemuro": "A1",
+      "surface": 65,
+      "immeuble_id": 3,
+      "propretaire_id": 9
+    },
+    {
+      "id": "10",
+      "etage": 1,
+      "nemuro": "A2",
+      "surface": 72,
+      "immeuble_id": 3,
+      "propretaire_id": 10
+    },
+    {
+      "id": "11",
+      "etage": 2,
+      "nemuro": "B1",
+      "surface": 85,
+      "immeuble_id": 3,
+      "propretaire_id": 11
+    },
+    {
+      "id": "12",
+      "etage": 2,
+      "nemuro": "B2",
+      "surface": 90,
+      "immeuble_id": 3,
+      "propretaire_id": 12
+    },
+    {
+      "id": "13",
+      "etage": 1,
+      "nemuro": "A1",
+      "surface": 77,
+      "immeuble_id": 4,
+      "propretaire_id": 13
+    },
+    {
+      "id": "14",
+      "etage": 1,
+      "nemuro": "A2",
+      "surface": 82,
+      "immeuble_id": 4,
+      "propretaire_id": 14
+    },
+    {
+      "id": "15",
+      "etage": 2,
+      "nemuro": "B1",
+      "surface": 95,
+      "immeuble_id": 4,
+      "propretaire_id": 15
+    },
+    {
+      "id": "16",
+      "etage": 2,
+      "nemuro": "B2",
+      "surface": 88,
+      "immeuble_id": 4,
+      "propretaire_id": 16
+    },
+    {
+      "id": "17",
+      "etage": 1,
+      "nemuro": "A1",
+      "surface": 73,
+      "immeuble_id": 5,
+      "propretaire_id": 17
+    },
+    {
+      "id": "18",
+      "etage": 1,
+      "nemuro": "A2",
+      "surface": 79,
+      "immeuble_id": 5,
+      "propretaire_id": 18
+    },
+    {
+      "id": "19",
+      "etage": 2,
+      "nemuro": "B1",
+      "surface": 91,
+      "immeuble_id": 5,
+      "propretaire_id": 19
+    },
+    {
+      "id": "20",
+      "etage": 2,
+      "nemuro": "B2",
+      "surface": 86,
+      "immeuble_id": 5,
+      "propretaire_id": 20
+    },
+    {
+      "id": "eb8c",
+      "nemuro": "12",
+      "etage": 1,
+      "surface": 120,
+      "immeuble_id": "2",
+      "propretaire_id": "8"
+    }
+  ],
+  "user": [
+    {
+      "id": "1",
+      "email": "user1@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "El Amrani",
+      "prenom": "Youssef",
+      "role": "propreitaire"
+    },
+    {
+      "id": "2",
+      "email": "user2@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Benali",
+      "prenom": "Sara",
+      "role": "propreitaire"
+    },
+    {
+      "id": "3",
+      "email": "user3@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Haddad",
+      "prenom": "Omar",
+      "role": "propreitaire"
+    },
+    {
+      "id": "4",
+      "email": "user4@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Fassi",
+      "prenom": "Khadija",
+      "role": "propreitaire"
+    },
+    {
+      "id": "5",
+      "email": "user5@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Alaoui",
+      "prenom": "Anas",
+      "role": "propreitaire"
+    },
+    {
+      "id": "6",
+      "email": "user6@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Ziani",
+      "prenom": "Imane",
+      "role": "propreitaire"
+    },
+    {
+      "id": "7",
+      "email": "user7@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Karimi",
+      "prenom": "Hamza",
+      "role": "propreitaire"
+    },
+    {
+      "id": "8",
+      "email": "user8@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Berrada",
+      "prenom": "Nour",
+      "role": "propreitaire"
+    },
+    {
+      "id": "9",
+      "email": "user9@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Chraibi",
+      "prenom": "Mehdi",
+      "role": "propreitaire"
+    },
+    {
+      "id": "10",
+      "email": "user10@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Lahlou",
+      "prenom": "Salma",
+      "role": "propreitaire"
+    },
+    {
+      "id": "11",
+      "email": "user11@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Idrissi",
+      "prenom": "Ayoub",
+      "role": "propreitaire"
+    },
+    {
+      "id": "12",
+      "email": "user12@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Skalli",
+      "prenom": "Meryem",
+      "role": "propreitaire"
+    },
+    {
+      "id": "13",
+      "email": "user13@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Raji",
+      "prenom": "Sofiane",
+      "role": "propreitaire"
+    },
+    {
+      "id": "14",
+      "email": "user14@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Tahiri",
+      "prenom": "Asmaa",
+      "role": "propreitaire"
+    },
+    {
+      "id": "15",
+      "email": "user15@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "El Fadil",
+      "prenom": "Reda",
+      "role": "propreitaire"
+    },
+    {
+      "id": "16",
+      "email": "user16@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Ouali",
+      "prenom": "Hajar",
+      "role": "propreitaire"
+    },
+    {
+      "id": "17",
+      "email": "user17@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Kabbaj",
+      "prenom": "Ismail",
+      "role": "propreitaire"
+    },
+    {
+      "id": "18",
+      "email": "user18@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Mansouri",
+      "prenom": "Rania",
+      "role": "propreitaire"
+    },
+    {
+      "id": "19",
+      "email": "user19@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Saidi",
+      "prenom": "Adil",
+      "role": "propreitaire"
+    },
+    {
+      "id": "20",
+      "email": "user20@mail.com",
+      "mot_de_passe": "123456",
+      "nom": "Boukili",
+      "prenom": "Lina",
+      "role": "propreitaire"
+    },
+    {
+      "id": "4546",
+      "nom": "youness",
+      "prenom": "hammou",
+      "email": "youness@gmail.com",
+      "mot_de_passe": "1234",
+      "role": "propreitaire"
+    }
+  ]
+}

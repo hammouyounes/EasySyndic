@@ -2,7 +2,9 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainLayout from './components/Layout/MainLayout';
 import BuildingList from './pages/Buildings/BuildingList';
-import ApartmentList from './pages/Apartments/ApartmentList';
+import ApartmentList from './pages/Apartments/ApartmentList.tsx';
+import UserList from './pages/Users/UserList';
+
 
 
 // import Login from './pages/Auth/Login';
@@ -29,6 +31,7 @@ const App: React.FC = () => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="buildings" element={<BuildingList />} />
           <Route path="apartments" element={<ApartmentList />} />
+          <Route path="users" element={<UserList />} />
           <Route path="payments" element={<Payments />} />
         </Route>
       </Routes>

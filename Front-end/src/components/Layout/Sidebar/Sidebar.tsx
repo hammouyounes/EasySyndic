@@ -7,6 +7,7 @@ import {
   WalletOutlined, 
   SettingOutlined,
   LogoutOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -94,6 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
             children: [
               { key: '/buildings', icon: <ShopOutlined />, label: 'Buildings' },
               { key: '/apartments', icon: <TeamOutlined />, label: 'Apartments & Owners' },
+              { key: '/users', icon: <UserOutlined />, label: 'Users' },
               { key: '/payments', icon: <WalletOutlined />, label: 'Finance & Payments' },
             ]
           },
