@@ -1,0 +1,120 @@
+/* Navbar.css */
+
+/* 1. Main Navbar Container */
+.horizon-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  /* CHANGED: Removed fixed margins and set width to 100% to take all space */
+  width: 100%; 
+  margin: 0; 
+  border-radius: 0 0 16px 16px; /* Optional: Rounded corners only at bottom if full width */
+  
+  /* Glass Effect */
+  background: rgba(255, 250, 250, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+/* 2. Left Side Typography */
+.navbar-breadcrumb {
+  margin-bottom: 4px;
+}
+
+/* Ant Design Breadcrumb Override */
+.navbar-breadcrumb .ant-breadcrumb {
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif; /* Assuming standard font */
+}
+
+.crumb-light {
+  color: #707EAE !important; /* Cool Gray */
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.crumb-light:hover {
+  color: #4318FF !important;
+  text-decoration: underline;
+}
+
+.crumb-bold {
+  color: #1B2559 !important; /* Dark Navy */
+  font-weight: 700;
+}
+
+.navbar-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: #1B2559;
+  margin: 0;
+  line-height: 1;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* 3. Right Side "Pill" Container */
+.navbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  
+  background: white;
+  padding: 10px;
+  border-radius: 30px; /* The Pill Shape */
+  box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+}
+
+/* 4. Search Bar Styling */
+.search-wrapper {
+  background: #F4F7FE; /* Very light gray background for input */
+  border-radius: 49px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-icon {
+  color: #2B3674;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  color: #2B3674;
+  font-size: 14px;
+  width: 150px; /* Adjusted slightly */
+}
+
+.search-input::placeholder {
+  color: #8F9BBA;
+}
+
+/* 5. Icon Buttons */
+.nav-icon {
+  font-size: 20px;
+  color: #A3AED0; /* Icon Gray */
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.nav-icon:hover {
+  color: #4318FF; /* Purple on Hover */
+}
+
+/* 6. Avatar */
+.nav-avatar {
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  background-color: #11047A; /* Fallback color */
+  color: white;
+  font-weight: 700;
+}
