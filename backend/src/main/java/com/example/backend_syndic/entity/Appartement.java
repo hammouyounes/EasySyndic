@@ -1,87 +1,41 @@
 package com.example.backend_syndic.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Appartement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private  Long id;
-    private String nemuro;
+    private String numero;
     private int etage;
     private double surface;
 
     @ManyToOne
-    @JoinColumn(name= "immeuble_id")
+    @JoinColumn(name = "immeuble_id")
+    @JsonIgnoreProperties({"appartements", "charges"})
     private Immeuble immeuble;
 
-    @OneToMany(mappedBy = "appartement" , cascade = CascadeType.ALL,orphanRemoval = true)
+    @ManyToOne
+    @JoinColumn(name = "proprietaire_id")
+    private User proprietaire;
+
+    @ManyToOne
+    @JoinColumn(name = "locataire_id")
+    private User locataire;
+
+    @OneToMany(mappedBy = "appartement", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Paiement> paiements;
-
-
-
-
-
-
-    public Appartement() {
-
-    }
-    public Appartement(Long id, String nemuro, int etage, double surface) {
-        this.id = id;
-        this.nemuro = nemuro;
-        this.etage = etage;
-        this.surface = surface;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNemuro() {
-        return nemuro;
-    }
-
-    public void setNemuro(String nemuro) {
-        this.nemuro = nemuro;
-    }
-
-    public int getEtage() {
-        return etage;
-    }
-
-    public void setEtage(int etage) {
-        this.etage = etage;
-    }
-
-    public double getSurface() {
-        return surface;
-    }
-
-    public void setSurface(double surface) {
-        this.surface = surface;
-    }
-
-    public Immeuble getImmeuble() {
-        return immeuble;
-    }
-
-    public void setImmeuble(Immeuble immeuble) {
-        this.immeuble = immeuble;
-    }
-
-    public List<Paiement> getPaiements() {
-        return paiements;
-    }
-
-    public void setPaiements(List<Paiement> paiements) {
-        this.paiements = paiements;
-    }
 }

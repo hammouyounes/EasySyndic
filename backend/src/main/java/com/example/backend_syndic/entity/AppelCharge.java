@@ -1,5 +1,6 @@
 package com.example.backend_syndic.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -11,11 +12,13 @@ public class AppelCharge {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date dateEmission ;
+
+    private Date dateEmission;
     private double total;
 
     @ManyToOne
-    @JoinColumn(name="charge_id")
+    @JoinColumn(name = "charge_id")
+    @JsonIgnore
     private Charge charge;
 
     public AppelCharge() {}
