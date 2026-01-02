@@ -4,10 +4,11 @@ import {
   SearchOutlined, 
   BellOutlined, 
   InfoCircleOutlined, 
-  SettingOutlined,
   UserOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  MoonOutlined,
+  SunOutlined
 } from '@ant-design/icons';
 import './Navbar.css'; // Import the CSS file above
 
@@ -17,6 +18,8 @@ interface NavbarProps {
   avatarUrl?: string; // Optional URL for image, otherwise uses initials
   collapsed: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  darkMode: boolean;
+  toggleTheme: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ 
@@ -24,8 +27,11 @@ const Navbar: React.FC<NavbarProps> = ({
   currentRoute = "Pages",
   avatarUrl,
   collapsed,
-  setCollapsed
+  setCollapsed,
+  darkMode,
+  toggleTheme
 }) => {
+  // Local state for dark mode removed, using props instead
 
   // Dropdown menu for the avatar
   const items: MenuProps['items'] = [
@@ -80,6 +86,11 @@ const Navbar: React.FC<NavbarProps> = ({
         <BellOutlined className="nav-icon" />
         <InfoCircleOutlined className="nav-icon" />
         
+        {/* Theme Toggle */}
+        <div className="nav-icon" onClick={toggleTheme} style={{ display: 'flex', alignItems: 'center' }}>
+          {darkMode ? <SunOutlined /> : <MoonOutlined />}
+        </div>
+
         {/* Avatar with Dropdown */}
         <Dropdown menu={{ items }} trigger={['click']}>
             <Avatar 

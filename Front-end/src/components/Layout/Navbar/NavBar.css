@@ -68,6 +68,7 @@
   padding: 10px;
   border-radius: 30px; /* The Pill Shape */
   box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+  transition: background 0.3s ease;
 }
 
 /* 4. Search Bar Styling */
@@ -78,6 +79,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  transition: background 0.3s ease;
 }
 
 .search-icon {
@@ -117,4 +119,46 @@
   background-color: #11047A; /* Fallback color */
   color: white;
   font-weight: 700;
+}
+
+/* --- Dark Mode Overrides --- */
+body.dark .horizon-navbar {
+  background: rgba(11, 20, 55, 0.6); /* Darker glass context */
+}
+
+body.dark .navbar-controls {
+  background: #111c44;
+  box-shadow: 14px 17px 40px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .search-wrapper {
+  background: #0b1437;
+}
+
+body.dark .search-icon {
+  color: white;
+}
+
+body.dark .search-input {
+  color: white;
+}
+
+body.dark .search-input::placeholder {
+  color: #A3AED0;
+}
+
+body.dark .nav-icon {
+  color: white;
+}
+
+body.dark .nav-icon:hover {
+  color: #7551FF;
+}
+
+body.dark .crumb-bold {
+  color: white !important;
+}
+
+body.dark .crumb-light {
+   color: #A3AED0 !important;
 }

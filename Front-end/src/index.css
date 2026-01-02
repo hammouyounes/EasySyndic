@@ -11,8 +11,35 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #f0f2f5; /* Light gray background */
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+:root {
+  /* Light Mode Variables */
+  --bg-primary: #f4f7fe;
+  --bg-secondary: #ffffff;
+  --bg-input: #f4f7fe;
+  --text-primary: #1B2559;
+  --text-secondary: #a0aec0;
+  --accent: #7551FF;
+  --border-color: rgba(0,0,0,0.06);
+}
+
+body.dark {
+  /* Dark Mode Variables */
+  --bg-primary: #0b1437;
+  --bg-secondary: #111c44;
+  --bg-input: #0b1437;
+  --text-primary: #ffffff;
+  --text-secondary: #a0aec0;
+  --accent: #7551FF;
+  --border-color: rgba(255,255,255,0.06);
+  
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 /* 3. Force the React Root container to fill the screen */
