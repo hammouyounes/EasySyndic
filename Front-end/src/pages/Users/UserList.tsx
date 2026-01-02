@@ -29,7 +29,11 @@ const UserList: React.FC = () => {
 
   const onFinish = async (values: any) => {
      try {
-       await addUser(values).unwrap();
+       const userPayload = {
+         ...values,
+         motDePasse: values.mot_de_passe
+       };
+       await addUser(userPayload).unwrap();
        message.success('Utilisateur ajouté avec succès');
        setIsModalOpen(false);
        form.resetFields();
@@ -52,9 +56,9 @@ const UserList: React.FC = () => {
     { 
       title: 'Rôle', dataIndex: 'role', key: 'role',
       render: (role: string) => {
-        let color = role === 'Administrateur' ? 'red' : 'green';
-        if (role === 'Comptable') color = 'blue';
-        return <Tag color={color}>{role ? role.toUpperCase() : 'N/A'}</Tag>;
+        let color = role === 'ADMIN' ? 'red' : 'green';
+        if (role === 'PROPRIETAIRE') color = 'blue';
+        return <Tag color={color}>{role ? role : 'N/A'}</Tag>;
       }
     },
   ];
@@ -121,10 +125,9 @@ const UserList: React.FC = () => {
             rules={[{ required: true, message: 'Veuillez sélectionner un rôle!' }]}
           >
             <Select placeholder="Sélectionner un rôle">
-              <Select.Option value="Administrateur">Administrateur</Select.Option>
-              <Select.Option value="Utilisateur">Utilisateur</Select.Option>
-              <Select.Option value="Comptable">Comptable</Select.Option>
-              <Select.Option value="propreitaire">Propriétaire</Select.Option>
+              <Select.Option value="ADMIN">Administrateur</Select.Option>
+              <Select.Option value="PROPRIETAIRE">Propriétaire</Select.Option>
+              <Select.Option value="LOCATAIRE">Locataire</Select.Option>
             </Select>
           </Form.Item>
 

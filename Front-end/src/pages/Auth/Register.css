@@ -37,19 +37,18 @@ body {
 
 .register-card {
   display: flex;
-  width: 70%;
-  height: 750px;
+  width: 850px;
+  max-width: 95%;
+  height: 600px;
   background-color: var(--card-bg);
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Left Side - Image Section */
 .register-image-section {
   flex: 1;
   position: relative;
-  /* PLACEHOLDER FOR YOUR IMAGE - Add url inside quotes */
   background-image: url(''); 
   background-size: cover;
   background-position: center;
@@ -122,7 +121,7 @@ body {
 /* Right Side - Form Section */
 .register-form-section {
   flex: 1;
-  padding: 60px;
+  padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;

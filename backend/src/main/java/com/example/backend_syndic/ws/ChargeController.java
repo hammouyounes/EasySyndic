@@ -14,6 +14,9 @@ public class ChargeController {
     @Autowired
     private ChargeService chargeService;
 
+    @Autowired
+    private com.example.backend_syndic.service.facade.AppelChargeService appelChargeService;
+
     // ➕ POST /api/charges
     @PostMapping("/immeuble/{immeubleId}")
     public Charge createCharge(
@@ -36,6 +39,12 @@ public class ChargeController {
     @DeleteMapping("/{id}")
     public void deleteCharge(@PathVariable Long id) {
         chargeService.deleteCharge(id);
+    }
+
+    // 🚀 Distribute Charge
+    @PostMapping("/{id}/distribute")
+    public void distributeCharge(@PathVariable Long id) {
+        appelChargeService.distributeCharge(id);
     }
 
     // 🔍 GET /api/charges/{id}

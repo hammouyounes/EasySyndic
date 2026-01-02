@@ -2,11 +2,16 @@ package com.example.backend_syndic.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppelCharge {
 
     @Id
@@ -18,47 +23,13 @@ public class AppelCharge {
 
     @ManyToOne
     @JoinColumn(name = "charge_id")
-    @JsonIgnore
     private Charge charge;
 
-    public AppelCharge() {}
+    @ManyToOne
+    @JoinColumn(name = "appartement_id")
+    private Appartement appartement;
 
-    public AppelCharge(Long id, Date dateEmission, double total, Charge charge) {
-        this.id = id;
-        this.dateEmission = dateEmission;
-        this.total = total;
-        this.charge = charge;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Date getDateEmission() {
-        return dateEmission;
-    }
-
-    public void setDateEmission(Date dateEmission) {
-        this.dateEmission = dateEmission;
-    }
-
-    public double getTotal() {
-        return total;
-    }
-
-    public void setTotal(double total) {
-        this.total = total;
-    }
-
-    public Charge getCharge() {
-        return charge;
-    }
-
-    public void setCharge(Charge charge) {
-        this.charge = charge;
-    }
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private Status status;
 }

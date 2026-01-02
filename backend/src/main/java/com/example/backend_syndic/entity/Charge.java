@@ -13,7 +13,7 @@ public class Charge {
     private Long id;
 
     private String type;
-    private double montant;
+    private Double montant;
     private String periode;
 
     @OneToMany(mappedBy = "charge")
@@ -28,7 +28,7 @@ public class Charge {
 
     public Charge() {}
 
-    public Charge(Long id, String type, double montant, String periode, Immeuble immeuble) {
+    public Charge(Long id, String type, Double montant, String periode, Immeuble immeuble) {
         this.id = id;
         this.type = type;
         this.montant = montant;
@@ -52,11 +52,11 @@ public class Charge {
         this.type = type;
     }
 
-    public double getMontant() {
+    public Double getMontant() {
         return montant;
     }
 
-    public void setMontant(double montant) {
+    public void setMontant(Double montant) {
         this.montant = montant;
     }
 

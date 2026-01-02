@@ -45,8 +45,8 @@ public class AppartementServiceImpl implements AppartementService {
             throw new RuntimeException("Capacité maximale de l'immeuble atteinte (" + immeuble.getNombreAppartementsMax() + " appartements)");
         }
 
-        // 2. Validate floor
-        if (appartement.getEtage() > immeuble.getNombreEtages()) {
+        // 2. Validate floor (only if building has defined floors)
+        if (immeuble.getNombreEtages() > 0 && appartement.getEtage() > immeuble.getNombreEtages()) {
             throw new RuntimeException("L'étage spécifié (" + appartement.getEtage() + ") dépasse le nombre d'étages de l'immeuble (" + immeuble.getNombreEtages() + ")");
         }
 
@@ -61,6 +61,11 @@ public class AppartementServiceImpl implements AppartementService {
             }
             String autoNumber = String.format("%d%02d", appartement.getEtage(), countOnFloor + 1);
             appartement.setNumero(autoNumber);
+        }
+
+        // 4. Initialize default Solde if null from JSON
+        if (appartement.getSolde() == null) {
+            appartement.setSolde(0.0);
         }
 
         appartement.setImmeuble(immeuble);

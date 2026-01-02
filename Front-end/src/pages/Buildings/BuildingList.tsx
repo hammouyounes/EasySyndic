@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { Table, Button, Card, Tag, Space, Modal, Form, Input, message } from 'antd';
+import { Table, Button, Card, Tag, Space, Modal, Form, Input, InputNumber, message } from 'antd';
 import { PlusOutlined, HomeOutlined, SaveOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { useGetBuildingsQuery, useAddBuildingMutation, useUpdateBuildingMutation, useGetApartmentsQuery, useDeleteBuildingMutation } from '../../features/api/apiSlice';
+import { useGetBuildingsQuery, useAddBuildingMutation, useUpdateBuildingMutation, useGetApartmentsQuery, useDeleteBuildingMutation, useGetChargesQuery } from '../../features/api/apiSlice';
+import GradientButton from '../../components/common/GradientButton';
+import DefaultButton from '../../components/common/DefaultButton';
 
 interface Building {
   id: number;
   nom: string;
   adress: string;
-  nombre_appartement: number;
+  nombreAppartement: number;
+  nombreEtages: number;
+  nombreAppartementsMax: number;
 }
 
 const BuildingList: React.FC = () => {
@@ -17,6 +21,8 @@ const BuildingList: React.FC = () => {
   
   const { data: buildings, isLoading, isError } = useGetBuildingsQuery({});
   const { data: apartments } = useGetApartmentsQuery({});
+  const { data: charges } = useGetChargesQuery({}); // Fetch charges
+  
   const [addBuilding] = useAddBuildingMutation();
   const [updateBuilding] = useUpdateBuildingMutation();
   const [deleteBuilding] = useDeleteBuildingMutation();
@@ -35,7 +41,7 @@ const BuildingList: React.FC = () => {
 
   const handleDelete = (record: Building) => {
     // Check for linked apartments
-    const linkedApartments = apartments?.filter((appt: any) => String(appt.immeuble_id) === String(record.id));
+    const linkedApartments = apartments?.filter((appt: any) => String(appt.immeuble?.id) === String(record.id));
     
     if (linkedApartments && linkedApartments.length > 0) {
       Modal.error({
@@ -72,12 +78,23 @@ const BuildingList: React.FC = () => {
   };
 
   const onFinish = async (values: any) => {
+    console.log("Form Values:", values);
     try {
+      const payload = {
+        nom: values.nom,
+        adress: values.adress,
+        nombreEtages: Number(values.nombreEtages),
+        nombreAppartementsMax: Number(values.nombreAppartementsMax),
+        nombreAppartement: 0 // Initialize to 0 for new buildings
+      };
+      
+      console.log("Sending Payload:", payload);
+
       if (editingId) {
-        await updateBuilding({ id: editingId, ...values }).unwrap();
+        await updateBuilding({ id: editingId, ...payload }).unwrap();
         message.success('Bâtiment modifié avec succès');
       } else {
-        await addBuilding(values).unwrap();
+        await addBuilding(payload).unwrap();
         message.success('Bâtiment ajouté avec succès');
       }
       setIsModalOpen(false);
@@ -98,11 +115,27 @@ const BuildingList: React.FC = () => {
     { title: 'Adresse', dataIndex: 'adress', key: 'adress' },
     { 
       title: 'Appartements', 
-      key: 'nombre_appartement',
+      key: 'nombreAppartement',
       render: (_: any, record: Building) => {
-        // Calculate count dynamically
-        const count = apartments?.filter((appt: any) => String(appt.immeuble_id) === String(record.id)).length || 0;
-        return <Tag color="blue">{count} Appartements</Tag>;
+        // Calculate count dynamically from apartments list if available, otherwise use record count
+        const count = apartments?.filter((appt: any) => String(appt.immeuble?.id) === String(record.id)).length ?? record.nombreAppartement ?? 0;
+        return <Tag color="blue">{count} / {record.nombreAppartementsMax || '?'} </Tag>;
+      }
+    },
+    { title: 'Étages', dataIndex: 'nombreEtages', key: 'nombreEtages' },
+    {
+      title: 'Total Charges',
+      key: 'totalCharges',
+      render: (_: any, record: Building) => {
+        // Calculate total charges for this building
+        const buildingCharges = charges?.filter((c: any) => c.immeuble?.id === record.id) || [];
+        const total = buildingCharges.reduce((sum: number, c: any) => sum + (c.montant || 0), 0);
+        
+        return (
+          <DefaultButton>
+            {total} MAD
+          </DefaultButton>
+        );
       }
     },
     {
@@ -130,7 +163,7 @@ const BuildingList: React.FC = () => {
   ];
 
   return (
-    <Card title="Gestion des Bâtiments" extra={<Button type="primary" icon={<PlusOutlined />} onClick={showModal}>Ajouter</Button>}>
+    <Card title="Gestion des Bâtiments" extra={<GradientButton type="primary" icon={<PlusOutlined />} onClick={showModal}>Ajouter</GradientButton>}>
       <Table 
         columns={columns} 
         dataSource={buildings} 
@@ -165,6 +198,26 @@ const BuildingList: React.FC = () => {
           >
             <Input placeholder="Ex: 12 Av Mohammed V" />
           </Form.Item>
+
+          <div style={{ display: 'flex', gap: '16px' }}>
+            <Form.Item
+              label="Nombre d'étages"
+              name="nombreEtages"
+              style={{ flex: 1 }}
+              rules={[{ required: true, message: 'Requis!' }]}
+            >
+              <InputNumber min={1} style={{ width: '100%' }} placeholder="Ex: 5" />
+            </Form.Item>
+
+            <Form.Item
+              label="Max Appartements"
+              name="nombreAppartementsMax"
+              style={{ flex: 1 }}
+              rules={[{ required: true, message: 'Requis!' }]}
+            >
+              <InputNumber min={1} style={{ width: '100%' }} placeholder="Ex: 20" />
+            </Form.Item>
+          </div>
 
 
 

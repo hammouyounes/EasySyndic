@@ -5,6 +5,7 @@ import {
   useGetApartmentsQuery, 
   useAddApartmentMutation, 
   useUpdateApartmentMutation,
+  useAssignProprietaireMutation,
   useGetBuildingsQuery, 
   useGetUsersQuery 
 } from '../../features/api/apiSlice';
@@ -12,10 +13,10 @@ import {
 interface Apartment {
   id: number;
   etage: number;
-  nemuro: string;
+  numero: string;
   surface: number;
-  immeuble_id: number;
-  propretaire_id: number;
+  immeuble?: { id: number; nom: string };
+  proprietaire?: { id: number; nom: string; prenom: string };
 }
 
 const ApartmentList: React.FC = () => {
@@ -30,6 +31,7 @@ const ApartmentList: React.FC = () => {
   
   const [addApartment] = useAddApartmentMutation();
   const [updateApartment] = useUpdateApartmentMutation();
+  const [assignProprietaire] = useAssignProprietaireMutation();
 
   const showModal = () => {
     setEditingId(null);
@@ -39,7 +41,11 @@ const ApartmentList: React.FC = () => {
 
   const handleEdit = (record: Apartment) => {
     setEditingId(record.id);
-    form.setFieldsValue(record);
+    form.setFieldsValue({
+      ...record,
+      immeuble_id: record.immeuble?.id,
+      propretaire_id: record.proprietaire?.id
+    });
     setIsModalOpen(true);
   };
 
@@ -51,39 +57,37 @@ const ApartmentList: React.FC = () => {
 
   const onFinish = async (values: any) => {
     try {
+      const { immeuble_id, propretaire_id, ...apartmentData } = values;
+      
       if (editingId) {
-        await updateApartment({ id: editingId, ...values }).unwrap();
+        await updateApartment({ id: editingId, ...apartmentData }).unwrap();
+        if (propretaire_id) {
+           await assignProprietaire({ id: editingId, proprietaireId: propretaire_id }).unwrap();
+        }
         message.success('Appartement modifié avec succès');
       } else {
-        await addApartment(values).unwrap();
+        const newAppt = await addApartment({ immeubleId: immeuble_id, ...apartmentData }).unwrap();
+        if (propretaire_id) {
+           await assignProprietaire({ id: newAppt.id, proprietaireId: propretaire_id }).unwrap();
+        }
         message.success('Appartement ajouté avec succès');
       }
       setIsModalOpen(false);
       setEditingId(null);
       form.resetFields();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save apartment", error);
-      message.error(editingId ? 'Erreur lors de la modification' : 'Erreur lors de l\'ajout de l\'appartement');
+      const errorMsg = error?.data?.message || (editingId ? 'Erreur lors de la modification' : 'Erreur lors de l\'ajout de l\'appartement');
+      message.error(errorMsg);
     }
   };
 
-  // Helper functions to get names from IDs
-  const getBuildingName = (id: number) => {
-    // Note: IDs in JSON server might be strings or numbers. 
-    // Using loose equality check (==) or string conversion can be safer if types are inconsistent.
-    const building = buildings?.find((b: any) => b.id == id); 
-    return building ? building.nom : 'Inconnu';
-  };
 
-  const getUserName = (id: number) => {
-    const user = users?.find((u: any) => u.id == id);
-    return user ? `${user.nom} ${user.prenom}` : 'Inconnu';
-  };
 
   const columns = [
     { title: 'ID', dataIndex: 'id', key: 'id' },
     { 
-      title: 'Numéro', dataIndex: 'nemuro', key: 'nemuro', // Note: DB uses 'nemuro'
+      title: 'Numéro', dataIndex: 'numero', key: 'numero',
       render: (text: string) => <Space><AppstoreOutlined /> <b>{text}</b></Space>
     },
     { 
@@ -95,12 +99,12 @@ const ApartmentList: React.FC = () => {
       render: (surface: number) => <span>{surface} m²</span>
     },
     { 
-      title: 'Immeuble', dataIndex: 'immeuble_id', key: 'immeuble_id',
-      render: (id: number) => <Tag color="blue">{getBuildingName(id)}</Tag>
+      title: 'Immeuble', key: 'immeuble',
+      render: (_: any, record: Apartment) => <Tag color="blue">{record.immeuble ? record.immeuble.nom : 'N/A'}</Tag>
     },
     { 
-      title: 'Propriétaire', dataIndex: 'propretaire_id', key: 'propretaire_id',
-      render: (id: number) => <span>{getUserName(id)}</span>
+      title: 'Propriétaire', key: 'proprietaire',
+      render: (_: any, record: Apartment) => <span>{record.proprietaire ? `${record.proprietaire.nom} ${record.proprietaire.prenom}` : 'Aucun'}</span>
     },
     {
       title: 'Actions',
@@ -137,9 +141,9 @@ const ApartmentList: React.FC = () => {
           onFinish={onFinish}
           autoComplete="off"
         >
-           <Form.Item
+          <Form.Item
             label="Numéro"
-            name="nemuro"
+            name="numero"
             rules={[{ required: true, message: 'Veuillez entrer le numéro!' }]}
           >
             <Input placeholder="Ex: A1" />
@@ -170,6 +174,7 @@ const ApartmentList: React.FC = () => {
               showSearch
               placeholder="Sélectionner un immeuble"
               optionFilterProp="children"
+              disabled={!!editingId} // Disable in edit mode as backend doesn't support easy move yet
               filterOption={(input, option) =>
                 (String(option?.label ?? '')).toLowerCase().includes(input.toLowerCase())
               }

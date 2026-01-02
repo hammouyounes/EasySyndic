@@ -2,16 +2,16 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3001' }),
-  tagTypes: ['Buildings', 'Users', 'Apartments'],
+  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8080/api' }),
+  tagTypes: ['Buildings', 'Users', 'Apartments', 'Charges'],
   endpoints: (builder) => ({
     getBuildings: builder.query({
-      query: () => '/immeuble',
+      query: () => '/immeubles',
       providesTags: ['Buildings'],
     }),
     addBuilding: builder.mutation({
       query: (initialBuilding) => ({
-        url: '/immeuble',
+        url: '/immeubles',
         method: 'POST',
         body: initialBuilding,
       }),
@@ -19,7 +19,7 @@ export const apiSlice = createApi({
     }),
     updateBuilding: builder.mutation({
       query: ({ id, ...initialBuilding }) => ({
-        url: `/immeuble/${id}`,
+        url: `/immeubles/${id}`,
         method: 'PUT',
         body: initialBuilding,
       }),
@@ -27,42 +27,86 @@ export const apiSlice = createApi({
     }),
     deleteBuilding: builder.mutation({
       query: (id) => ({
-        url: `/immeuble/${id}`,
+        url: `/immeubles/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Buildings'],
     }),
     getUsers: builder.query({
-      query: () => '/user',
+      query: () => '/users',
       providesTags: ['Users'],
     }),
     addUser: builder.mutation({
       query: (initialUser) => ({
-        url: '/user',
+        url: '/users',
         method: 'POST',
         body: initialUser,
       }),
       invalidatesTags: ['Users'],
     }),
     getApartments: builder.query({
-      query: () => '/appartement',
+      query: () => '/appartements',
       providesTags: ['Apartments'],
     }),
     addApartment: builder.mutation({
-      query: (initialApartment) => ({
-        url: '/appartement',
+      query: ({ immeubleId, ...initialApartment }) => ({
+        url: `/appartements/immeuble/${immeubleId}`,
         method: 'POST',
+        body: initialApartment,
+      }),
+      invalidatesTags: ['Apartments', 'Buildings'], 
+    }),
+    updateApartment: builder.mutation({
+      query: ({ id, ...initialApartment }) => ({
+        url: `/appartements/${id}`,
+        method: 'PUT',
         body: initialApartment,
       }),
       invalidatesTags: ['Apartments'],
     }),
-    updateApartment: builder.mutation({
-      query: ({ id, ...initialApartment }) => ({
-        url: `/appartement/${id}`,
+    assignProprietaire: builder.mutation({
+      query: ({ id, proprietaireId }) => ({
+        url: `/appartements/${id}/proprietaire/${proprietaireId}`,
         method: 'PUT',
-        body: initialApartment,
       }),
-      invalidatesTags: ['Apartments', 'Buildings'], // Invalidate Buildings too as counts might change
+      invalidatesTags: ['Apartments'],
+    }),
+    getCharges: builder.query({
+      query: () => '/charges',
+      providesTags: ['Charges'],
+    }),
+    addCharge: builder.mutation({
+      query: ({ immeubleId, ...initialCharge }) => ({
+        url: `/charges/immeuble/${immeubleId}`,
+        method: 'POST',
+        body: initialCharge,
+      }),
+      invalidatesTags: ['Charges'],
+    }),
+    updateCharge: builder.mutation({
+      query: ({ id, ...initialCharge }) => ({
+        url: `/charges/${id}`,
+        method: 'PUT',
+        body: initialCharge,
+      }),
+      invalidatesTags: ['Charges'],
+    }),
+    deleteCharge: builder.mutation({
+      query: (id) => ({
+        url: `/charges/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Charges'],
+    }),
+    distributeCharge: builder.mutation({
+      query: (id) => ({
+        url: `/charges/${id}/distribute`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Charges'],
+    }),
+    getAppelCharges: builder.query({
+      query: () => '/appel-charges',
     }),
   }),
 });
@@ -76,5 +120,12 @@ export const {
   useAddUserMutation,
   useGetApartmentsQuery,
   useAddApartmentMutation,
-  useUpdateApartmentMutation
+  useUpdateApartmentMutation,
+  useAssignProprietaireMutation,
+  useGetChargesQuery,
+  useAddChargeMutation,
+  useUpdateChargeMutation,
+  useDeleteChargeMutation,
+  useDistributeChargeMutation,
+  useGetAppelChargesQuery
 } = apiSlice;

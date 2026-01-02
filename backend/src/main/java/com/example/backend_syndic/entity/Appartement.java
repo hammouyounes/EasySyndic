@@ -19,8 +19,9 @@ public class Appartement {
     private Long id;
 
     private String numero;
-    private int etage;
-    private double surface;
+    private Integer etage;
+    private Double surface;
+    private Double solde = 0.0;
 
     @ManyToOne
     @JoinColumn(name = "immeuble_id")
@@ -38,4 +39,6 @@ public class Appartement {
     @OneToMany(mappedBy = "appartement", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Paiement> paiements;
+
+    
 }

@@ -95,8 +95,9 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
             children: [
               { key: '/buildings', icon: <ShopOutlined />, label: 'Buildings' },
               { key: '/apartments', icon: <TeamOutlined />, label: 'Apartments & Owners' },
+              { key: '/charges', icon: <WalletOutlined />, label: 'Charges' },
               { key: '/users', icon: <UserOutlined />, label: 'Users' },
-              { key: '/payments', icon: <WalletOutlined />, label: 'Finance & Payments' },
+              { key: '/appel-charges', icon: <WalletOutlined />, label: 'Appels & Paiements' },
             ]
           },
 

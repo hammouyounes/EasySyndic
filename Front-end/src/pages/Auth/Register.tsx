@@ -127,9 +127,6 @@ const Register: React.FC = () => {
             <button className="social-btn google">
               <FcGoogle size={20} style={{ marginRight: '10px' }} /> Google
             </button>
-            <button className="social-btn apple">
-              <FaApple size={20} style={{ marginRight: '10px' }} /> Apple
-            </button>
           </div>
         </div>
       </div>
