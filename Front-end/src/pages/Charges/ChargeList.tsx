@@ -16,6 +16,7 @@ interface Charge {
   montant: number;
   periode: string;
   immeuble: { id: number; nom: string };
+  diviser: number;
 }
 
 const ChargeList: React.FC = () => {
@@ -141,9 +142,10 @@ const ChargeList: React.FC = () => {
             ghost
             icon={<SendOutlined />} 
             onClick={() => handleDistribute(record)} 
-            title="Distribuer aux appartements"
+            disabled={record.diviser === 1}
+            title={record.diviser === 1 ? "Déjà distribué" : "Distribuer aux appartements"}
           >
-            Distribuer
+            {record.diviser === 1 ? "Déjà Distribué" : "Distribuer"}
           </Button>
           <Button 
             icon={<EditOutlined />} 

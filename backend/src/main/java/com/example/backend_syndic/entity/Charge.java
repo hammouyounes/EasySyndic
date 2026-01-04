@@ -1,6 +1,5 @@
 package com.example.backend_syndic.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -19,12 +18,21 @@ public class Charge {
     @OneToMany(mappedBy = "charge")
     private List<AppelCharge> appelCharges;
 
-    @ManyToOne(fetch = FetchType.LAZY)   // ✔ correct relation
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "immeuble_id",
-            nullable = false                // ✔ forces DB consistency
+            nullable = false   
     )
     private Immeuble immeuble;
+
+    private Integer diviser = 0;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.diviser == null) {
+            this.diviser = 0;
+        }
+    }
 
     public Charge() {}
 
@@ -74,5 +82,13 @@ public class Charge {
 
     public void setImmeuble(Immeuble immeuble) {
         this.immeuble = immeuble;
+    }
+
+    public Integer getDiviser() {
+        return diviser;
+    }
+
+    public void setDiviser(Integer diviser) {
+        this.diviser = diviser;
     }
 }

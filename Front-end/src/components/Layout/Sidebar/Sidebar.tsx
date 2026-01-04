@@ -10,9 +10,12 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
+import logo from '../../../assets/images/logo2 (1).png';
+import logo1 from '../../../assets/images/logo22.png';
 
 const { Sider } = Layout;
 const { Text } = Typography;
+
 
 interface SidebarProps {
   collapsed: boolean;
@@ -42,7 +45,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
         transition: 'all 0.3s ease'
       }}
     >
-      {/* 1. LOGO AREA */}
       <div style={{ 
         height: 90, 
         display: 'flex', 
@@ -59,11 +61,16 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
            fontSize: 20,
            letterSpacing: '1px'
          }}>
-           <div style={{ 
-             width: 32, height: 32, background: accentColor, borderRadius: 8,
-             display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white'
-           }}>S</div>
-           {!collapsed && "SYNDIC PRO"}
+           <img 
+             src={collapsed ? logo1 : logo} 
+             alt="Company Logo" 
+             style={{ 
+               width: collapsed ? 80 : 85, 
+               height: 'auto', 
+               transition: 'all 0.3s ease' 
+             }} 
+           />
+           {!collapsed && "eSyndic"}
          </div>
       </div>
 

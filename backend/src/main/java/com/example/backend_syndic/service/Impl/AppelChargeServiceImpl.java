@@ -66,6 +66,9 @@ public class AppelChargeServiceImpl implements AppelChargeService {
 
             repo.save(appel);
         }
+
+        charge.setDiviser(1);
+        chargeRepository.save(charge);
     }
     @Override
     public List<AppelCharge> getAllAppelCharges() {
