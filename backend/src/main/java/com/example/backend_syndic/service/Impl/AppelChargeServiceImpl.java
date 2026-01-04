@@ -70,6 +70,18 @@ public class AppelChargeServiceImpl implements AppelChargeService {
         charge.setDiviser(1);
         chargeRepository.save(charge);
     }
+
+    @Override
+    public void undoDistributeCharge(Long chargeId) {
+        Charge charge = chargeRepository.findById(chargeId)
+                .orElseThrow(() -> new RuntimeException("Charge not found"));
+
+        List<AppelCharge> appels = repo.findByCharge(charge);
+        repo.deleteAll(appels);
+
+        charge.setDiviser(0);
+        chargeRepository.save(charge);
+    }
     @Override
     public List<AppelCharge> getAllAppelCharges() {
         return repo.findAll();

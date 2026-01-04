@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AppelChargeRepository extends JpaRepository<AppelCharge,Long> {
+    java.util.List<AppelCharge> findByCharge(com.example.backend_syndic.entity.Charge charge);
 }

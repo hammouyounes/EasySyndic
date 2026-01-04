@@ -105,6 +105,13 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Charges'],
     }),
+    undoDistributeCharge: builder.mutation({
+      query: (id) => ({
+        url: `/charges/${id}/undo-distribute`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Charges'],
+    }),
     getAppelCharges: builder.query({
       query: () => '/appel-charges',
     }),
@@ -127,5 +134,6 @@ export const {
   useUpdateChargeMutation,
   useDeleteChargeMutation,
   useDistributeChargeMutation,
+  useUndoDistributeChargeMutation,
   useGetAppelChargesQuery
 } = apiSlice;

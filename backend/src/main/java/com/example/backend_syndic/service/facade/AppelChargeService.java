@@ -5,5 +5,6 @@ import java.util.List;
 
 public interface AppelChargeService {
     void distributeCharge(Long chargeId);
+    void undoDistributeCharge(Long chargeId);
     List<AppelCharge> getAllAppelCharges();
 }

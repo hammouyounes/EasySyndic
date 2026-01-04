@@ -47,6 +47,12 @@ public class ChargeController {
         appelChargeService.distributeCharge(id);
     }
 
+    // ↩️ Undo Distribute Charge
+    @PostMapping("/{id}/undo-distribute")
+    public void undoDistributeCharge(@PathVariable Long id) {
+        appelChargeService.undoDistributeCharge(id);
+    }
+
     // 🔍 GET /api/charges/{id}
     @GetMapping("/{id}")
     public Charge getChargeById(@PathVariable Long id) {

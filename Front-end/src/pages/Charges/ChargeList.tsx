@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Table, Button, Card, Tag, Space, Modal, Form, Input, InputNumber, Select, message } from 'antd';
-import { PlusOutlined, DollarOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined, SendOutlined } from '@ant-design/icons';
+import { PlusOutlined, DollarOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
 import { 
   useGetChargesQuery, 
   useAddChargeMutation, 
   useUpdateChargeMutation, 
   useDeleteChargeMutation,
   useGetBuildingsQuery,
-  useDistributeChargeMutation
+  useDistributeChargeMutation,
+  useUndoDistributeChargeMutation
 } from '../../features/api/apiSlice';
 
 interface Charge {
@@ -31,6 +32,7 @@ const ChargeList: React.FC = () => {
   const [updateCharge] = useUpdateChargeMutation();
   const [deleteCharge] = useDeleteChargeMutation();
   const [distributeCharge] = useDistributeChargeMutation();
+  const [undoDistributeCharge] = useUndoDistributeChargeMutation();
 
   const showModal = () => {
     setEditingId(null);
@@ -67,23 +69,52 @@ const ChargeList: React.FC = () => {
     });
   };
 
-  const handleDistribute = (record: Charge) => {
-    Modal.confirm({
-      title: 'Distribuer la charge',
-      icon: <SendOutlined />,
-      content: `Voulez-vous vraiment générer les appels de charges pour "${record.type}" pour tous les appartements de "${record.immeuble?.nom}" ?`,
-      okText: 'Oui, distribuer',
-      cancelText: 'Annuler',
-      onOk: async () => {
-        try {
-          await distributeCharge(record.id).unwrap();
-          message.success('Charge distribuée avec succès! Appels de fonds générés.');
-        } catch (error: any) {
-          console.error("Failed to distribute charge", error);
-          message.error(error?.data?.message || "Erreur lors de la distribution de la charge");
+  const handleDistributeToggle = (record: Charge) => {
+    if (record.diviser === 1) {
+      // Undo Logic
+      Modal.confirm({
+        title: 'Annuler la distribution',
+        icon: <UndoOutlined />,
+        content: `Voulez-vous vraiment annuler la distribution pour "${record.type}" ? Cela supprimera tous les appels de fonds générés.`,
+        okText: 'Oui, annuler',
+        okType: 'danger',
+        cancelText: 'Retour',
+        onOk: async () => {
+          try {
+            await undoDistributeCharge(record.id).unwrap();
+            message.success('Distribution annulée avec succès.');
+          } catch (error: any) {
+             console.error("Failed to undo distribution", error);
+             message.error(error?.data?.message || "Erreur lors de l'annulation");
+          }
         }
-      },
-    });
+      });
+    } else {
+      // Distribute Logic
+      Modal.confirm({
+        title: 'Distribuer la charge',
+        icon: <SendOutlined />,
+        content: (
+          <div>
+            Voulez-vous vraiment générer les appels de charges pour "<b>{record.type}</b>" pour tous les appartements de "<b>{record.immeuble?.nom}</b>" ?
+            <br /><br />
+            <span style={{ fontSize: 16 }}>Montant total : </span>
+            <span style={{ color: '#52c41a', fontWeight: 'bold', fontSize: 18 }}>{record.montant} MAD</span>
+          </div>
+        ),
+        okText: 'Oui, distribuer',
+        cancelText: 'Annuler',
+        onOk: async () => {
+          try {
+            await distributeCharge(record.id).unwrap();
+            message.success('Charge distribuée avec succès! Appels de fonds générés.');
+          } catch (error: any) {
+            console.error("Failed to distribute charge", error);
+            message.error(error?.data?.message || "Erreur lors de la distribution de la charge");
+          }
+        },
+      });
+    }
   };
 
   const handleCancel = () => {
@@ -138,14 +169,14 @@ const ChargeList: React.FC = () => {
       render: (_: any, record: Charge) => (
         <Space>
           <Button 
-            type="primary"
-            ghost
-            icon={<SendOutlined />} 
-            onClick={() => handleDistribute(record)} 
-            disabled={record.diviser === 1}
-            title={record.diviser === 1 ? "Déjà distribué" : "Distribuer aux appartements"}
+            type={record.diviser === 1 ? 'default' : 'primary'}
+            danger={record.diviser === 1}
+            ghost={record.diviser !== 1}
+            icon={record.diviser === 1 ? <UndoOutlined /> : <SendOutlined />}
+            onClick={() => handleDistributeToggle(record)} 
+            title={record.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements"}
           >
-            {record.diviser === 1 ? "Déjà Distribué" : "Distribuer"}
+            {record.diviser === 1 ? "Annuler Distribution" : "Distribuer"}
           </Button>
           <Button 
             icon={<EditOutlined />} 
