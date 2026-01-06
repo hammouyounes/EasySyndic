@@ -9,7 +9,7 @@ import {
   useGetBuildingsQuery,
   useDistributeChargeMutation,
   useUndoDistributeChargeMutation
-} from '../../features/api/apiSlice';
+} from '../../../features/api/apiSlice';
 
 interface Charge {
   id: number;

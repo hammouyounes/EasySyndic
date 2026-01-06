@@ -39,7 +39,17 @@ const Login: React.FC = () => {
       console.log('Login Successful:', user);
       // You might want to store the user in a context or global state here
       localStorage.setItem('user', JSON.stringify(user));
-      navigate('/');
+      
+      const userRole = user.role ? user.role.toLowerCase() : '';
+
+      if (userRole === 'admin') {
+        navigate('/');
+      } else if (userRole === 'proprietaire') {
+        navigate('/proprietaire');
+      } else {
+        // Default fallback
+        navigate('/');
+      }
     } catch (err) {
       console.error('Login Failed:', err);
       alert('Login failed. Please check your credentials.');
@@ -49,10 +59,7 @@ const Login: React.FC = () => {
   return (
     <div className="register-container">
       <div className="register-card">
-        {/* Left Side - Image Panel */}
         <div className="register-image-section">
-          {/* Note: You can change the background image in CSS specifically for this page if needed, 
-              or use inline style: style={{ backgroundImage: `url(...)` }} */}
           <div className="image-overlay">
             <div className="brand-logo">AMU</div>
             <a href="/" className="back-link">Back to website &rarr;</a>
@@ -68,7 +75,6 @@ const Login: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Side - Form Panel */}
         <div className="register-form-section">
           <div className="form-header">
             <h2>Log in</h2>

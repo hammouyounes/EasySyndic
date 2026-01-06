@@ -8,7 +8,7 @@ import {
   useAssignProprietaireMutation,
   useGetBuildingsQuery, 
   useGetUsersQuery 
-} from '../../features/api/apiSlice';
+} from '../../../features/api/apiSlice';
 
 interface Apartment {
   id: number;

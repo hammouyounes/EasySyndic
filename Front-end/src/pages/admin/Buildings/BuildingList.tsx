@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Table, Button, Card, Tag, Space, Modal, Form, Input, InputNumber, message } from 'antd';
 import { PlusOutlined, HomeOutlined, SaveOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { useGetBuildingsQuery, useAddBuildingMutation, useUpdateBuildingMutation, useGetApartmentsQuery, useDeleteBuildingMutation, useGetChargesQuery } from '../../features/api/apiSlice';
-import GradientButton from '../../components/common/GradientButton';
-import DefaultButton from '../../components/common/DefaultButton';
+import { useGetBuildingsQuery, useAddBuildingMutation, useUpdateBuildingMutation, useGetApartmentsQuery, useDeleteBuildingMutation, useGetChargesQuery } from '../../../features/api/apiSlice';
+import GradientButton from '../../../components/common/GradientButton';
+import DefaultButton from '../../../components/common/DefaultButton';
 
 interface Building {
   id: number;

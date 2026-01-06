@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Card, Tag } from 'antd';
-import { useGetAppelChargesQuery } from '../../features/api/apiSlice';
+import { useGetAppelChargesQuery } from '../../../features/api/apiSlice';
 import { FileTextOutlined } from '@ant-design/icons';
 
 const AppelChargeList: React.FC = () => {
