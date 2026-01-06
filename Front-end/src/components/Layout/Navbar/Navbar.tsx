@@ -22,6 +22,10 @@ interface NavbarProps {
   toggleTheme: () => void;
 }
 
+import { useNavigate } from 'react-router-dom';
+
+// ... (imports)
+
 const Navbar: React.FC<NavbarProps> = ({ 
   brandText = "Main Dashboard", 
   currentRoute = "Pages",
@@ -31,7 +35,18 @@ const Navbar: React.FC<NavbarProps> = ({
   darkMode,
   toggleTheme
 }) => {
-  // Local state for dark mode removed, using props instead
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
+  const handleMenuClick: MenuProps['onClick'] = (e) => {
+    if (e.key === '3') {
+      handleLogout();
+    }
+  };
 
   // Dropdown menu for the avatar
   const items: MenuProps['items'] = [
@@ -92,7 +107,7 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Avatar with Dropdown */}
-        <Dropdown menu={{ items }} trigger={['click']}>
+        <Dropdown menu={{ items, onClick: handleMenuClick }} trigger={['click']}>
             <Avatar 
               src={avatarUrl} 
               size="large" 

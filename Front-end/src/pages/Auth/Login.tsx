@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import './Register.css'; // Reusing the same CSS file
 import { FcGoogle } from 'react-icons/fc';
-import { FaApple } from 'react-icons/fa';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+
+import { useNavigate } from 'react-router-dom';
+import { useLoginUserMutation } from '../../features/api/apiSlice';
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,6 +12,9 @@ const Login: React.FC = () => {
     email: '',
     password: '',
   });
+  
+  const navigate = useNavigate();
+  const [loginUser] = useLoginUserMutation();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -23,10 +28,22 @@ const Login: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login Submitted:', formData);
-    // Add your Spring Boot API login logic here
+    try {
+      const user = await loginUser({
+        email: formData.email,
+        motDePasse: formData.password
+      }).unwrap();
+      
+      console.log('Login Successful:', user);
+      // You might want to store the user in a context or global state here
+      localStorage.setItem('user', JSON.stringify(user));
+      navigate('/');
+    } catch (err) {
+      console.error('Login Failed:', err);
+      alert('Login failed. Please check your credentials.');
+    }
   };
 
   return (

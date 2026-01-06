@@ -44,6 +44,13 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Users'],
     }),
+    loginUser: builder.mutation({
+      query: (credentials) => ({
+        url: '/users/login',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
     getApartments: builder.query({
       query: () => '/appartements',
       providesTags: ['Apartments'],
@@ -135,5 +142,6 @@ export const {
   useDeleteChargeMutation,
   useDistributeChargeMutation,
   useUndoDistributeChargeMutation,
-  useGetAppelChargesQuery
+  useGetAppelChargesQuery,
+  useLoginUserMutation
 } = apiSlice;

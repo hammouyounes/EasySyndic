@@ -12,6 +12,8 @@ import AppelChargeList from './pages/AppelCharges/AppelChargeList';
 // Placeholder Pages (We will build these later)
 const Dashboard = () => <h1>Dashboard Stats (To Do)</h1>;
 
+import ProtectedRoute from './components/ProtectedRoute';
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -19,16 +21,18 @@ const App: React.FC = () => {
         {/* PUBLIC ROUTES */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
+
         {/* PROTECTED ROUTES (Sidebar Layout) */}
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="buildings" element={<BuildingList />} />
-          <Route path="apartments" element={<ApartmentList />} />
-          <Route path="users" element={<UserList />} />
-          <Route path="charges" element={<ChargeList />} />
-          <Route path="appel-charges" element={<AppelChargeList />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="buildings" element={<BuildingList />} />
+            <Route path="apartments" element={<ApartmentList />} />
+            <Route path="users" element={<UserList />} />
+            <Route path="charges" element={<ChargeList />} />
+            <Route path="appel-charges" element={<AppelChargeList />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

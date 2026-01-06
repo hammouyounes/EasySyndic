@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import './Register.css';
 import { FcGoogle } from 'react-icons/fc'; // Google Icon
-import { FaApple } from 'react-icons/fa';   // Apple Icon
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'; // Eye Icons
+
+import { useNavigate } from 'react-router-dom';
+import { useAddUserMutation } from '../../features/api/apiSlice';
 
 const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +15,9 @@ const Register: React.FC = () => {
     password: '',
     agreeToTerms: false,
   });
+
+  const navigate = useNavigate();
+  const [addUser] = useAddUserMutation();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -26,9 +31,31 @@ const Register: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form Submitted:', formData);
+    if (!formData.agreeToTerms) {
+      alert("Please agree to the terms and conditions.");
+      return;
+    }
+    
+    try {
+      const newUser = {
+        nom: formData.lastName,
+        prenom: formData.firstName,
+        email: formData.email,
+        motDePasse: formData.password,
+        role: "PROPRIETAIRE" // Default role
+      };
+
+      await addUser(newUser).unwrap();
+      
+      console.log('Registration Successful');
+      alert('Registration successful! Please log in.');
+      navigate('/login');
+    } catch (err) {
+      console.error('Registration Failed:', err);
+      alert('Registration failed. Please try again.');
+    }
   };
 
   return (

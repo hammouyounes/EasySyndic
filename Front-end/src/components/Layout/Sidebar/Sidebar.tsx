@@ -111,14 +111,13 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
           },
 
           // SECTION 3: SYSTEM
-          { 
-            key: 'g3', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1, marginTop: 20 }}>SYSTEM</span>, 
-            type: 'group',
-            children: [
-              { key: '/settings', icon: <SettingOutlined />, label: 'Settings' },
-              { key: '/login', icon: <LogoutOutlined style={{ color: '#ff4d4f' }} />, label: <span style={{ color: '#ff4d4f' }}>Logout</span> },
-            ]
-          },
+          // { 
+          //   key: 'g3', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1, marginTop: 20 }}>SYSTEM</span>, 
+          //   type: 'group',
+          //   children: [
+          //     { key: '/settings', icon: <SettingOutlined />, label: 'Settings' },
+          //   ]
+          // },
         ]}
       />
 
