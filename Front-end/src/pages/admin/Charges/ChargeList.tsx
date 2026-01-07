@@ -18,6 +18,7 @@ interface Charge {
   periode: string;
   immeuble: { id: number; nom: string };
   diviser: number;
+  locked: boolean;
 }
 
 const ChargeList: React.FC = () => {
@@ -174,13 +175,16 @@ const ChargeList: React.FC = () => {
             ghost={record.diviser !== 1}
             icon={record.diviser === 1 ? <UndoOutlined /> : <SendOutlined />}
             onClick={() => handleDistributeToggle(record)} 
-            title={record.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements"}
+            disabled={record.locked}
+            title={record.locked ? "Charge verrouillée (paiements existants)" : (record.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
           >
             {record.diviser === 1 ? "Annuler Distribution" : "Distribuer"}
           </Button>
           <Button 
             icon={<EditOutlined />} 
             onClick={() => handleEdit(record)} 
+            disabled={record.locked}
+            title={record.locked ? "Impossible de modifier (paiements en cours)" : "Modifier"}
           >
             Modifier
           </Button>
@@ -188,6 +192,8 @@ const ChargeList: React.FC = () => {
             danger
             icon={<DeleteOutlined />} 
             onClick={() => handleDelete(record)}
+            disabled={record.locked}
+            title={record.locked ? "Impossible de supprimer (paiements en cours)" : "Supprimer"}
           >
             Supprimer
           </Button>

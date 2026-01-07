@@ -2,6 +2,7 @@ package com.example.backend_syndic.service.Impl;
 
 import com.example.backend_syndic.Dao.AppelChargeRepository;
 import com.example.backend_syndic.Dao.ChargeRepository;
+import com.example.backend_syndic.Dao.PaiementRepository;
 import com.example.backend_syndic.Dao.StatusRepository;
 import com.example.backend_syndic.entity.Appartement;
 import com.example.backend_syndic.entity.AppelCharge;
@@ -28,6 +29,9 @@ public class AppelChargeServiceImpl implements AppelChargeService {
 
     @Autowired
     private StatusRepository statusRepository;
+
+    @Autowired
+    private PaiementRepository paiementRepository;
 
     @Override
     public void distributeCharge(Long chargeId) {
@@ -77,6 +81,14 @@ public class AppelChargeServiceImpl implements AppelChargeService {
                 .orElseThrow(() -> new RuntimeException("Charge not found"));
 
         List<AppelCharge> appels = repo.findByCharge(charge);
+
+        // Check for existing payments
+        for (AppelCharge appel : appels) {
+            if (paiementRepository.existsByAppelCharge(appel)) {
+                throw new RuntimeException("Impossible de supprimer la distribution : des paiements ont déjà été effectués pour cette charge.");
+            }
+        }
+
         repo.deleteAll(appels);
 
         charge.setDiviser(0);

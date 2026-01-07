@@ -2,6 +2,7 @@ package com.example.backend_syndic.service.Impl;
 
 import com.example.backend_syndic.Dao.ChargeRepository;
 import com.example.backend_syndic.Dao.ImmeubleRepository;
+import com.example.backend_syndic.Dao.PaiementRepository;
 import com.example.backend_syndic.entity.Charge;
 import com.example.backend_syndic.entity.Immeuble;
 import com.example.backend_syndic.service.facade.ChargeService;
@@ -21,6 +22,9 @@ public class ChargeServiceImpl implements ChargeService {
 
     @Autowired
     private ImmeubleRepository immeubleRepository;
+
+    @Autowired
+    private PaiementRepository paiementRepository;
 
     @Autowired
     private com.example.backend_syndic.service.facade.ActivityLogService activityLogService;
@@ -84,6 +88,7 @@ public class ChargeServiceImpl implements ChargeService {
             "Mise à jour de la charge " + saved.getType() + " (" + saved.getMontant() + " DH)", 
             "Admin");
 
+        saved.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(saved.getId()));
         return saved;
     }
 
@@ -103,26 +108,34 @@ public class ChargeServiceImpl implements ChargeService {
 
     @Override
     public Charge getChargeById(Long id) {
-        return repo.findById(id)
+        Charge charge = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Charge not found"));
+        charge.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(charge.getId()));
+        return charge;
     }
 
     @Override
     public List<Charge> getAllCharges(){
-        return repo.findAll();
+        List<Charge> charges = repo.findAll();
+        charges.forEach(c -> c.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(c.getId())));
+        return charges;
     }
 
     @Override
     public List<Charge> getChargesByImmeuble(Long immeubleId) {
-        return repo.findAll().stream()
+        List<Charge> charges = repo.findAll().stream()
                 .filter(c -> c.getImmeuble() != null && c.getImmeuble().getId().equals(immeubleId))
                 .collect(Collectors.toList());
+        charges.forEach(c -> c.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(c.getId())));
+        return charges;
     }
 
     @Override
     public List<Charge> getChargesByYear(int year) {
         String yearStr = String.valueOf(year);
-        return repo.findByYear(yearStr);
+        List<Charge> charges = repo.findByYear(yearStr);
+        charges.forEach(c -> c.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(c.getId())));
+        return charges;
     }
     @Override
     public List<Charge> getChargesByPeriode(int year, Integer month) {
@@ -130,11 +143,15 @@ public class ChargeServiceImpl implements ChargeService {
 
         if (month == null) {
             // only year filter
-            return repo.findByYear(yearStr);
+            List<Charge> charges = repo.findByYear(yearStr);
+            charges.forEach(c -> c.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(c.getId())));
+            return charges;
         } else {
             // format month to 2 digits: "04"
             String monthStr = String.format("%02d", month);
-            return repo.findByMonthAndYear(monthStr, yearStr);
+            List<Charge> charges = repo.findByMonthAndYear(monthStr, yearStr);
+            charges.forEach(c -> c.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(c.getId())));
+            return charges;
         }
     }
 

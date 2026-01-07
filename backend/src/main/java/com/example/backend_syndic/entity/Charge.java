@@ -91,4 +91,15 @@ public class Charge {
     public void setDiviser(Integer diviser) {
         this.diviser = diviser;
     }
+
+    @Transient
+    private boolean locked;
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
 }
