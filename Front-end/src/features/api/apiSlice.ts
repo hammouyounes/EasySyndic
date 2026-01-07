@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8080/api' }),
-  tagTypes: ['Buildings', 'Users', 'Apartments', 'Charges'],
+  tagTypes: ['Buildings', 'Users', 'Apartments', 'Charges', 'AppelCharges'],
   endpoints: (builder) => ({
     getBuildings: builder.query({
       query: () => '/immeubles',
@@ -29,6 +29,7 @@ export const apiSlice = createApi({
       query: (id) => ({
         url: `/immeubles/${id}`,
         method: 'DELETE',
+        body: initialBuilding,
       }),
       invalidatesTags: ['Buildings'],
     }),
@@ -110,17 +111,26 @@ export const apiSlice = createApi({
         url: `/charges/${id}/distribute`,
         method: 'POST',
       }),
-      invalidatesTags: ['Charges'],
+      invalidatesTags: ['Charges', 'AppelCharges'],
     }),
     undoDistributeCharge: builder.mutation({
       query: (id) => ({
         url: `/charges/${id}/undo-distribute`,
         method: 'POST',
       }),
-      invalidatesTags: ['Charges'],
+      invalidatesTags: ['Charges', 'AppelCharges'],
+    }),
+    addPayment: builder.mutation({
+      query: ({ userId, appartementId, appelChargeId, ...paymentData }) => ({
+        url: `/paiements/user/${userId}/appartement/${appartementId}/appel-charge/${appelChargeId}`,
+        method: 'POST',
+        body: paymentData,
+      }),
+      invalidatesTags: ['AppelCharges'],
     }),
     getAppelCharges: builder.query({
       query: () => '/appel-charges',
+      providesTags: ['AppelCharges'],
     }),
   }),
 });
@@ -143,5 +153,6 @@ export const {
   useDistributeChargeMutation,
   useUndoDistributeChargeMutation,
   useGetAppelChargesQuery,
-  useLoginUserMutation
+  useLoginUserMutation,
+  useAddPaymentMutation
 } = apiSlice;

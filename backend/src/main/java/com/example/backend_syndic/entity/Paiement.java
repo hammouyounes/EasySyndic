@@ -42,6 +42,10 @@ public class Paiement {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "appel_charge_id")
+    private AppelCharge appelCharge;
+
     public Long getId() {
         return id;
     }
@@ -104,5 +108,13 @@ public class Paiement {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public AppelCharge getAppelCharge() {
+        return appelCharge;
+    }
+
+    public void setAppelCharge(AppelCharge appelCharge) {
+        this.appelCharge = appelCharge;
     }
 }

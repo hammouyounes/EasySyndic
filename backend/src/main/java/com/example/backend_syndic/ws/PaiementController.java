@@ -26,6 +26,26 @@ public class PaiementController {
         return new ResponseEntity<>(newPaiement, HttpStatus.CREATED);
     }
 
+    @PostMapping("/user/{userId}/appartement/{appartementId}/appel-charge/{appelChargeId}")
+    public ResponseEntity<Paiement> createPaiementFull(
+            @RequestBody Paiement paiement, 
+            @PathVariable Long userId,
+            @PathVariable Long appartementId,
+            @PathVariable Long appelChargeId) {
+        
+        // Construct partial objects for service processing
+        com.example.backend_syndic.entity.User user = new com.example.backend_syndic.entity.User();
+        user.setId(userId);
+        paiement.setUser(user);
+        
+        com.example.backend_syndic.entity.AppelCharge appelCharge = new com.example.backend_syndic.entity.AppelCharge();
+        appelCharge.setId(appelChargeId);
+        paiement.setAppelCharge(appelCharge);
+
+        Paiement newPaiement = paiementService.addPaiement(paiement, appartementId);
+        return new ResponseEntity<>(newPaiement, HttpStatus.CREATED);
+    }
+
     @GetMapping
     public List<Paiement> getAllPaiements() {
         return paiementService.getAllPaiements();

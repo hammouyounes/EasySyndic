@@ -10,6 +10,10 @@ import com.example.backend_syndic.service.facade.ChargeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.backend_syndic.Dao.AppelChargeRepository;
+import com.example.backend_syndic.Dao.StatusRepository;
+import com.example.backend_syndic.entity.AppelCharge;
+import com.example.backend_syndic.entity.Status;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
@@ -20,6 +24,12 @@ public class PaiementServiceImpl implements PaiementService {
 
     @Autowired
     private PaiementRepository repo;
+    
+    @Autowired
+    private AppelChargeRepository appelChargeRepo;
+
+    @Autowired
+    private StatusRepository statusRepo;
 
     @Override
     public List<Paiement> getAllPaiements() {
@@ -50,13 +60,31 @@ public class PaiementServiceImpl implements PaiementService {
         Appartement appartement = appartementService.getAppartementById(appartementId);
         paiement.setAppartement(appartement);
         
-        // Associate with locataire (tenant) first, if not then proprietaire (owner)
         if (paiement.getUser() == null) {
             if (appartement.getLocataire() != null) {
                 paiement.setUser(appartement.getLocataire());
             } else if (appartement.getProprietaire() != null) {
                 paiement.setUser(appartement.getProprietaire());
             }
+        }
+
+        if (paiement.getAppelCharge() != null && paiement.getAppelCharge().getId() != null) {
+            AppelCharge appelCharge = appelChargeRepo.findById(paiement.getAppelCharge().getId())
+                    .orElseThrow(() -> new RuntimeException("Appel de charge introuvable"));
+            
+            if (appelCharge.getStatus() != null && "PAYÉ".equals(appelCharge.getStatus().getLabel())) {
+                 throw new RuntimeException("Cet appel de charge est déjà payé.");
+            }
+            
+            Status statusPaye = statusRepo.findByLabel("PAYÉ")
+                .orElseThrow(() -> new RuntimeException("Statut 'PAYÉ' introuvable en base de données"));
+
+            // Mark as paid
+            appelCharge.setStatus(statusPaye);
+            appelChargeRepo.save(appelCharge);
+            
+            // Link to payment
+            paiement.setAppelCharge(appelCharge);
         }
 
         Paiement savedPaiement = repo.save(paiement);
