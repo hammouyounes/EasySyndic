@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8080/api' }),
-  tagTypes: ['Buildings', 'Users', 'Apartments', 'Charges', 'AppelCharges'],
+  tagTypes: ['Buildings', 'Users', 'Apartments', 'Charges', 'AppelCharges', 'Paiements'],
   endpoints: (builder) => ({
     getBuildings: builder.query({
       query: () => '/immeubles',
@@ -29,7 +29,6 @@ export const apiSlice = createApi({
       query: (id) => ({
         url: `/immeubles/${id}`,
         method: 'DELETE',
-        body: initialBuilding,
       }),
       invalidatesTags: ['Buildings'],
     }),
@@ -126,11 +125,15 @@ export const apiSlice = createApi({
         method: 'POST',
         body: paymentData,
       }),
-      invalidatesTags: ['AppelCharges'],
+      invalidatesTags: ['AppelCharges', 'Paiements'],
     }),
     getAppelCharges: builder.query({
       query: () => '/appel-charges',
       providesTags: ['AppelCharges'],
+    }),
+    getPaiements: builder.query({
+      query: () => '/paiements',
+      providesTags: ['Paiements'],
     }),
   }),
 });
@@ -154,5 +157,6 @@ export const {
   useUndoDistributeChargeMutation,
   useGetAppelChargesQuery,
   useLoginUserMutation,
-  useAddPaymentMutation
+  useAddPaymentMutation,
+  useGetPaiementsQuery
 } = apiSlice;

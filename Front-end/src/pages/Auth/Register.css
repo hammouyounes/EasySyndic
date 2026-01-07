@@ -17,13 +17,7 @@
   --border-color: #3f3f46;
 }
 
-body {
-  background-color: var(--bg-dark);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
+
 
 /* Container & Card Layout */
 .register-container {
@@ -33,6 +27,7 @@ body {
   width: 100%;
   min-height: 100vh;
   padding: 20px;
+  background-color: var(--bg-dark);
 }
 
 .register-card {

@@ -8,9 +8,7 @@ import ChargeList from './pages/admin/Charges/ChargeList';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import AppelChargeList from './pages/admin/AppelCharges/AppelChargeList';
-
-// Placeholder Pages (We will build these later)
-const Dashboard = () => <h1>Dashboard Stats (To Do)</h1>;
+import Dashboard from './pages/admin/Dashboard/Dashboard';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import ProprietaireLayout from './components/Layout/ProprietaireLayout';

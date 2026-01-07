@@ -1,0 +1,20 @@
+
+.chart-card {
+  width: 100%;
+  max-width: 700px;
+  border-radius: 12px;
+  background-color: #ffffff; /* Or transparent if you prefer */
+  padding: 10px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 0 10px;
+}
+
+.chart-container {
+  height: 300px; /* Fixed height for the graph */
+}

@@ -1,0 +1,132 @@
+
+:root {
+  --bg-color: #e0e7ff;
+  --card-bg: #ffffff;
+}
+
+/* Scoped to avoid global body conflict if possible, but user asked for this CSS */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 0; /* Let parent padding handle spacing */
+}
+
+/* Base de la Carte */
+.stat-card {
+  background: var(--card-bg);
+  width: 100%; /* Fill grid cell */
+  padding: 24px;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08); /* Enhanced shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Dark Mode Support */
+body.dark .stat-card {
+  background: var(--bg-secondary); /* Usually #111c44 from index.css */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  color: var(--text-primary);
+}
+
+body.dark .stat-label {
+  color: var(--text-secondary);
+}
+
+body.dark .stat-value {
+  color: var(--text-primary);
+}
+
+body.dark .stat-icon {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .progress-circle {
+   background: radial-gradient(closest-side, var(--bg-secondary) 79%, transparent 80% 100%),
+               conic-gradient(var(--color) calc(var(--percent) * 1%), rgba(255,255,255,0.1) 0);
+}
+
+/* Accent coloré sur le côté droit */
+.stat-card::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 12px;
+  border-radius: 10px 0 0 10px;
+}
+
+.stat-card.purple::after { background: #6366f1; }
+.stat-card.blue::after { background: #38bdf8; }
+.stat-card.dark-purple::after { background: #8b5cf6; }
+.stat-card.green::after { background: #22c55e; }
+.stat-card.red::after { background: #ef4444; }
+
+/* En-tête avec Icône et Cercle */
+.stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.stat-icon {
+  font-size: 24px;
+  line-height: 1; /* Fix vertical alignment */
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Cercle de progression simplifié en CSS */
+.progress-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, white 79%, transparent 80% 100%),
+              conic-gradient(var(--color) calc(var(--percent) * 1%), #f1f5f9 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* Corps de la carte */
+.stat-label {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 28px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.stat-trend {
+  color: #94a3b8;
+  font-size: 18px;
+  font-weight: normal;
+}
+
+.stat-subtext {
+  color: #94a3b8;
+  font-size: 12px;
+  margin-top: 8px;
+}
