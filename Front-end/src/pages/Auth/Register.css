@@ -7,12 +7,12 @@
 }
 
 :root {
-  --bg-dark: #2c2c35; /* Outer background */
-  --card-bg: #1e1e24; /* Form background */
+  --bg-dark: #2c2c35; 
+  --card-bg: #1e1e24; 
   --input-bg: #2b2b36;
   --text-main: #ffffff;
   --text-muted: #a1a1aa;
-  --primary-purple: #8b5cf6; /* Matches the button/overlay */
+  --primary-purple: #8b5cf6;
   --primary-purple-hover: #7c3aed;
   --border-color: #3f3f46;
 }
@@ -35,7 +35,7 @@
   width: 850px;
   max-width: 95%;
   height: 600px;
-  background-color: var(--card-bg);
+  background-color: #1e1e24;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -121,6 +121,7 @@
   flex-direction: column;
   justify-content: center;
   color: var(--text-main);
+  background-color: #1e1e24;
 }
 
 .form-header h2 {
