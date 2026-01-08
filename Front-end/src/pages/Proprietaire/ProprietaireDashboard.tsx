@@ -4,7 +4,7 @@
 
 import React, { useMemo } from 'react';
 import { Card, Row, Col, Statistic, Table, Tag, Spin, Empty } from 'antd';
-import { WalletOutlined, HomeOutlined, FileTextOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { WalletOutlined, HomeOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useGetApartmentsQuery, useGetAppelChargesQuery } from '../../features/api/apiSlice';
 
 const ProprietaireDashboard: React.FC = () => {

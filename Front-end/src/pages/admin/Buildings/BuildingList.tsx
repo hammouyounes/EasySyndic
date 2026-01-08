@@ -23,7 +23,7 @@ const BuildingList: React.FC = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
   
-  const { data: buildings, isLoading, isError } = useGetBuildingsQuery({});
+  const { data: buildings, isLoading } = useGetBuildingsQuery({});
   const { data: apartments } = useGetApartmentsQuery({});
   const { data: charges } = useGetChargesQuery({}); // Fetch charges
   
