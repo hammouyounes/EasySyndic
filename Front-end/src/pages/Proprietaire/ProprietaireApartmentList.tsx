@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { Card, Table, Tag, Empty, Spin, Button, Space } from 'antd';
-import { HomeOutlined, EyeOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Empty, Spin } from 'antd';
+import { HomeOutlined } from '@ant-design/icons';
 import { useGetApartmentsQuery } from '../../features/api/apiSlice';
 
 const ProprietaireApartmentList: React.FC = () => {

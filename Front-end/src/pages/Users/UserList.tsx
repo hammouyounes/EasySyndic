@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button, Card, Tag, Space, Modal, Form, Input, Select, message } from 'antd';
 import { UserOutlined, SaveOutlined } from '@ant-design/icons';
 import { useGetUsersQuery, useAddUserMutation, useToggleUserStatusMutation } from '../../features/api/apiSlice';
-import Switch from '../../components/Common/Switch';
+import Switch from '../../components/common/Switch';
 import AddButton from '../../components/common/AddButton';
 import DataTable from 'datatables.net-dt';
 import 'datatables.net-dt/css/dataTables.dataTables.css';

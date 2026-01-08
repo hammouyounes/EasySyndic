@@ -1,19 +1,16 @@
 import React from 'react';
-import { Layout, Menu, Avatar, Typography } from 'antd';
+import { Layout, Menu } from 'antd';
 import { 
   AppstoreOutlined, 
   ShopOutlined, 
   TeamOutlined, 
   WalletOutlined, 
-  SettingOutlined,
-  LogoutOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../../../assets/images/logoEs2.png';
 
 const { Sider } = Layout;
-const { Text } = Typography;
 
 
 interface SidebarProps {
@@ -31,7 +28,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
   // Using CSS variables for dynamic theming
   const sidebarColor = 'var(--bg-secondary)'; 
   const sidebarTextColor = 'var(--text-secondary)';
-  const accentColor = 'var(--accent, #7551FF)'; 
 
   return (
     <Sider 
@@ -91,20 +87,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
               { key: '/appel-charges', icon: <WalletOutlined />, label: 'Appels & Paiements' },
             ]
           },
-
-          // SECTION 3: SYSTEM
-          // { 
-          //   key: 'g3', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1, marginTop: 20 }}>SYSTEM</span>, 
-          //   type: 'group',
-          //   children: [
-          //     { key: '/settings', icon: <SettingOutlined />, label: 'Settings' },
-          //   ]
-          // },
         ]}
       />
-
-      {/* 3. CREATIVE PROFILE CARD AT BOTTOM */}
-      {/* 3. CREATIVE PROFILE CARD AT BOTTOM */}
       
     </Sider>
   );

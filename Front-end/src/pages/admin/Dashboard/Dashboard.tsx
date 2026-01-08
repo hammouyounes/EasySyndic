@@ -1,10 +1,6 @@
 import React, { useMemo } from 'react';
-import { Row, Col, Typography, Card, Statistic, Spin, List, Avatar } from 'antd';
+import { Row, Col, Typography, Card, Spin, List, Avatar } from 'antd';
 import { 
-  BankOutlined, 
-  HomeOutlined, 
-  DollarOutlined, 
-  WarningOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
   SyncOutlined

@@ -11,7 +11,7 @@ import {
   InfoCircleOutlined,
   LogoutOutlined
 } from '@ant-design/icons';
-import { Dropdown, type MenuProps, Avatar } from 'antd';
+import { Dropdown, type MenuProps } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import profile from '../../../assets/images/profile.jpg';
 
@@ -23,13 +23,14 @@ const MoonIcon = () => (
 );
 
 interface NavbarProps {
+  brandText?: string;
   collapsed: boolean;
   setCollapsed: (collapsed: boolean) => void;
   darkMode: boolean;
   toggleTheme: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ collapsed, setCollapsed, darkMode, toggleTheme }) => {
+const Navbar: React.FC<NavbarProps> = ({ brandText, collapsed, setCollapsed, darkMode, toggleTheme }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -89,6 +90,16 @@ const Navbar: React.FC<NavbarProps> = ({ collapsed, setCollapsed, darkMode, togg
           <MenuOutlined />
         </button>
 
+        {brandText && (
+          <span style={{ 
+            fontSize: '20px', 
+            fontWeight: 'bold', 
+            color: darkMode ? '#ffffff' : '#1B2559'
+          }}>
+            {brandText}
+          </span>
+        )}
+
         <div className="search-wrapper">
           <SearchOutlined className="search-icon" />
           <input 
@@ -118,7 +129,7 @@ const Navbar: React.FC<NavbarProps> = ({ collapsed, setCollapsed, darkMode, togg
               className="avatar" 
             />
             <span className="profile-name">
-              {user.prenom || 'Musharof'} <DownOutlined style={{ fontSize: '10px', color: '#9ca3af' }} />
+              {user.prenom || 'youness'} <DownOutlined style={{ fontSize: '10px', color: '#2d72e8ff' }} />
             </span>
           </div>
         </Dropdown>
