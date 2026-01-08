@@ -10,8 +10,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
-import logo from '../../../assets/images/logo2 (1).png';
-import logo1 from '../../../assets/images/logo22.png';
+import logo from '../../../assets/images/logoEs2.png';
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -21,6 +20,8 @@ interface SidebarProps {
   collapsed: boolean;
   darkMode: boolean;
 }
+
+import './Sidebar.css';
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
   const navigate = useNavigate();
@@ -45,33 +46,14 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
         transition: 'all 0.3s ease'
       }}
     >
-      <div style={{ 
-        height: 90, 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}` 
-      }}>
-         <div style={{ 
-           display: 'flex', 
-           alignItems: 'center', 
-           gap: 10, 
-           color: 'var(--text-primary)', 
-           fontWeight: 'bold', 
-           fontSize: 20,
-           letterSpacing: '1px'
-         }}>
+      <div className="sidebar-logo-container">
            <img 
-             src={collapsed ? logo1 : logo} 
+             src={logo} 
              alt="Company Logo" 
-             style={{ 
-               width: collapsed ? 80 : 85, 
-               height: 'auto', 
-               transition: 'all 0.3s ease' 
-             }} 
+             className="logo-icon"
+             style={{ paddingLeft: !collapsed ? '30px' : '0px' }}
            />
-           {!collapsed && "eSyndic"}
-         </div>
+           {!collapsed && <span className="logo-text">eSyndic</span>}
       </div>
 
       {/* 2. MENU */}
@@ -123,28 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
 
       {/* 3. CREATIVE PROFILE CARD AT BOTTOM */}
       {/* 3. CREATIVE PROFILE CARD AT BOTTOM */}
-      {!collapsed && (
-        <div style={{
-          position: 'absolute',
-          bottom: 30,
-          left: 20,
-          right: 20,
-          background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-          borderRadius: 16,
-          padding: 16,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          backdropFilter: 'blur(10px)',
-          transition: 'background 0.3s ease'
-        }}>
-          <Avatar size="large" src="https://ui-avatars.com/api/?name=Admin+Syndic&background=7551FF&color=fff" />
-          <div style={{ lineHeight: 1.2 }}>
-            <Text strong style={{ color: 'var(--text-primary)', display: 'block' }}>Hassan Admin</Text>
-            <Text style={{ color: 'var(--text-secondary)', fontSize: 11 }}>Syndic Manager</Text>
-          </div>
-        </div>
-      )}
+      
     </Sider>
   );
 };

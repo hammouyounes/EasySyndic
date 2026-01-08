@@ -6,8 +6,8 @@ import {
   HomeOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
-import logo from '../../../assets/images/logo2 (1).png';
-import logo1 from '../../../assets/images/logo22.png';
+import logo from '../../../assets/images/logoEs2.png';
+import './Sidebar.css';
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -38,33 +38,14 @@ const ProprietaireSidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) =>
         transition: 'all 0.3s ease'
       }}
     >
-      <div style={{ 
-        height: 90, 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}` 
-      }}>
-         <div style={{ 
-           display: 'flex', 
-           alignItems: 'center', 
-           gap: 10, 
-           color: 'var(--text-primary)', 
-           fontWeight: 'bold', 
-           fontSize: 20,
-           letterSpacing: '1px'
-         }}>
+      <div className="sidebar-logo-container">
            <img 
-             src={collapsed ? logo1 : logo} 
+             src={logo} 
              alt="Company Logo" 
-             style={{ 
-               width: collapsed ? 80 : 85, 
-               height: 'auto', 
-               transition: 'all 0.3s ease' 
-             }} 
+             className="logo-icon"
+             style={{ paddingLeft: !collapsed ? '30px' : '0px' }}
            />
-           {!collapsed && "eSyndic"}
-         </div>
+           {!collapsed && <span className="logo-text">eSyndic</span>}
       </div>
 
       <Menu

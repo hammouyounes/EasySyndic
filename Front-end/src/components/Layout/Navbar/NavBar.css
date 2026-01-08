@@ -1,164 +1,202 @@
-/* Navbar.css */
-
-/* 1. Main Navbar Container */
-.horizon-navbar {
+.navbar-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
-  /* CHANGED: Removed fixed margins and set width to 100% to take all space */
-  width: 100%; 
-  margin: 0; 
-  border-radius: 0 0 16px 16px; /* Optional: Rounded corners only at bottom if full width */
-  
-  /* Glass Effect */
-  background: rgba(255, 250, 250, 0.2);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  transition: all 0.3s ease;
+  padding: 16px 24px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* 2. Left Side Typography */
-.navbar-breadcrumb {
-  margin-bottom: 4px;
-}
-
-/* Ant Design Breadcrumb Override */
-.navbar-breadcrumb .ant-breadcrumb {
-  font-size: 14px;
-  font-family: 'DM Sans', sans-serif; /* Assuming standard font */
-}
-
-.crumb-light {
-  color: #707EAE !important; /* Cool Gray */
-  font-weight: 500;
-  transition: 0.2s;
-}
-
-.crumb-light:hover {
-  color: #4318FF !important;
-  text-decoration: underline;
-}
-
-.crumb-bold {
-  color: #1B2559 !important; /* Dark Navy */
-  font-weight: 700;
-}
-
-.navbar-title {
-  font-size: 34px;
-  font-weight: 700;
-  color: #1B2559;
-  margin: 0;
-  line-height: 1;
-  font-family: 'DM Sans', sans-serif;
-}
-
-/* 3. Right Side "Pill" Container */
-.navbar-controls {
+/* Left Section */
+.navbar-left {
   display: flex;
   align-items: center;
-  gap: 15px;
-  
+  gap: 16px;
+  flex: 1;
+}
+
+.menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
   background: white;
-  padding: 10px;
-  border-radius: 30px; /* The Pill Shape */
-  box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
-  transition: background 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #6b7280;
 }
 
-/* 4. Search Bar Styling */
 .search-wrapper {
-  background: #F4F7FE; /* Very light gray background for input */
-  border-radius: 49px;
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: background 0.3s ease;
+  position: relative;
+  width: 100%;
+  max-width: 400px;
 }
 
 .search-icon {
-  color: #2B3674;
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
 }
 
 .search-input {
-  border: none;
-  background: transparent;
-  outline: none;
-  color: #2B3674;
+  width: 100%;
+  padding: 10px 10px 10px 40px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   font-size: 14px;
-  width: 150px; /* Adjusted slightly */
+  outline: none;
+  transition: border-color 0.2s;
 }
 
-.search-input::placeholder {
-  color: #8F9BBA;
+.search-input:focus {
+  border-color: #3b82f6;
+  background-color: #fff;
 }
 
-/* 5. Icon Buttons */
-.nav-icon {
-  font-size: 20px;
-  color: #A3AED0; /* Icon Gray */
+.command-key {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* Right Section */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  background: white;
   cursor: pointer;
-  transition: color 0.2s;
+  color: #4b5563;
+  position: relative;
 }
 
-.nav-icon:hover {
-  color: #4318FF; /* Purple on Hover */
-}
-
-/* 6. Avatar */
-.nav-avatar {
-  cursor: pointer;
+.notification-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 10px;
+  height: 10px;
+  background-color: #f97316; /* Orange dot */
   border: 2px solid white;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  background-color: #11047A; /* Fallback color */
-  color: white;
-  font-weight: 700;
+  border-radius: 50%;
 }
 
-/* --- Dark Mode Overrides --- */
-body.dark .horizon-navbar {
-  background: rgba(11, 20, 55, 0.6); /* Darker glass context */
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 8px;
+  cursor: pointer;
 }
 
-body.dark .navbar-controls {
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #e0e7ff;
+}
+
+.profile-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+body.dark .navbar-container {
+  background-color: #0b1437;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark .menu-button {
   background: #111c44;
-  box-shadow: 14px 17px 40px 4px rgba(0, 0, 0, 0.2);
-}
-
-body.dark .search-wrapper {
-  background: #0b1437;
-}
-
-body.dark .search-icon {
-  color: white;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 body.dark .search-input {
-  color: white;
+  background-color: #111c44;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 body.dark .search-input::placeholder {
-  color: #A3AED0;
+  color: #a0aec0;
 }
 
-body.dark .nav-icon {
-  color: white;
+body.dark .command-key {
+  background: #1B2559;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
-body.dark .nav-icon:hover {
-  color: #7551FF;
+body.dark .icon-circle {
+  background: #111c44;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
-body.dark .crumb-bold {
-  color: white !important;
+body.dark .profile-name {
+  color: #fff;
 }
 
-body.dark .crumb-light {
-   color: #A3AED0 !important;
+body.dark .search-icon {
+  color: #fff;
+}
+
+/* Custom Dropdown Styles */
+.custom-dropdown .ant-dropdown-menu {
+  min-width: 260px;
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.custom-dropdown .ant-dropdown-menu-item {
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+
+body.dark .custom-dropdown .ant-dropdown-menu {
+  background-color: #111c44;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+body.dark .custom-dropdown .ant-dropdown-menu-item {
+  color: #fff;
+}
+
+body.dark .custom-dropdown .ant-dropdown-menu-item:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+body.dark .custom-dropdown .ant-dropdown-menu-item-divider {
+  background-color: rgba(255,255,255,0.1);
 }
