@@ -26,6 +26,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(columnDefinition = "boolean default true")
+    private boolean active = true;
+
     public enum Role {
         ADMIN,
         PROPRIETAIRE,
@@ -126,5 +129,15 @@ public class User {
 
     public void setAppartementsLoues(List<Appartement> appartementsLoues) {
         this.appartementsLoues = appartementsLoues;
+    }
+    @Transient
+    private boolean canToggleStatus = true;
+
+    public boolean isCanToggleStatus() {
+        return canToggleStatus;
+    }
+
+    public void setCanToggleStatus(boolean canToggleStatus) {
+        this.canToggleStatus = canToggleStatus;
     }
 }

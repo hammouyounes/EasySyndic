@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Table, Button, Card, Tag, Space, Modal, Form, Input, Select, message } from 'antd';
 import { PlusOutlined, UserOutlined, SaveOutlined } from '@ant-design/icons';
-import { useGetUsersQuery, useAddUserMutation } from '../../features/api/apiSlice';
+import { useGetUsersQuery, useAddUserMutation, useToggleUserStatusMutation } from '../../features/api/apiSlice';
+import Switch from '../../components/Common/Switch';
 
 interface User {
   id: number;
@@ -9,6 +10,8 @@ interface User {
   nom: string;
   prenom: string;
   role: string;
+  active: boolean;
+  canToggleStatus: boolean;
 }
 
 const UserList: React.FC = () => {
@@ -17,6 +20,7 @@ const UserList: React.FC = () => {
 
   const { data: users, isLoading } = useGetUsersQuery({});
   const [addUser] = useAddUserMutation();
+  const [toggleUserStatus] = useToggleUserStatusMutation();
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -31,7 +35,8 @@ const UserList: React.FC = () => {
      try {
        const userPayload = {
          ...values,
-         motDePasse: values.mot_de_passe
+         motDePasse: values.mot_de_passe,
+         active: false
        };
        await addUser(userPayload).unwrap();
        message.success('Utilisateur ajouté avec succès');
@@ -41,6 +46,16 @@ const UserList: React.FC = () => {
         console.error("Failed to save user", error);
         message.error('Erreur lors de l\'ajout de l\'utilisateur');
      }
+  };
+
+  const handleToggleStatus = async (id: number, currentStatus: boolean) => {
+    try {
+      await toggleUserStatus(id).unwrap();
+      message.success(`Utilisateur ${currentStatus ? 'désactivé' : 'activé'} avec succès`);
+    } catch (error) {
+      console.error("Failed to toggle user status", error);
+      message.error("Erreur lors du changement de statut");
+    }
   };
 
   const columns = [
@@ -60,6 +75,17 @@ const UserList: React.FC = () => {
         if (role === 'PROPRIETAIRE') color = 'blue';
         return <Tag color={color}>{role ? role : 'N/A'}</Tag>;
       }
+    },
+    {
+      title: 'Statut',
+      key: 'active',
+      render: (record: User) => (
+        <Switch 
+          checked={record.active} 
+          onChange={() => handleToggleStatus(record.id, record.active)} 
+          disabled={!record.canToggleStatus}
+        />
+      ),
     },
   ];
 

@@ -54,4 +54,9 @@ public class UserController {
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUtilisateur(id);
     }
+
+    @PutMapping("/{id}/toggle-status")
+    public ResponseEntity<User> toggleStatus(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(userService.toggleStatus(id));
+    }
 }

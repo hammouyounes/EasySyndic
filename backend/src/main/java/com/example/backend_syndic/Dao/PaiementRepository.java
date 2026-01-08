@@ -10,4 +10,5 @@ import com.example.backend_syndic.entity.AppelCharge;
 public interface PaiementRepository extends JpaRepository <Paiement,Long> {
     boolean existsByAppelCharge(AppelCharge appelCharge);
     boolean existsByAppelCharge_Charge_Id(Long chargeId);
+    boolean existsByUserId(Long userId);
 }

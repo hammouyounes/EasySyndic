@@ -1,5 +1,8 @@
 package com.example.backend_syndic.service.Impl;
 
+import com.example.backend_syndic.Dao.AppartementRepository;
+import com.example.backend_syndic.Dao.AppelChargeRepository;
+import com.example.backend_syndic.Dao.PaiementRepository;
 import com.example.backend_syndic.Dao.UserRepository;
 import com.example.backend_syndic.entity.User;
 import com.example.backend_syndic.service.facade.UserService;
@@ -14,6 +17,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository repo;
+
+    @Autowired
+    private AppartementRepository appartementRepository;
+
+    @Autowired
+    private AppelChargeRepository appelChargeRepository;
+
+    @Autowired
+    private PaiementRepository paiementRepository;
 
     @Autowired
     private com.example.backend_syndic.service.facade.ActivityLogService activityLogService;
@@ -65,7 +77,15 @@ public class UserServiceImpl implements UserService {
     // 📋 Get all
     @Override
     public List<User> getAllUtilisateurs() {
-        return repo.findAll();
+        List<User> users = repo.findAll();
+        for (User user : users) {
+             boolean isOwner = appartementRepository.existsByProprietaireId(user.getId());
+             boolean hasPayments = paiementRepository.existsByUserId(user.getId());
+             
+             // Allow toggle only if NOT an owner AND has no associated payments
+             user.setCanToggleStatus(!isOwner && !hasPayments);
+        }
+        return users;
     }
 
     // 🔹 Propriétaires
@@ -109,5 +129,17 @@ public class UserServiceImpl implements UserService {
         User user = getUtilisateurById(id);
         user.setRole(role);
         return repo.save(user);
+    }
+
+    // 🔄 Activer/Désactiver
+    @Override
+    public User toggleStatus(Long id) {
+        User user = getUtilisateurById(id);
+        user.setActive(!user.isActive());
+        User saved = repo.save(user);
+        activityLogService.log("UPDATE", "USER", 
+            (saved.isActive() ? "Activation" : "Désactivation") + " de l'utilisateur " + saved.getNom(), 
+            "Admin");
+        return saved;
     }
 }

@@ -44,6 +44,13 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Users'],
     }),
+    toggleUserStatus: builder.mutation({
+      query: (id) => ({
+        url: `/users/${id}/toggle-status`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Users'],
+    }),
     loginUser: builder.mutation({
       query: (credentials) => ({
         url: '/users/login',
@@ -145,6 +152,7 @@ export const {
   useDeleteBuildingMutation,
   useGetUsersQuery,
   useAddUserMutation,
+  useToggleUserStatusMutation,
   useGetApartmentsQuery,
   useAddApartmentMutation,
   useUpdateApartmentMutation,

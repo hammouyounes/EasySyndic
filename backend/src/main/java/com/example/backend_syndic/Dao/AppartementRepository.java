@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AppartementRepository extends JpaRepository<Appartement,Long> {
+    boolean existsByProprietaireId(Long userId);
 }

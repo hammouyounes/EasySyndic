@@ -35,4 +35,7 @@ public interface UserService {
 
     // 🔧 Changer rôle
     User assignRole(Long id, User.Role role);
+
+    // 🔄 Activer/Désactiver
+    User toggleStatus(Long id);
 }
