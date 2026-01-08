@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Table, Button, Card, Tag, Space, Modal, Form, Input, Select, message } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, Card, Tag, Space, Modal, Form, Input, Select, message } from 'antd';
 import { UserOutlined, SaveOutlined } from '@ant-design/icons';
 import { useGetUsersQuery, useAddUserMutation, useToggleUserStatusMutation } from '../../features/api/apiSlice';
-// import Switch from '../../components/Common/Switch';
 import Switch from '../../components/Common/Switch';
 import AddButton from '../../components/common/AddButton';
+import DataTable from 'datatables.net-dt';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
 
 interface User {
   id: number;
@@ -28,6 +29,43 @@ const UserList: React.FC = () => {
   const currentUser = userString ? JSON.parse(userString) : null;
 
   const filteredUsers = users?.filter((user: User) => user.id !== currentUser?.id);
+
+  const tableRef = useRef<HTMLTableElement>(null);
+  const dataTableInstance = useRef<any>(null);
+
+  useEffect(() => {
+    if (!isLoading && filteredUsers && tableRef.current) {
+        if (dataTableInstance.current) {
+          dataTableInstance.current.destroy();
+        }
+  
+        const timer = setTimeout(() => {
+           dataTableInstance.current = new DataTable(tableRef.current!, {
+              language: {
+                  url: '//cdn.datatables.net/plug-ins/1.13.3/i18n/fr-FR.json'
+              },
+              destroy: true,
+              autoWidth: false,
+              stateSave: true,
+              paging: true,
+              pageLength: 5,
+              lengthMenu: [5, 10, 25, 50],
+              columnDefs: [
+                  { className: "dt-head-center dt-body-center", targets: "_all" },
+                  { orderable: false, targets: -1, width: '1%' }
+              ]
+           });
+        }, 100);
+  
+        return () => {
+          clearTimeout(timer);
+          if (dataTableInstance.current) {
+               dataTableInstance.current.destroy();
+               dataTableInstance.current = null;
+          }
+        };
+    }
+  }, [filteredUsers, isLoading]);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -65,45 +103,44 @@ const UserList: React.FC = () => {
     }
   };
 
-  const columns = [
-    { title: 'ID', dataIndex: 'id', key: 'id' },
-    { 
-      title: 'Email', dataIndex: 'email', key: 'email',
-    },
-    { 
-        title: 'Nom', dataIndex: 'nom', key: 'nom',
-        render: (text: string) => <Space><UserOutlined /> <b>{text}</b></Space> 
-    },
-    { title: 'Prénom', dataIndex: 'prenom', key: 'prenom' },
-    { 
-      title: 'Rôle', dataIndex: 'role', key: 'role',
-      render: (role: string) => {
-        let color = role === 'ADMIN' ? 'red' : 'green';
-        if (role === 'PROPRIETAIRE') color = 'blue';
-        return <Tag color={color}>{role ? role : 'N/A'}</Tag>;
-      }
-    },
-    {
-      title: 'Statut',
-      key: 'active',
-      render: (record: User) => (
-        <Switch 
-          checked={record.active} 
-          onChange={() => handleToggleStatus(record.id, record.active)} 
-          disabled={!record.canToggleStatus}
-        />
-      ),
-    },
-  ];
-
   return (
     <Card title="Gestion des Utilisateurs" extra={<AddButton onClick={showModal} />}>
-      <Table 
-        columns={columns} 
-        dataSource={filteredUsers} 
-        rowKey="id" 
-        loading={isLoading}
-      />
+      <div style={{ padding: '20px' }}>
+        <table ref={tableRef} id="usersTable" className="display" style={{ width: '100%' }}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Nom</th>
+              <th>Prénom</th>
+              <th>Rôle</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredUsers?.map((user: User) => (
+              <tr key={user.id}>
+                <td>{user.id}</td>
+                <td>{user.email}</td>
+                <td><Space><UserOutlined /> <b>{user.nom}</b></Space></td>
+                <td>{user.prenom}</td>
+                <td>
+                  <Tag color={user.role === 'ADMIN' ? 'red' : (user.role === 'PROPRIETAIRE' ? 'blue' : 'green')}>
+                    {user.role}
+                  </Tag>
+                </td>
+                <td style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Switch 
+                    checked={user.active} 
+                    onChange={() => handleToggleStatus(user.id, user.active)} 
+                    disabled={!user.canToggleStatus}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <Modal 
         title="Ajouter un nouvel utilisateur" 

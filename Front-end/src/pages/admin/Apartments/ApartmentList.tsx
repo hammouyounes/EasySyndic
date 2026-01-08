@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Table, Button, Card, Tag, Space, Modal, Form, Input, InputNumber, Select, message } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, Card, Tag, Space, Modal, Form, Input, InputNumber, Select, message } from 'antd';
 import { AppstoreOutlined, SaveOutlined } from '@ant-design/icons';
+import DataTable from 'datatables.net-dt';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
 import { 
   useGetApartmentsQuery, 
   useAddApartmentMutation, 
@@ -34,6 +36,45 @@ const ApartmentList: React.FC = () => {
   const [addApartment] = useAddApartmentMutation();
   const [updateApartment] = useUpdateApartmentMutation();
   const [assignProprietaire] = useAssignProprietaireMutation();
+
+  const tableRef = useRef<HTMLTableElement>(null);
+  const dataTableInstance = useRef<any>(null);
+
+  useEffect(() => {
+    if (!isLoadingApartments && apartments && tableRef.current) {
+        // Destroy existing instance if it exists to prevent re-initialization error
+        if (dataTableInstance.current) {
+          dataTableInstance.current.destroy();
+        }
+  
+        // Initialize DataTable
+        const timer = setTimeout(() => {
+           dataTableInstance.current = new DataTable(tableRef.current!, {
+              language: {
+                  url: '//cdn.datatables.net/plug-ins/1.13.3/i18n/fr-FR.json'
+              },
+              destroy: true,
+              autoWidth: false,
+              stateSave: true,
+              paging: true,
+              pageLength: 5,
+              lengthMenu: [5, 10, 25, 50],
+              columnDefs: [
+                  { className: "dt-head-center dt-body-center", targets: "_all" },
+                  { orderable: false, targets: -1, width: '1%' } // Disable sorting and minimize width on Actions column
+              ]
+           });
+        }, 100);
+  
+        return () => {
+          clearTimeout(timer);
+          if (dataTableInstance.current) {
+               dataTableInstance.current.destroy();
+               dataTableInstance.current = null;
+          }
+        };
+    }
+  }, [apartments, isLoadingApartments]);
 
   const showModal = () => {
     setEditingId(null);
@@ -84,49 +125,38 @@ const ApartmentList: React.FC = () => {
     }
   };
 
-
-
-  const columns = [
-    { title: 'ID', dataIndex: 'id', key: 'id' },
-    { 
-      title: 'Numéro', dataIndex: 'numero', key: 'numero',
-      render: (text: string) => <Space><AppstoreOutlined /> <b>{text}</b></Space>
-    },
-    { 
-      title: 'Étage', dataIndex: 'etage', key: 'etage',
-      render: (etage: number) => <Tag color="cyan">{etage} Étage</Tag>
-    },
-    { 
-      title: 'Surface', dataIndex: 'surface', key: 'surface',
-      render: (surface: number) => <span>{surface} m²</span>
-    },
-    { 
-      title: 'Immeuble', key: 'immeuble',
-      render: (_: any, record: Apartment) => <Tag color="blue">{record.immeuble ? record.immeuble.nom : 'N/A'}</Tag>
-    },
-    { 
-      title: 'Propriétaire', key: 'proprietaire',
-      render: (_: any, record: Apartment) => <span>{record.proprietaire ? `${record.proprietaire.nom} ${record.proprietaire.prenom}` : 'Aucun'}</span>
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_: any, record: Apartment) => (
-        <EditButton 
-          onClick={() => handleEdit(record)} 
-        />
-      ),
-    },
-  ];
-
   return (
     <Card title="Gestion des Appartements" extra={<AddButton onClick={showModal} />}>
-      <Table 
-        columns={columns} 
-        dataSource={apartments} 
-        rowKey="id" 
-        loading={isLoadingApartments}
-      />
+      <div style={{ padding: '20px' }}>
+        <table ref={tableRef} id="apartmentsTable" className="display" style={{ width: '100%' }}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Numéro</th>
+              <th>Étage</th>
+              <th>Surface</th>
+              <th>Immeuble</th>
+              <th>Propriétaire</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {apartments?.map((appt: Apartment) => (
+              <tr key={appt.id}>
+                <td>{appt.id}</td>
+                <td><Space><AppstoreOutlined /> <b>{appt.numero}</b></Space></td>
+                <td><Tag color="cyan">{appt.etage} Étage</Tag></td>
+                <td><span>{appt.surface} m²</span></td>
+                <td><Tag color="blue">{appt.immeuble ? appt.immeuble.nom : 'N/A'}</Tag></td>
+                <td><span>{appt.proprietaire ? `${appt.proprietaire.nom} ${appt.proprietaire.prenom}` : 'Aucun'}</span></td>
+                <td>
+                   <EditButton onClick={() => handleEdit(appt)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <Modal 
         title={editingId ? "Modifier l'appartement" : "Ajouter un nouvel appartement"} 

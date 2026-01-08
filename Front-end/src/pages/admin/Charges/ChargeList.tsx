@@ -66,11 +66,12 @@ const ChargeList: React.FC = () => {
               paging: true,
               pageLength: 5,
               lengthMenu: [5, 10, 25, 50],
-              columnDefs: [
-                  { orderable: false, targets: -1 } // Disable sorting on the Actions column (last one)
-              ]
-           });
-        }, 100);
+               columnDefs: [
+                  { className: "dt-head-center dt-body-center", targets: "_all" },
+                  { orderable: false, targets: -1, width: '1%' } // Disable sorting and minimize width on Actions column
+               ]
+            });
+         }, 100);
   
         return () => {
           clearTimeout(timer);

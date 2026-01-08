@@ -1,15 +1,54 @@
-import React from 'react';
-import { Table, Card, Tag, Button, Modal, Form, Input, InputNumber, Select, message, Space } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, Tag, Button, Modal, Form, Input, InputNumber, Select, message, Space } from 'antd';
 import { useGetAppelChargesQuery, useAddPaymentMutation } from '../../../features/api/apiSlice';
 import { FileTextOutlined, DollarOutlined } from '@ant-design/icons';
+import DataTable from 'datatables.net-dt';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
 
 const AppelChargeList: React.FC = () => {
   const { data: appelCharges, isLoading } = useGetAppelChargesQuery({});
 
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [selectedAppelCharge, setSelectedAppelCharge] = React.useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAppelCharge, setSelectedAppelCharge] = useState<any>(null);
   const [form] = Form.useForm();
   const [addPayment] = useAddPaymentMutation();
+
+  const tableRef = useRef<HTMLTableElement>(null);
+  const dataTableInstance = useRef<any>(null);
+
+  useEffect(() => {
+    if (!isLoading && appelCharges && tableRef.current) {
+        if (dataTableInstance.current) {
+          dataTableInstance.current.destroy();
+        }
+  
+        const timer = setTimeout(() => {
+           dataTableInstance.current = new DataTable(tableRef.current!, {
+              language: {
+                  url: '//cdn.datatables.net/plug-ins/1.13.3/i18n/fr-FR.json'
+              },
+              destroy: true,
+              autoWidth: false,
+              stateSave: true,
+              paging: true,
+              pageLength: 5,
+              lengthMenu: [5, 10, 25, 50],
+              columnDefs: [
+                  { className: "dt-head-center dt-body-center", targets: "_all" },
+                  { orderable: false, targets: -1, width: '1%' }
+              ]
+           });
+        }, 100);
+  
+        return () => {
+          clearTimeout(timer);
+          if (dataTableInstance.current) {
+               dataTableInstance.current.destroy();
+               dataTableInstance.current = null;
+          }
+        };
+    }
+  }, [appelCharges, isLoading]);
 
   const handlePaymentClick = (record: any) => {
     setSelectedAppelCharge(record);
@@ -58,68 +97,55 @@ const AppelChargeList: React.FC = () => {
     }
   };
 
-  const columns = [
-    { title: 'ID', dataIndex: 'id', key: 'id' },
-    { 
-      title: 'Charge', 
-      key: 'charge',
-      render: (_: any, record: any) => <b>{record.charge?.type}</b> 
-    },
-    { 
-      title: 'Appartement', 
-      key: 'appartement',
-      render: (_: any, record: any) => (
-        <span>
-          {record.appartement?.numero} <small>({record.appartement?.immeuble?.nom})</small>
-        </span>
-      )
-    },
-    { 
-      title: 'Montant à payer', 
-      dataIndex: 'total', 
-      key: 'total',
-      render: (amount: number) => <Tag color="blue">{amount?.toFixed(2)} MAD</Tag>
-    },
-    { 
-      title: 'Statut', 
-      key: 'status',
-      render: (_: any, record: any) => {
-          const color = record.status?.label === 'PAYÉ' ? 'green' : record.status?.label === 'EN_ATTENTE' ? 'orange' : 'red';
-          return <Tag color={color}>{record.status?.label}</Tag>;
-      }
-    },
-    { 
-      title: 'Date Émission', 
-      dataIndex: 'dateEmission', 
-      key: 'dateEmission',
-      render: (date: string) => new Date(date).toLocaleDateString()
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_: any, record: any) => (
-         record.status?.label !== 'PAYÉ' && (
-            <Button 
-              type="primary" 
-              size="small" 
-              icon={<DollarOutlined />}
-              onClick={() => handlePaymentClick(record)}
-            >
-              Payer
-            </Button>
-         )
-      )
-    }
-  ];
-
   return (
     <Card title="Appels de Fonds (Paiements)" extra={<FileTextOutlined />}>
-      <Table 
-        columns={columns} 
-        dataSource={appelCharges} 
-        rowKey="id" 
-        loading={isLoading} 
-      />
+      <div style={{ padding: '20px' }}>
+        <table ref={tableRef} id="appelChargesTable" className="display" style={{ width: '100%' }}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Charge</th>
+              <th>Appartement</th>
+              <th>Montant à payer</th>
+              <th>Statut</th>
+              <th>Date Émission</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {appelCharges?.map((record: any) => (
+              <tr key={record.id}>
+                <td>{record.id}</td>
+                <td><b>{record.charge?.type}</b></td>
+                <td>
+                  <span>
+                    {record.appartement?.numero} <small>({record.appartement?.immeuble?.nom})</small>
+                  </span>
+                </td>
+                <td><Tag color="blue">{record.total?.toFixed(2)} MAD</Tag></td>
+                <td>
+                  <Tag color={record.status?.label === 'PAYÉ' ? 'green' : record.status?.label === 'EN_ATTENTE' ? 'orange' : 'red'}>
+                    {record.status?.label}
+                  </Tag>
+                </td>
+                <td>{new Date(record.dateEmission).toLocaleDateString()}</td>
+                <td style={{ display: 'flex', justifyContent: 'center' }}>
+                  {record.status?.label !== 'PAYÉ' && (
+                    <Button 
+                      type="primary" 
+                      size="small" 
+                      icon={<DollarOutlined />}
+                      onClick={() => handlePaymentClick(record)}
+                    >
+                      Payer
+                    </Button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <Modal
         title="Enregistrer un Paiement"
