@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Table, Button, Card, Tag, Space, Modal, Form, Input, InputNumber, Select, message } from 'antd';
-import { PlusOutlined, DollarOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
+import { DollarOutlined, ExclamationCircleOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
 import { 
   useGetChargesQuery, 
   useAddChargeMutation, 
@@ -10,6 +10,10 @@ import {
   useDistributeChargeMutation,
   useUndoDistributeChargeMutation
 } from '../../../features/api/apiSlice';
+import EditButton from '../../../components/common/EditButton';
+import DeleteButton from '../../../components/common/DeleteButton';
+import AddButton from '../../../components/common/AddButton';
+import DistributeButton from '../../../components/common/DistributeButton';
 
 interface Charge {
   id: number;
@@ -169,41 +173,30 @@ const ChargeList: React.FC = () => {
       key: 'actions',
       render: (_: any, record: Charge) => (
         <Space>
-          <Button 
-            type={record.diviser === 1 ? 'default' : 'primary'}
-            danger={record.diviser === 1}
-            ghost={record.diviser !== 1}
-            icon={record.diviser === 1 ? <UndoOutlined /> : <SendOutlined />}
+          <DistributeButton 
             onClick={() => handleDistributeToggle(record)} 
             disabled={record.locked}
             title={record.locked ? "Charge verrouillée (paiements existants)" : (record.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
-          >
-            {record.diviser === 1 ? "Annuler Distribution" : "Distribuer"}
-          </Button>
-          <Button 
-            icon={<EditOutlined />} 
+            label={record.diviser === 1 ? "Annuler" : "Distribuer"}
+            isUndo={record.diviser === 1}
+          />
+          <EditButton 
             onClick={() => handleEdit(record)} 
             disabled={record.locked}
             title={record.locked ? "Impossible de modifier (paiements en cours)" : "Modifier"}
-          >
-            Modifier
-          </Button>
-          <Button 
-            danger
-            icon={<DeleteOutlined />} 
+          />
+          <DeleteButton 
             onClick={() => handleDelete(record)}
             disabled={record.locked}
             title={record.locked ? "Impossible de supprimer (paiements en cours)" : "Supprimer"}
-          >
-            Supprimer
-          </Button>
+          />
         </Space>
       ),
     },
   ];
 
   return (
-    <Card title="Gestion des Charges" extra={<Button type="primary" icon={<PlusOutlined />} onClick={showModal}>Ajouter</Button>}>
+    <Card title="Gestion des Charges" extra={<AddButton onClick={showModal} />}>
       <Table 
         columns={columns} 
         dataSource={charges} 

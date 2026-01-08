@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Table, Button, Card, Tag, Space, Modal, Form, Input, InputNumber, Select, message } from 'antd';
-import { PlusOutlined, AppstoreOutlined, SaveOutlined, EditOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, SaveOutlined } from '@ant-design/icons';
 import { 
   useGetApartmentsQuery, 
   useAddApartmentMutation, 
@@ -9,6 +9,8 @@ import {
   useGetBuildingsQuery, 
   useGetUsersQuery 
 } from '../../../features/api/apiSlice';
+import EditButton from '../../../components/common/EditButton';
+import AddButton from '../../../components/common/AddButton';
 
 interface Apartment {
   id: number;
@@ -110,18 +112,15 @@ const ApartmentList: React.FC = () => {
       title: 'Actions',
       key: 'actions',
       render: (_: any, record: Apartment) => (
-        <Button 
-          icon={<EditOutlined />} 
+        <EditButton 
           onClick={() => handleEdit(record)} 
-        >
-          Modifier
-        </Button>
+        />
       ),
     },
   ];
 
   return (
-    <Card title="Gestion des Appartements" extra={<Button type="primary" icon={<PlusOutlined />} onClick={showModal}>Ajouter</Button>}>
+    <Card title="Gestion des Appartements" extra={<AddButton onClick={showModal} />}>
       <Table 
         columns={columns} 
         dataSource={apartments} 

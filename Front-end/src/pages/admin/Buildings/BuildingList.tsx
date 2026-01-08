@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Table, Button, Card, Tag, Space, Modal, Form, Input, InputNumber, message } from 'antd';
-import { PlusOutlined, HomeOutlined, SaveOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { HomeOutlined, SaveOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useGetBuildingsQuery, useAddBuildingMutation, useUpdateBuildingMutation, useGetApartmentsQuery, useDeleteBuildingMutation, useGetChargesQuery } from '../../../features/api/apiSlice';
-import GradientButton from '../../../components/common/GradientButton';
 import DefaultButton from '../../../components/common/DefaultButton';
+import EditButton from '../../../components/common/EditButton';
+import DeleteButton from '../../../components/common/DeleteButton';
+import AddButton from '../../../components/common/AddButton';
 
 interface Building {
   id: number;
@@ -143,27 +145,20 @@ const BuildingList: React.FC = () => {
       key: 'actions',
       render: (_: any, record: Building) => (
         <>
-          <Button 
-            icon={<EditOutlined />} 
+          <EditButton 
             onClick={() => handleEdit(record)} 
-          >
-            Modifier
-          </Button>
-          <Button 
-            danger
-            icon={<DeleteOutlined />} 
+          />
+          <DeleteButton 
             onClick={() => handleDelete(record)}
             style={{ marginLeft: 8 }}
-          >
-            Supprimer
-          </Button>
+          />
         </>
       ),
     },
   ];
 
   return (
-    <Card title="Gestion des Bâtiments" extra={<GradientButton type="primary" icon={<PlusOutlined />} onClick={showModal}>Ajouter</GradientButton>}>
+    <Card title="Gestion des Bâtiments" extra={<AddButton onClick={showModal} />}>
       <Table 
         columns={columns} 
         dataSource={buildings} 

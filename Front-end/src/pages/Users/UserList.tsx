@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Table, Button, Card, Tag, Space, Modal, Form, Input, Select, message } from 'antd';
-import { PlusOutlined, UserOutlined, SaveOutlined } from '@ant-design/icons';
+import { UserOutlined, SaveOutlined } from '@ant-design/icons';
 import { useGetUsersQuery, useAddUserMutation, useToggleUserStatusMutation } from '../../features/api/apiSlice';
+// import Switch from '../../components/Common/Switch';
 import Switch from '../../components/Common/Switch';
+import AddButton from '../../components/common/AddButton';
 
 interface User {
   id: number;
@@ -95,7 +97,7 @@ const UserList: React.FC = () => {
   ];
 
   return (
-    <Card title="Gestion des Utilisateurs" extra={<Button type="primary" icon={<PlusOutlined />} onClick={showModal}>Ajouter</Button>}>
+    <Card title="Gestion des Utilisateurs" extra={<AddButton onClick={showModal} />}>
       <Table 
         columns={columns} 
         dataSource={filteredUsers} 
