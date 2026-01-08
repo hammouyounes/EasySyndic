@@ -62,7 +62,7 @@ const Login: React.FC = () => {
         <div className="register-image-section">
           <div className="image-overlay">
             <div className="brand-logo">AMU</div>
-            <a href="/" className="back-link">Back to website &rarr;</a>
+            {/* <a href="/" className="back-link">Back to website &rarr;</a> */}
             
             <div className="image-text">
               <h2>Welcome Back,<br />Continue your journey</h2>
@@ -78,7 +78,8 @@ const Login: React.FC = () => {
         <div className="register-form-section">
           <div className="form-header">
             <h2>Log in</h2>
-            <p>Don't have an account? <a href="/register">Create one</a></p>
+            <br />
+            {/* <p>Don't have an account? <a href="/register">Create one</a></p> */}
           </div>
 
           <form onSubmit={handleSubmit}>
