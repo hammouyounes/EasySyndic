@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Table, Button, Card, Tag, Space, Modal, Form, Input, InputNumber, Select, message } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, Card, Tag, Modal, Form, Input, InputNumber, Select, message, Progress } from 'antd';
 import { DollarOutlined, ExclamationCircleOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
+import DataTable from 'datatables.net-dt';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
 import { 
   useGetChargesQuery, 
   useAddChargeMutation, 
@@ -23,7 +25,9 @@ interface Charge {
   immeuble: { id: number; nom: string };
   diviser: number;
   locked: boolean;
+  progress: number;
 }
+
 
 const ChargeList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,6 +42,45 @@ const ChargeList: React.FC = () => {
   const [deleteCharge] = useDeleteChargeMutation();
   const [distributeCharge] = useDistributeChargeMutation();
   const [undoDistributeCharge] = useUndoDistributeChargeMutation();
+
+  const tableRef = useRef<HTMLTableElement>(null);
+  const dataTableInstance = useRef<any>(null);
+
+  useEffect(() => {
+    if (!isLoading && charges && tableRef.current) {
+        // Destroy existing instance if it exists to prevent re-initialization error
+        if (dataTableInstance.current) {
+          dataTableInstance.current.destroy();
+        }
+  
+        // Initialize DataTable
+        // We use a slight timeout to ensure React has rendered the DOM nodes
+        const timer = setTimeout(() => {
+           dataTableInstance.current = new DataTable(tableRef.current!, {
+              language: {
+                  url: '//cdn.datatables.net/plug-ins/1.13.3/i18n/fr-FR.json'
+              },
+              destroy: true, // Allow re-initialization
+              autoWidth: false,
+              stateSave: true, // Remembers page number and length
+              paging: true,
+              pageLength: 5,
+              lengthMenu: [5, 10, 25, 50],
+              columnDefs: [
+                  { orderable: false, targets: -1 } // Disable sorting on the Actions column (last one)
+              ]
+           });
+        }, 100);
+  
+        return () => {
+          clearTimeout(timer);
+          if (dataTableInstance.current) {
+               dataTableInstance.current.destroy();
+               dataTableInstance.current = null;
+          }
+        };
+    }
+  }, [charges, isLoading]);
 
   const showModal = () => {
     setEditingId(null);
@@ -153,56 +196,62 @@ const ChargeList: React.FC = () => {
     }
   };
 
-  const columns = [
-    { title: 'ID', dataIndex: 'id', key: 'id' },
-    { 
-      title: 'Type', dataIndex: 'type', key: 'type',
-      render: (text: string) => <b>{text}</b>
-    },
-    { 
-      title: 'Montant', dataIndex: 'montant', key: 'montant',
-      render: (montant: number) => <Tag color="green">{montant} MAD</Tag>
-    },
-    { title: 'Période', dataIndex: 'periode', key: 'periode' },
-    { 
-      title: 'Immeuble', key: 'immeuble',
-      render: (_: any, record: Charge) => <Tag color="blue">{record.immeuble ? record.immeuble.nom : 'N/A'}</Tag>
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_: any, record: Charge) => (
-        <Space>
-          <DistributeButton 
-            onClick={() => handleDistributeToggle(record)} 
-            disabled={record.locked}
-            title={record.locked ? "Charge verrouillée (paiements existants)" : (record.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
-            label={record.diviser === 1 ? "Annuler" : "Distribuer"}
-            isUndo={record.diviser === 1}
-          />
-          <EditButton 
-            onClick={() => handleEdit(record)} 
-            disabled={record.locked}
-            title={record.locked ? "Impossible de modifier (paiements en cours)" : "Modifier"}
-          />
-          <DeleteButton 
-            onClick={() => handleDelete(record)}
-            disabled={record.locked}
-            title={record.locked ? "Impossible de supprimer (paiements en cours)" : "Supprimer"}
-          />
-        </Space>
-      ),
-    },
-  ];
-
   return (
     <Card title="Gestion des Charges" extra={<AddButton onClick={showModal} />}>
-      <Table 
-        columns={columns} 
-        dataSource={charges} 
-        rowKey="id" 
-        loading={isLoading}
-      />
+      <div style={{ padding: '20px' }}>
+        <table ref={tableRef} id="myTable" className="display" style={{ width: '100%' }}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Montant</th>
+              <th>Période</th>
+              <th>Immeuble</th>
+              <th>Progression</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {charges?.map((charge: Charge) => (
+              <tr key={charge.id}>
+                <td>{charge.id}</td>
+                <td><b>{charge.type}</b></td>
+                <td><Tag color="green">{charge.montant} MAD</Tag></td>
+                <td>{charge.periode}</td>
+                <td><Tag color="blue">{charge.immeuble?.nom || 'N/A'}</Tag></td>
+                <td>
+                  <Progress 
+                    percent={Math.round(charge.progress || 0)} 
+                    size="small"
+                    steps={5}
+                    strokeColor={charge.diviser !== 1 ? '#ccc' : undefined}
+                    format={(percent) => charge.diviser !== 1 ? 'ND' : `${percent}%`}
+                  />
+                </td>
+                <td style={{ display: 'flex', gap: '8px' }}>
+                   <DistributeButton 
+                      onClick={() => handleDistributeToggle(charge)} 
+                      disabled={charge.locked}
+                      title={charge.locked ? "Charge verrouillée (paiements existants)" : (charge.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
+                      label={charge.diviser === 1 ? "Annuler" : "Distribuer"}
+                      isUndo={charge.diviser === 1}
+                    />
+                    <EditButton 
+                      onClick={() => handleEdit(charge)} 
+                      disabled={charge.locked}
+                      title={charge.locked ? "Impossible de modifier (paiements en cours)" : "Modifier"}
+                    />
+                    <DeleteButton 
+                      onClick={() => handleDelete(charge)}
+                      disabled={charge.locked}
+                      title={charge.locked ? "Impossible de supprimer (paiements en cours)" : "Supprimer"}
+                    />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <Modal 
         title={editingId ? "Modifier la charge" : "Ajouter une nouvelle charge"} 

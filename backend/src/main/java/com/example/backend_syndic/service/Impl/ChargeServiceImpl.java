@@ -75,6 +75,24 @@ public class ChargeServiceImpl implements ChargeService {
     }
 
 
+    @Autowired
+    private com.example.backend_syndic.Dao.AppelChargeRepository appelChargeRepository;
+
+    private void enrichCharge(Charge charge) {
+        charge.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(charge.getId()));
+        if (charge.getDiviser() != null && charge.getDiviser() == 1) {
+            long total = appelChargeRepository.countByChargeId(charge.getId());
+            if (total > 0) {
+                long paid = appelChargeRepository.countByChargeIdAndStatusLabel(charge.getId(), "PAYÉ");
+                charge.setProgress((double) paid / total * 100);
+            } else {
+                charge.setProgress(0);
+            }
+        } else {
+            charge.setProgress(0);
+        }
+    }
+
     @Override
     public Charge updateCharge(Long id, Charge updatedCharge) {
         Charge existing = repo.findById(id)
@@ -88,7 +106,7 @@ public class ChargeServiceImpl implements ChargeService {
             "Mise à jour de la charge " + saved.getType() + " (" + saved.getMontant() + " DH)", 
             "Admin");
 
-        saved.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(saved.getId()));
+        enrichCharge(saved);
         return saved;
     }
 
@@ -110,14 +128,14 @@ public class ChargeServiceImpl implements ChargeService {
     public Charge getChargeById(Long id) {
         Charge charge = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Charge not found"));
-        charge.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(charge.getId()));
+        enrichCharge(charge);
         return charge;
     }
 
     @Override
     public List<Charge> getAllCharges(){
         List<Charge> charges = repo.findAll();
-        charges.forEach(c -> c.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(c.getId())));
+        charges.forEach(this::enrichCharge);
         return charges;
     }
 
@@ -126,7 +144,7 @@ public class ChargeServiceImpl implements ChargeService {
         List<Charge> charges = repo.findAll().stream()
                 .filter(c -> c.getImmeuble() != null && c.getImmeuble().getId().equals(immeubleId))
                 .collect(Collectors.toList());
-        charges.forEach(c -> c.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(c.getId())));
+        charges.forEach(this::enrichCharge);
         return charges;
     }
 
@@ -134,7 +152,7 @@ public class ChargeServiceImpl implements ChargeService {
     public List<Charge> getChargesByYear(int year) {
         String yearStr = String.valueOf(year);
         List<Charge> charges = repo.findByYear(yearStr);
-        charges.forEach(c -> c.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(c.getId())));
+        charges.forEach(this::enrichCharge);
         return charges;
     }
     @Override
@@ -144,13 +162,13 @@ public class ChargeServiceImpl implements ChargeService {
         if (month == null) {
             // only year filter
             List<Charge> charges = repo.findByYear(yearStr);
-            charges.forEach(c -> c.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(c.getId())));
+            charges.forEach(this::enrichCharge);
             return charges;
         } else {
             // format month to 2 digits: "04"
             String monthStr = String.format("%02d", month);
             List<Charge> charges = repo.findByMonthAndYear(monthStr, yearStr);
-            charges.forEach(c -> c.setLocked(paiementRepository.existsByAppelCharge_Charge_Id(c.getId())));
+            charges.forEach(this::enrichCharge);
             return charges;
         }
     }
@@ -170,20 +188,20 @@ public class ChargeServiceImpl implements ChargeService {
 
     @Override
     public double calculateChargePerAppartement(Long immeubleId) {
-        // get total charges
-        double total = calculateTotalChargesForImmeuble(immeubleId);
-
-        // get the number of appartements in the immeuble
-        Immeuble immeuble = immeubleRepository.findById(immeubleId)
-                .orElseThrow(() -> new RuntimeException("Immeuble not found"));
-
-        int nombreAppartement = immeuble.getAppartements() != null ? immeuble.getAppartements().size() : 0;
-        if (nombreAppartement == 0) {
-            throw new RuntimeException("No appartements in this immeuble");
-        }
-
-        // divide total by number of appartements
-        return total / nombreAppartement;
+         // get total charges
+         double total = calculateTotalChargesForImmeuble(immeubleId);
+ 
+         // get the number of appartements in the immeuble
+         Immeuble immeuble = immeubleRepository.findById(immeubleId)
+                 .orElseThrow(() -> new RuntimeException("Immeuble not found"));
+ 
+         int nombreAppartement = immeuble.getAppartements() != null ? immeuble.getAppartements().size() : 0;
+         if (nombreAppartement == 0) {
+             throw new RuntimeException("No appartements in this immeuble");
+         }
+ 
+         // divide total by number of appartements
+         return total / nombreAppartement;
     }
 
 }

@@ -102,4 +102,14 @@ public class Charge {
     public void setLocked(boolean locked) {
         this.locked = locked;
     }
+    @Transient
+    private double progress;
+
+    public double getProgress() {
+        return progress;
+    }
+
+    public void setProgress(double progress) {
+        this.progress = progress;
+    }
 }

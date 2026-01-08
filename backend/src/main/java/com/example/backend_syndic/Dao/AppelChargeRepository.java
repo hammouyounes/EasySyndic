@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface AppelChargeRepository extends JpaRepository<AppelCharge,Long> {
     java.util.List<AppelCharge> findByCharge(com.example.backend_syndic.entity.Charge charge);
     boolean existsByAppartementProprietaireIdAndStatusLabelNot(Long userId, String statusLabel);
+    long countByChargeId(Long chargeId);
+    long countByChargeIdAndStatusLabel(Long chargeId, String label);
 }
