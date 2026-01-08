@@ -27,7 +27,7 @@ public class User {
     private Role role;
 
     @Column(columnDefinition = "boolean default true")
-    private boolean active = true;
+    private Boolean active = true;
 
     public enum Role {
         ADMIN,
@@ -131,13 +131,13 @@ public class User {
         this.appartementsLoues = appartementsLoues;
     }
     @Transient
-    private boolean canToggleStatus = true;
+    private Boolean canToggleStatus = true;
 
-    public boolean isCanToggleStatus() {
+    public Boolean getCanToggleStatus() {
         return canToggleStatus;
     }
 
-    public void setCanToggleStatus(boolean canToggleStatus) {
+    public void setCanToggleStatus(Boolean canToggleStatus) {
         this.canToggleStatus = canToggleStatus;
     }
 }

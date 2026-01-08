@@ -112,6 +112,9 @@ public class UserServiceImpl implements UserService {
         if(!user.getMotDePasse().equals(motDePasse)) {
             throw new RuntimeException("Email ou mot de passe incorrect");
         }
+        if (!Boolean.TRUE.equals(user.getActive())) {
+             throw new RuntimeException("Votre compte est désactivé. Veuillez contacter l'administrateur.");
+        }
         return user;
     }
 
@@ -135,10 +138,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User toggleStatus(Long id) {
         User user = getUtilisateurById(id);
-        user.setActive(!user.isActive());
+        user.setActive(!user.getActive());
         User saved = repo.save(user);
         activityLogService.log("UPDATE", "USER", 
-            (saved.isActive() ? "Activation" : "Désactivation") + " de l'utilisateur " + saved.getNom(), 
+            (saved.getActive() ? "Activation" : "Désactivation") + " de l'utilisateur " + saved.getNom(), 
             "Admin");
         return saved;
     }

@@ -22,6 +22,11 @@ const UserList: React.FC = () => {
   const [addUser] = useAddUserMutation();
   const [toggleUserStatus] = useToggleUserStatusMutation();
 
+  const userString = localStorage.getItem('user');
+  const currentUser = userString ? JSON.parse(userString) : null;
+
+  const filteredUsers = users?.filter((user: User) => user.id !== currentUser?.id);
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -93,7 +98,7 @@ const UserList: React.FC = () => {
     <Card title="Gestion des Utilisateurs" extra={<Button type="primary" icon={<PlusOutlined />} onClick={showModal}>Ajouter</Button>}>
       <Table 
         columns={columns} 
-        dataSource={users} 
+        dataSource={filteredUsers} 
         rowKey="id" 
         loading={isLoading}
       />
