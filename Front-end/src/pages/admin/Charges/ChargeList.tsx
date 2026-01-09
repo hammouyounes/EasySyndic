@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Card, Tag, Modal, Form, Input, InputNumber, Select, message, Progress } from 'antd';
-import { DollarOutlined, ExclamationCircleOutlined, SendOutlined, UndoOutlined } from '@ant-design/icons';
+import { Button, Card, Tag, Modal, Form, Input, InputNumber, Select, message, Progress, Switch } from 'antd';
+import { DollarOutlined, ExclamationCircleOutlined, SendOutlined, UndoOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import DataTable from 'datatables.net-dt';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import { 
@@ -26,6 +26,8 @@ interface Charge {
   diviser: number;
   locked: boolean;
   progress: number;
+  chargeType?: string;
+  isRecurring?: boolean;
 }
 
 
@@ -198,6 +200,8 @@ const ChargeList: React.FC = () => {
          type: values.type,
          montant: Number(values.montant),
          periode: values.periode,
+         chargeType: values.chargeType,
+         isRecurring: values.isRecurring
       };
 
       if (editingId) {
@@ -224,6 +228,8 @@ const ChargeList: React.FC = () => {
             <tr>
               <th>ID</th>
               <th>Type</th>
+              <th>Catégorie</th>
+              <th>Récurrence</th>
               <th>Montant</th>
               <th>Période</th>
               <th>Immeuble</th>
@@ -236,6 +242,19 @@ const ChargeList: React.FC = () => {
               <tr key={charge.id}>
                 <td>{charge.id}</td>
                 <td><b>{charge.type}</b></td>
+                <td>
+                  {charge.chargeType && (
+                    <Tag color={charge.chargeType === 'MONTHLY' ? 'blue' : (charge.chargeType === 'EXCEPTIONNEL' ? 'red' : 'orange')}>
+                      {charge.chargeType}
+                    </Tag>
+                  )}
+                </td>
+                <td style={{ textAlign: 'center' }}>
+                  {charge.isRecurring ? 
+                    <CheckCircleOutlined style={{ color: 'green', fontSize: '16px' }} /> : 
+                    <CloseCircleOutlined style={{ color: '#ccc', fontSize: '16px' }} />
+                  }
+                </td>
                 <td><Tag color="green">{charge.montant} MAD</Tag></td>
                 <td>{charge.periode}</td>
                 <td><Tag color="blue">{charge.immeuble?.nom || 'N/A'}</Tag></td>
@@ -326,6 +345,27 @@ const ChargeList: React.FC = () => {
                 label: b.nom,
               }))}
             />
+          </Form.Item>
+
+          <Form.Item
+            label="Catégorie"
+            name="chargeType"
+            rules={[{ required: true, message: 'Veuillez sélectionner une catégorie!' }]}
+          >
+            <Select placeholder="Sélectionner une catégorie">
+              <Select.Option value="MONTHLY">MENSUEL (MONTHLY)</Select.Option>
+              <Select.Option value="SPECIAL">SPÉCIAL</Select.Option>
+              <Select.Option value="EXCEPTIONNEL">EXCEPTIONNEL</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Récurrente ?"
+            name="isRecurring"
+            valuePropName="checked"
+            initialValue={false}
+          >
+             <Switch checkedChildren="Oui" unCheckedChildren="Non" />
           </Form.Item>
 
           <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>

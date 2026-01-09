@@ -3,6 +3,7 @@ package com.example.backend_syndic.entity;
 import jakarta.persistence.*;
 
 import java.util.List;
+import com.example.backend_syndic.enums.ChargeType;
 
 @Entity
 public class Charge {
@@ -14,6 +15,11 @@ public class Charge {
     private String type;
     private Double montant;
     private String periode;
+    
+    @Enumerated(EnumType.STRING)
+    private ChargeType chargeType;
+
+    private Boolean isRecurring;
 
     @OneToMany(mappedBy = "charge")
     private List<AppelCharge> appelCharges;
@@ -74,6 +80,22 @@ public class Charge {
 
     public void setPeriode(String periode) {
         this.periode = periode;
+    }
+
+    public ChargeType getChargeType() {
+        return chargeType;
+    }
+
+    public void setChargeType(ChargeType chargeType) {
+        this.chargeType = chargeType;
+    }
+
+    public Boolean getIsRecurring() {
+        return isRecurring;
+    }
+
+    public void setIsRecurring(Boolean isRecurring) {
+        this.isRecurring = isRecurring;
     }
 
     public Immeuble getImmeuble() {
