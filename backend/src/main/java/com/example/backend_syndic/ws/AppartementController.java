@@ -1,7 +1,6 @@
     package com.example.backend_syndic.ws;
 
     import com.example.backend_syndic.entity.Appartement;
-    import com.example.backend_syndic.entity.User;
     import com.example.backend_syndic.service.facade.AppartementService;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.web.bind.annotation.*;
