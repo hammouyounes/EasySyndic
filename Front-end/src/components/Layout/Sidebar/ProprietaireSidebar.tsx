@@ -71,7 +71,6 @@ const ProprietaireSidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) =>
             key: 'g2', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1, marginTop: 20 }}>MES BIENS</span>, 
             type: 'group',
             children: [
-              { key: '/proprietaire/payments', icon: <WalletOutlined />, label: 'Mes Paiements' },
               { key: '/proprietaire/apartments', icon: <HomeOutlined />, label: 'Mes Appartements' },
             ]
           },
