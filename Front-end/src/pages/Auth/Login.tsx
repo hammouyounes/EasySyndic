@@ -8,13 +8,14 @@ import { useLoginUserMutation } from '../../features/api/apiSlice';
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-  
+
   const navigate = useNavigate();
-  const [loginUser] = useLoginUserMutation();
+  const [loginUser, { isLoading }] = useLoginUserMutation();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -22,6 +23,7 @@ const Login: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    setErrorMessage(''); // Clear error when user types
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -30,16 +32,16 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
     try {
       const user = await loginUser({
         email: formData.email,
         motDePasse: formData.password
       }).unwrap();
-      
+
       console.log('Login Successful:', user);
-      // You might want to store the user in a context or global state here
       localStorage.setItem('user', JSON.stringify(user));
-      
+
       const userRole = user.role ? user.role.toLowerCase() : '';
 
       if (userRole === 'admin') {
@@ -47,12 +49,13 @@ const Login: React.FC = () => {
       } else if (userRole === 'proprietaire') {
         navigate('/proprietaire');
       } else {
-        // Default fallback
         navigate('/');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Login Failed:', err);
-      alert('Login failed. Please check your credentials.');
+      // Extract the error message from RTK Query error
+      const message = err?.data?.message || err?.error || 'Login failed. Please check your credentials.';
+      setErrorMessage(message);
     }
   };
 
@@ -63,7 +66,7 @@ const Login: React.FC = () => {
           <div className="image-overlay">
             <div className="brand-logo">AMU</div>
             {/* <a href="/" className="back-link">Back to website &rarr;</a> */}
-            
+
             <div className="image-text">
               <h2>Welcome Back,<br />Continue your journey</h2>
               <div className="slider-dots">
@@ -83,21 +86,35 @@ const Login: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit}>
+            {errorMessage && (
+              <div style={{
+                background: '#ff4d4f20',
+                border: '1px solid #ff4d4f',
+                color: '#ff4d4f',
+                padding: '10px 15px',
+                borderRadius: '8px',
+                marginBottom: '15px',
+                fontSize: '0.9rem',
+                textAlign: 'center'
+              }}>
+                {errorMessage}
+              </div>
+            )}
             <div className="input-group">
-              <input 
-                type="email" 
-                name="email" 
-                placeholder="Email" 
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
               />
             </div>
 
             <div className="input-group password-group">
-              <input 
-                type={showPassword ? "text" : "password"} 
-                name="password" 
-                placeholder="Enter your password" 
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -113,7 +130,9 @@ const Login: React.FC = () => {
               </a>
             </div>
 
-            <button type="submit" className="submit-btn">Log in</button>
+            <button type="submit" className="submit-btn" disabled={isLoading}>
+              {isLoading ? 'Logging in...' : 'Log in'}
+            </button>
           </form>
 
           <div className="divider">
