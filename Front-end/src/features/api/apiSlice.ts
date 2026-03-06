@@ -68,7 +68,7 @@ export const apiSlice = createApi({
         method: 'POST',
         body: initialApartment,
       }),
-      invalidatesTags: ['Apartments', 'Buildings'], 
+      invalidatesTags: ['Apartments', 'Buildings'],
     }),
     updateApartment: builder.mutation({
       query: ({ id, ...initialApartment }) => ({
@@ -142,11 +142,16 @@ export const apiSlice = createApi({
       query: () => '/paiements',
       providesTags: ['Paiements'],
     }),
+    // ─── NEW: Proprietaire Payment Endpoints ───
+    getPaiementsByProprietaire: builder.query({
+      query: (proprietaireId) => `/paiements/proprietaire/${proprietaireId}`,
+      providesTags: ['Paiements'],
+    }),
   }),
 });
 
-export const { 
-  useGetBuildingsQuery, 
+export const {
+  useGetBuildingsQuery,
   useAddBuildingMutation,
   useUpdateBuildingMutation,
   useDeleteBuildingMutation,
@@ -166,5 +171,7 @@ export const {
   useGetAppelChargesQuery,
   useLoginUserMutation,
   useAddPaymentMutation,
-  useGetPaiementsQuery
+  useGetPaiementsQuery,
+  useGetPaiementsByProprietaireQuery,
 } = apiSlice;
+

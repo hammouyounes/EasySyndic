@@ -1,8 +1,8 @@
 import React from 'react';
 import { Layout, Menu, Avatar, Typography } from 'antd';
-import { 
-  AppstoreOutlined, 
-  WalletOutlined, 
+import {
+  AppstoreOutlined,
+  WalletOutlined,
   HomeOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -20,18 +20,18 @@ interface SidebarProps {
 const ProprietaireSidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Using CSS variables for dynamic theming
-  const sidebarColor = 'var(--bg-secondary)'; 
+  const sidebarColor = 'var(--bg-secondary)';
   const sidebarTextColor = 'var(--text-secondary)';
 
   return (
-    <Sider 
-      trigger={null} 
-      collapsible 
+    <Sider
+      trigger={null}
+      collapsible
       collapsed={collapsed}
       width={260}
-      style={{ 
+      style={{
         background: sidebarColor,
         boxShadow: darkMode ? '4px 0 24px rgba(0,0,0,0.4)' : '4px 0 24px rgba(112, 144, 176, 0.08)',
         zIndex: 10,
@@ -39,39 +39,46 @@ const ProprietaireSidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) =>
       }}
     >
       <div className="sidebar-logo-container">
-           <img 
-             src={logo} 
-             alt="Company Logo" 
-             className="logo-icon"
-             style={{ paddingLeft: !collapsed ? '30px' : '0px' }}
-           />
-           {!collapsed && <span className="logo-text">eSyndic</span>}
+        <img
+          src={logo}
+          alt="Company Logo"
+          className="logo-icon"
+          style={{ paddingLeft: !collapsed ? '30px' : '0px' }}
+        />
+        {!collapsed && <span className="logo-text">eSyndic</span>}
       </div>
 
       <Menu
         mode="inline"
         selectedKeys={[location.pathname]}
         onClick={(e) => navigate(e.key)}
-        style={{ 
-          background: 'transparent', 
-          border: 'none', 
+        style={{
+          background: 'transparent',
+          border: 'none',
           marginTop: 20,
           padding: '0 12px'
         }}
         theme={darkMode ? "dark" : "light"}
         items={[
-          { 
-            key: 'g1', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1 }}>MENU</span>, 
+          {
+            key: 'g1', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1 }}>MENU</span>,
             type: 'group',
             children: [
               { key: '/proprietaire', icon: <AppstoreOutlined />, label: 'Tableau de bord' },
             ]
           },
-          { 
-            key: 'g2', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1, marginTop: 20 }}>MES BIENS</span>, 
+          {
+            key: 'g2', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1, marginTop: 20 }}>MES BIENS</span>,
             type: 'group',
             children: [
               { key: '/proprietaire/apartments', icon: <HomeOutlined />, label: 'Mes Appartements' },
+            ]
+          },
+          {
+            key: 'g3', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1, marginTop: 20 }}>FINANCES</span>,
+            type: 'group',
+            children: [
+              { key: '/proprietaire/payments', icon: <WalletOutlined />, label: 'Mes Paiements' },
             ]
           },
         ]}

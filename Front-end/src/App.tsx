@@ -15,6 +15,7 @@ import ProprietaireLayout from './components/Layout/ProprietaireLayout';
 import ProprietaireDashboard from './pages/Proprietaire/ProprietaireDashboard';
 
 import ProprietaireApartmentList from './pages/Proprietaire/ProprietaireApartmentList';
+import ProprietairePaymentHistory from './pages/Proprietaire/ProprietairePaymentHistory';
 
 const App: React.FC = () => {
   return (
@@ -28,7 +29,7 @@ const App: React.FC = () => {
 
         {/* PROTECTED ROUTES (Sidebar Layout) */}
         {/* PROTECTED ROUTES (Sidebar Layout) */}
-        
+
         {/* ADMIN SIDE */}
         <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
           <Route path="/" element={<MainLayout />}>
@@ -46,7 +47,7 @@ const App: React.FC = () => {
         <Route element={<ProtectedRoute allowedRoles={['proprietaire']} />}>
           <Route path="/proprietaire" element={<ProprietaireLayout />}>
             <Route index element={<ProprietaireDashboard />} />
-            <Route path="payments" element={<h1>Mes Paiements (To Do)</h1>} />
+            <Route path="payments" element={<ProprietairePaymentHistory />} />
             <Route path="apartments" element={<ProprietaireApartmentList />} />
           </Route>
         </Route>

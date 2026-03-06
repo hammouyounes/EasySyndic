@@ -28,16 +28,16 @@ public class PaiementController {
 
     @PostMapping("/user/{userId}/appartement/{appartementId}/appel-charge/{appelChargeId}")
     public ResponseEntity<Paiement> createPaiementFull(
-            @RequestBody Paiement paiement, 
+            @RequestBody Paiement paiement,
             @PathVariable Long userId,
             @PathVariable Long appartementId,
             @PathVariable Long appelChargeId) {
-        
+
         // Construct partial objects for service processing
         com.example.backend_syndic.entity.User user = new com.example.backend_syndic.entity.User();
         user.setId(userId);
         paiement.setUser(user);
-        
+
         com.example.backend_syndic.entity.AppelCharge appelCharge = new com.example.backend_syndic.entity.AppelCharge();
         appelCharge.setId(appelChargeId);
         paiement.setAppelCharge(appelCharge);
@@ -50,7 +50,7 @@ public class PaiementController {
     public List<Paiement> getAllPaiements() {
         return paiementService.getAllPaiements();
     }
-    
+
     @GetMapping("/appartement/{appartementId}")
     public List<Paiement> getPaiementsByAppartement(@PathVariable Long appartementId) {
         return paiementService.getPaiementsByAppartement(appartementId);
@@ -59,6 +59,11 @@ public class PaiementController {
     @GetMapping("/immeuble/{immeubleId}")
     public List<Paiement> getPaiementsByImmeuble(@PathVariable Long immeubleId) {
         return paiementService.getPaiementsByImmeuble(immeubleId);
+    }
+
+    @GetMapping("/proprietaire/{proprietaireId}")
+    public List<Paiement> getPaiementsByProprietaire(@PathVariable Long proprietaireId) {
+        return paiementService.getPaiementsByProprietaire(proprietaireId);
     }
 
     @GetMapping("/{id}")
