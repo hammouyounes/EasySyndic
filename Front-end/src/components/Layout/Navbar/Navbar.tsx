@@ -1,9 +1,9 @@
 import React from 'react';
 import './Navbar.css';
-import { 
-  SearchOutlined, 
-  BellOutlined, 
-  MenuOutlined, 
+import {
+  SearchOutlined,
+  BellOutlined,
+  MenuOutlined,
   DownOutlined,
   SunOutlined,
   UserOutlined,
@@ -83,17 +83,17 @@ const Navbar: React.FC<NavbarProps> = ({ brandText, collapsed, setCollapsed, dar
   return (
     <nav className="navbar-container">
       <div className="navbar-left">
-        <button 
-          className="menu-button" 
+        <button
+          className="menu-button"
           onClick={() => setCollapsed(!collapsed)}
         >
           <MenuOutlined />
         </button>
 
         {brandText && (
-          <span style={{ 
-            fontSize: '20px', 
-            fontWeight: 'bold', 
+          <span style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
             color: darkMode ? '#ffffff' : '#1B2559'
           }}>
             {brandText}
@@ -102,9 +102,9 @@ const Navbar: React.FC<NavbarProps> = ({ brandText, collapsed, setCollapsed, dar
 
         <div className="search-wrapper">
           <SearchOutlined className="search-icon" />
-          <input 
-            type="text" 
-            placeholder="Search or type command..." 
+          <input
+            type="text"
+            placeholder="Search or type command..."
             className="search-input"
           />
           <span className="command-key">⌘ K</span>
@@ -121,12 +121,12 @@ const Navbar: React.FC<NavbarProps> = ({ brandText, collapsed, setCollapsed, dar
           <span className="notification-dot"></span>
         </div>
 
-        <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight" overlayClassName="custom-dropdown">
+        <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight" classNames={{ root: 'custom-dropdown' }}>
           <div className="profile-section">
-            <img 
-              src={profile} 
-              alt="Profile" 
-              className="avatar" 
+            <img
+              src={profile}
+              alt="Profile"
+              className="avatar"
             />
             <span className="profile-name">
               {user.prenom || 'youness'} <DownOutlined style={{ fontSize: '10px', color: '#2d72e8ff' }} />

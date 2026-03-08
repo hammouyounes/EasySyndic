@@ -236,7 +236,7 @@ const ProprietairePaymentHistory: React.FC = () => {
     if (isLoading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-                <Spin size="large" tip="Chargement de votre historique de paiements..." />
+                <Spin size="large" description="Chargement de votre historique de paiements..." />
             </div>
         );
     }
@@ -343,7 +343,7 @@ const ProprietairePaymentHistory: React.FC = () => {
 
             {/* ─── Payments Table ─── */}
             <Card
-                bordered={false}
+                variant="borderless"
                 style={{ borderRadius: 16, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
             >
                 <Table

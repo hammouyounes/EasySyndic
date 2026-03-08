@@ -1,0 +1,50 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.example:backend_syndic >---------------------
+[INFO] Building backend_syndic 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ backend_syndic ---
+[INFO] Deleting C:\Users\saade\OneDrive\Desktop\EasySyndic\backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ backend_syndic ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ backend_syndic ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 53 source files with javac [debug parameters release 21] to target\classes
+[INFO] /C:/Users/saade/OneDrive/Desktop/EasySyndic/backend/src/main/java/com/example/backend_syndic/service/Impl/AppartementServiceImpl.java: C:\Users\saade\OneDrive\Desktop\EasySyndic\backend\src\main\java\com\example\backend_syndic\service\Impl\AppartementServiceImpl.java uses or overrides a deprecated API.
+[INFO] /C:/Users/saade/OneDrive/Desktop/EasySyndic/backend/src/main/java/com/example/backend_syndic/service/Impl/AppartementServiceImpl.java: Recompile with -Xlint:deprecation for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/saade/OneDrive/Desktop/EasySyndic/backend/src/main/java/com/example/backend_syndic/config/DataSeeder.java:[121,47] cannot find symbol
+  symbol:   variable FIXE
+  location: class com.example.backend_syndic.enums.ChargeType
+[ERROR] /C:/Users/saade/OneDrive/Desktop/EasySyndic/backend/src/main/java/com/example/backend_syndic/config/DataSeeder.java:[130,49] cannot find symbol
+  symbol:   variable FIXE
+  location: class com.example.backend_syndic.enums.ChargeType
+[INFO] 2 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  8.178 s
+[INFO] Finished at: 2026-03-07T22:42:17Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.1:compile (default-compile) on project backend_syndic: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/saade/OneDrive/Desktop/EasySyndic/backend/src/main/java/com/example/backend_syndic/config/DataSeeder.java:[121,47] cannot find symbol
+[ERROR]   symbol:   variable FIXE
+[ERROR]   location: class com.example.backend_syndic.enums.ChargeType
+[ERROR] /C:/Users/saade/OneDrive/Desktop/EasySyndic/backend/src/main/java/com/example/backend_syndic/config/DataSeeder.java:[130,49] cannot find symbol
+[ERROR]   symbol:   variable FIXE
+[ERROR]   location: class com.example.backend_syndic.enums.ChargeType
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

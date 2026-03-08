@@ -1,396 +1,284 @@
 {
-  "immeuble": [
+  "immeubles": [
     {
-      "nom": "Immeuble Atlas",
-      "adress": "10 Rue Hassan II, Rabat",
-      "nombre_appartement": 4,
-      "id": "1"
+      "id": "1",
+      "nom": "Résidence Les Palmiers",
+      "adress": "123 Blvd Mohammed V, Casablanca",
+      "nombre_appartement": 12
     },
     {
       "id": "2",
-      "nombre_appartement": 4,
-      "adress": "22 Avenue Mohammed V, Casablanca",
-      "nom": "Immeuble Ocean"
+      "nom": "Atlas Tower",
+      "adress": "45 Ave Hassan II, Rabat",
+      "nombre_appartement": 20
     },
     {
       "id": "3",
-      "nombre_appartement": 4,
-      "adress": "5 Rue Marrakech, Fes",
-      "nom": "Immeuble Andalouse"
+      "nom": "Marina Bay",
+      "adress": "Quai des Orfèvres, Tanger",
+      "nombre_appartement": 8
     },
     {
       "id": "4",
-      "nombre_appartement": 4,
-      "adress": "18 Boulevard Zerktouni, Agadir",
-      "nom": "Immeuble Soleil"
+      "nom": "Le Jardin d'Anfa",
+      "adress": "rue des Lilas, Casablanca",
+      "nombre_appartement": 15
     },
     {
       "id": "5",
-      "nombre_appartement": 4,
-      "adress": "30 Rue Tanja, Tanger",
-      "nom": "Immeuble Détroit"
-    },
-    {
-      "id": "df29",
-      "nom": "hammou youness",
-      "adress": "Ouled berhil hay ouled belaid",
-      "nombre_appartement": 5
+      "nom": "Majorelle Sky",
+      "adress": "Guéliz, Marrakech",
+      "nombre_appartement": 10
     }
   ],
-  "appartement": [
+  "appartements": [
     {
-      "nemuro": "A1",
+      "id": "1",
+      "nemuro": "A101",
       "etage": 1,
-      "surface": 80,
-      "immeuble_id": 1,
-      "propretaire_id": 1,
-      "id": "1"
+      "surface": 85,
+      "immeuble_id": "1",
+      "propretaire_id": "1"
     },
     {
       "id": "2",
+      "nemuro": "A102",
       "etage": 1,
-      "nemuro": "A2",
-      "surface": 75,
-      "immeuble_id": 1,
-      "propretaire_id": 2
+      "surface": 90,
+      "immeuble_id": "1",
+      "propretaire_id": "2"
     },
     {
       "id": "3",
+      "nemuro": "B201",
       "etage": 2,
-      "nemuro": "B1",
-      "surface": 90,
-      "immeuble_id": 1,
-      "propretaire_id": 3
+      "surface": 110,
+      "immeuble_id": "1",
+      "propretaire_id": "3"
     },
     {
       "id": "4",
-      "etage": 2,
-      "nemuro": "B2",
-      "surface": 85,
-      "immeuble_id": 1,
-      "propretaire_id": 4
+      "nemuro": "C301",
+      "etage": 3,
+      "surface": 75,
+      "immeuble_id": "1",
+      "propretaire_id": "4"
     },
     {
       "id": "5",
-      "etage": 1,
-      "nemuro": "A1",
-      "surface": 70,
-      "immeuble_id": 2,
-      "propretaire_id": 5
-    },
-    {
-      "id": "6",
-      "etage": 1,
-      "nemuro": "A2",
-      "surface": 78,
-      "immeuble_id": 2,
-      "propretaire_id": 6
-    },
-    {
-      "id": "7",
-      "etage": 2,
-      "nemuro": "B1",
-      "surface": 88,
-      "immeuble_id": 2,
-      "propretaire_id": 7
-    },
-    {
-      "id": "8",
-      "etage": 2,
-      "nemuro": "B2",
-      "surface": 92,
-      "immeuble_id": 2,
-      "propretaire_id": 8
-    },
-    {
-      "id": "9",
-      "etage": 1,
-      "nemuro": "A1",
-      "surface": 65,
-      "immeuble_id": 3,
-      "propretaire_id": 9
-    },
-    {
-      "id": "10",
-      "etage": 1,
-      "nemuro": "A2",
-      "surface": 72,
-      "immeuble_id": 3,
-      "propretaire_id": 10
-    },
-    {
-      "id": "11",
-      "etage": 2,
-      "nemuro": "B1",
-      "surface": 85,
-      "immeuble_id": 3,
-      "propretaire_id": 11
-    },
-    {
-      "id": "12",
-      "etage": 2,
-      "nemuro": "B2",
-      "surface": 90,
-      "immeuble_id": 3,
-      "propretaire_id": 12
-    },
-    {
-      "id": "13",
-      "etage": 1,
-      "nemuro": "A1",
-      "surface": 77,
-      "immeuble_id": 4,
-      "propretaire_id": 13
-    },
-    {
-      "id": "14",
-      "etage": 1,
-      "nemuro": "A2",
-      "surface": 82,
-      "immeuble_id": 4,
-      "propretaire_id": 14
-    },
-    {
-      "id": "15",
-      "etage": 2,
-      "nemuro": "B1",
-      "surface": 95,
-      "immeuble_id": 4,
-      "propretaire_id": 15
-    },
-    {
-      "id": "16",
-      "etage": 2,
-      "nemuro": "B2",
-      "surface": 88,
-      "immeuble_id": 4,
-      "propretaire_id": 16
-    },
-    {
-      "id": "17",
-      "etage": 1,
-      "nemuro": "A1",
-      "surface": 73,
-      "immeuble_id": 5,
-      "propretaire_id": 17
-    },
-    {
-      "id": "18",
-      "etage": 1,
-      "nemuro": "A2",
-      "surface": 79,
-      "immeuble_id": 5,
-      "propretaire_id": 18
-    },
-    {
-      "id": "19",
-      "etage": 2,
-      "nemuro": "B1",
-      "surface": 91,
-      "immeuble_id": 5,
-      "propretaire_id": 19
-    },
-    {
-      "id": "20",
-      "etage": 2,
-      "nemuro": "B2",
-      "surface": 86,
-      "immeuble_id": 5,
-      "propretaire_id": 20
-    },
-    {
-      "id": "eb8c",
-      "nemuro": "12",
+      "nemuro": "T01",
       "etage": 1,
       "surface": 120,
       "immeuble_id": "2",
-      "propretaire_id": "8"
-    },
-    {
-      "id": "3aba",
-      "nemuro": "12",
-      "etage": 1,
-      "surface": 80,
-      "immeuble_id": "df29",
-      "propretaire_id": "6"
-    },
-    {
-      "id": "c608",
-      "nemuro": "C1",
-      "etage": 3,
-      "surface": 90,
-      "immeuble_id": "1",
-      "propretaire_id": "1"
-    }
-  ],
-  "user": [
-    {
-      "id": "1",
-      "email": "user1@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "El Amrani",
-      "prenom": "Youssef",
-      "role": "propreitaire"
-    },
-    {
-      "id": "2",
-      "email": "user2@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Benali",
-      "prenom": "Sara",
-      "role": "propreitaire"
-    },
-    {
-      "id": "3",
-      "email": "user3@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Haddad",
-      "prenom": "Omar",
-      "role": "propreitaire"
-    },
-    {
-      "id": "4",
-      "email": "user4@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Fassi",
-      "prenom": "Khadija",
-      "role": "propreitaire"
-    },
-    {
-      "id": "5",
-      "email": "user5@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Alaoui",
-      "prenom": "Anas",
-      "role": "propreitaire"
+      "propretaire_id": "5"
     },
     {
       "id": "6",
-      "email": "user6@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Ziani",
-      "prenom": "Imane",
-      "role": "propreitaire"
+      "nemuro": "T02",
+      "etage": 1,
+      "surface": 115,
+      "immeuble_id": "2",
+      "propretaire_id": "6"
     },
     {
       "id": "7",
-      "email": "user7@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Karimi",
-      "prenom": "Hamza",
-      "role": "propreitaire"
+      "nemuro": "M01",
+      "etage": 1,
+      "surface": 95,
+      "immeuble_id": "3",
+      "propretaire_id": "7"
     },
     {
       "id": "8",
-      "email": "user8@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Berrada",
-      "prenom": "Nour",
-      "role": "propreitaire"
+      "nemuro": "M02",
+      "etage": 1,
+      "surface": 95,
+      "immeuble_id": "3",
+      "propretaire_id": "8"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "email": "youssef@example.com",
+      "mot_de_passe": "password123",
+      "nom": "El Amrani",
+      "prenom": "Youssef",
+      "role": "propreitaire",
+      "telephone": "+212600112233"
     },
     {
-      "id": "9",
-      "email": "user9@mail.com",
-      "mot_de_passe": "123456",
+      "id": "2",
+      "email": "sara@example.com",
+      "mot_de_passe": "password123",
+      "nom": "Benali",
+      "prenom": "Sara",
+      "role": "propreitaire",
+      "telephone": "+212600445566"
+    },
+    {
+      "id": "3",
+      "email": "admin@easysyndic.ma",
+      "mot_de_passe": "admin123",
+      "nom": "Syndic",
+      "prenom": "Manager",
+      "role": "admin",
+      "telephone": "+212522000000"
+    },
+    {
+      "id": "4",
+      "email": "omar@example.com",
+      "mot_de_passe": "password123",
+      "nom": "Haddad",
+      "prenom": "Omar",
+      "role": "propreitaire",
+      "telephone": "+212611223344"
+    },
+    {
+      "id": "5",
+      "email": "khadija@example.com",
+      "mot_de_passe": "password123",
+      "nom": "Lahlou",
+      "prenom": "Khadija",
+      "role": "propreitaire",
+      "telephone": "+212622334455"
+    },
+    {
+      "id": "6",
+      "email": "mehdi@example.com",
+      "mot_de_passe": "password123",
       "nom": "Chraibi",
       "prenom": "Mehdi",
-      "role": "propreitaire"
+      "role": "propreitaire",
+      "telephone": "+212633445566"
     },
     {
-      "id": "10",
-      "email": "user10@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Lahlou",
-      "prenom": "Salma",
-      "role": "propreitaire"
-    },
-    {
-      "id": "11",
-      "email": "user11@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Idrissi",
-      "prenom": "Ayoub",
-      "role": "propreitaire"
-    },
-    {
-      "id": "12",
-      "email": "user12@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Skalli",
-      "prenom": "Meryem",
-      "role": "propreitaire"
-    },
-    {
-      "id": "13",
-      "email": "user13@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Raji",
-      "prenom": "Sofiane",
-      "role": "propreitaire"
-    },
-    {
-      "id": "14",
-      "email": "user14@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Tahiri",
-      "prenom": "Asmaa",
-      "role": "propreitaire"
-    },
-    {
-      "id": "15",
-      "email": "user15@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "El Fadil",
-      "prenom": "Reda",
-      "role": "propreitaire"
-    },
-    {
-      "id": "16",
-      "email": "user16@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Ouali",
-      "prenom": "Hajar",
-      "role": "propreitaire"
-    },
-    {
-      "id": "17",
-      "email": "user17@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Kabbaj",
-      "prenom": "Ismail",
-      "role": "propreitaire"
-    },
-    {
-      "id": "18",
-      "email": "user18@mail.com",
-      "mot_de_passe": "123456",
+      "id": "7",
+      "email": "leila@example.com",
+      "mot_de_passe": "password123",
       "nom": "Mansouri",
-      "prenom": "Rania",
-      "role": "propreitaire"
+      "prenom": "Leila",
+      "role": "propreitaire",
+      "telephone": "+212644556677"
     },
     {
-      "id": "19",
-      "email": "user19@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Saidi",
-      "prenom": "Adil",
-      "role": "propreitaire"
+      "id": "8",
+      "email": "amine@example.com",
+      "mot_de_passe": "password123",
+      "nom": "Berrada",
+      "prenom": "Amine",
+      "role": "propreitaire",
+      "telephone": "+212655667788"
+    }
+  ],
+  "charges": [
+    {
+      "id": "1",
+      "designation": "Electricité Communs Mars",
+      "montant": 1500,
+      "date": "2024-03-01",
+      "immeubleId": "1",
+      "distributed": true
     },
     {
-      "id": "20",
-      "email": "user20@mail.com",
-      "mot_de_passe": "123456",
-      "nom": "Boukili",
-      "prenom": "Lina",
-      "role": "propreitaire"
+      "id": "2",
+      "designation": "Maintenance Ascenseur Q1",
+      "montant": 2500,
+      "date": "2024-03-05",
+      "immeubleId": "1",
+      "distributed": true
     },
     {
-      "id": "4546",
-      "nom": "youness",
-      "prenom": "hammou",
-      "email": "youness@gmail.com",
-      "mot_de_passe": "1234",
-      "role": "propreitaire"
+      "id": "3",
+      "designation": "Nettoyage Janvier",
+      "montant": 1200,
+      "date": "2024-01-10",
+      "immeubleId": "2",
+      "distributed": true
+    },
+    {
+      "id": "4",
+      "designation": "Réparation Plomberie",
+      "montant": 3000,
+      "date": "2024-03-15",
+      "immeubleId": "1",
+      "distributed": false
+    },
+    {
+      "id": "5",
+      "designation": "Eclairage Parking",
+      "montant": 800,
+      "date": "2024-03-20",
+      "immeubleId": "3",
+      "distributed": false
+    }
+  ],
+  "appel-charges": [
+    {
+      "id": "1",
+      "chargeId": "1",
+      "appartementId": "1",
+      "montant": 125,
+      "statut": "PAYE",
+      "dateEcheance": "2024-03-15"
+    },
+    {
+      "id": "2",
+      "chargeId": "1",
+      "appartementId": "2",
+      "montant": 125,
+      "statut": "NON_PAYE",
+      "dateEcheance": "2024-03-15"
+    },
+    {
+      "id": "3",
+      "chargeId": "1",
+      "appartementId": "3",
+      "montant": 125,
+      "statut": "PAYE",
+      "dateEcheance": "2024-03-15"
+    },
+    {
+      "id": "4",
+      "chargeId": "2",
+      "appartementId": "1",
+      "montant": 208.33,
+      "statut": "NON_PAYE",
+      "dateEcheance": "2024-03-20"
+    },
+    {
+      "id": "5",
+      "chargeId": "3",
+      "appartementId": "5",
+      "montant": 60,
+      "statut": "PAYE",
+      "dateEcheance": "2024-01-25"
+    }
+  ],
+  "paiements": [
+    {
+      "id": "1",
+      "appelChargeId": "1",
+      "montant": 125,
+      "datePaiement": "2024-03-10",
+      "methode": "VIREMENT",
+      "proprietaireId": "1"
+    },
+    {
+      "id": "2",
+      "appelChargeId": "3",
+      "montant": 125,
+      "datePaiement": "2024-03-12",
+      "methode": "ESPECES",
+      "proprietaireId": "3"
+    },
+    {
+      "id": "3",
+      "appelChargeId": "5",
+      "montant": 60,
+      "datePaiement": "2024-01-20",
+      "methode": "CARTE_BANCAIRE",
+      "proprietaireId": "5"
     }
   ]
 }

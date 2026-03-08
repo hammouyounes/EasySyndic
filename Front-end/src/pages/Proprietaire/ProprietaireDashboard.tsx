@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Card, Row, Col, Typography, Spin, Empty, List, Avatar, Tag, Table } from 'antd';
-import { 
-  WalletOutlined, 
-  HomeOutlined, 
-  CheckCircleOutlined, 
+import {
+  WalletOutlined,
+  HomeOutlined,
+  CheckCircleOutlined,
   ClockCircleOutlined,
   SyncOutlined,
   DollarOutlined
@@ -53,20 +53,20 @@ const ProprietaireDashboard: React.FC = () => {
   const chargeColumns = [
     { title: 'Appartement', dataIndex: ['appartement', 'numero'], key: 'appt', render: (text: string) => <b>{text}</b> },
     { title: 'Type de Charge', dataIndex: ['charge', 'type'], key: 'type' },
-    { 
-      title: 'Montant', 
-      dataIndex: 'total', 
+    {
+      title: 'Montant',
+      dataIndex: 'total',
       key: 'total',
       render: (amount: number) => <Tag color="blue">{amount?.toFixed(2)} DH</Tag>
     },
-    { 
-      title: 'Date', 
-      dataIndex: 'dateEmission', 
+    {
+      title: 'Date',
+      dataIndex: 'dateEmission',
       key: 'date',
       render: (date: string) => new Date(date).toLocaleDateString()
     },
-    { 
-      title: 'Statut', 
+    {
+      title: 'Statut',
       key: 'status',
       render: (_: any, record: any) => {
         const label = record.status?.label;
@@ -77,11 +77,11 @@ const ProprietaireDashboard: React.FC = () => {
   ];
 
   if (loadingApartments || loadingCharges) {
-      return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <Spin size="large" tip="Chargement des données..." />
-        </div>
-      );
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Spin size="large" description="Chargement des données..." />
+      </div>
+    );
   }
 
   if (!user) {
@@ -94,13 +94,13 @@ const ProprietaireDashboard: React.FC = () => {
         <Title level={2} style={{ margin: 0 }}>Bonjour, {user.prenom}</Title>
         <Text type="secondary">Voici un aperçu de votre situation financière et immobilière.</Text>
       </div>
-      
+
       {/* Top Section: Stats Cards */}
       <Row gutter={[24, 24]}>
         <Col xs={24} xl={24}>
           <div className="stats-container" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-             {/* Card 1: Total Payé (Purple -> Reusing Admin Style) */}
-             <div className="stat-card purple">
+            {/* Card 1: Total Payé (Purple -> Reusing Admin Style) */}
+            <div className="stat-card purple">
               <div className="stat-card-header">
                 <div className="stat-icon">✅</div>
                 <div className="progress-circle" style={{ '--percent': 100, '--color': '#6366f1' } as React.CSSProperties}>
@@ -109,7 +109,7 @@ const ProprietaireDashboard: React.FC = () => {
               </div>
               <div className="card-body">
                 <p className="stat-label">Total Payé</p>
-                <h2 className="stat-value">{totalPaid.toFixed(2)} <span className="stat-trend" style={{fontSize: '14px'}}>MAD</span></h2>
+                <h2 className="stat-value">{totalPaid.toFixed(2)} <span className="stat-trend" style={{ fontSize: '14px' }}>MAD</span></h2>
                 <p className="stat-subtext">Depuis le début</p>
               </div>
             </div>
@@ -124,13 +124,13 @@ const ProprietaireDashboard: React.FC = () => {
               </div>
               <div className="card-body">
                 <p className="stat-label">Reste à Payer</p>
-                <h2 className="stat-value">{totalToPay.toFixed(2)} <span className="stat-trend" style={{fontSize: '14px'}}>MAD</span></h2>
+                <h2 className="stat-value">{totalToPay.toFixed(2)} <span className="stat-trend" style={{ fontSize: '14px' }}>MAD</span></h2>
                 <p className="stat-subtext">Montant dû</p>
               </div>
             </div>
 
-             {/* Card 3: Appartements (Green) */}
-             <div className="stat-card green">
+            {/* Card 3: Appartements (Green) */}
+            <div className="stat-card green">
               <div className="stat-card-header">
                 <div className="stat-icon">🏡</div>
                 <div className="progress-circle" style={{ '--percent': 100, '--color': '#22c55e' } as React.CSSProperties}>
@@ -150,15 +150,15 @@ const ProprietaireDashboard: React.FC = () => {
       {/* Main Content Areas: Recent Transactions/Charges */}
       <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
         <Col span={24}>
-          <Card 
-            title={<span><DollarOutlined /> Historique des Charges & Paiements</span>} 
-            bordered={false} 
+          <Card
+            title={<span><DollarOutlined /> Historique des Charges & Paiements</span>}
+            variant="borderless"
             className="criclebox"
             style={{ borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
           >
-            <Table 
-              dataSource={myCharges} 
-              columns={chargeColumns} 
+            <Table
+              dataSource={myCharges}
+              columns={chargeColumns}
               pagination={{ pageSize: 5 }}
               rowKey="id"
             />

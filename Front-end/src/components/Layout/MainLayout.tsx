@@ -3,6 +3,7 @@ import { Layout, ConfigProvider, theme } from 'antd';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar/Sidebar';
 import Navbar from './Navbar/Navbar';
+import VoiceAssistant from '../Chat/VoiceAssistant';
 
 const { Content } = Layout;
 
@@ -41,7 +42,7 @@ const MainLayout: React.FC = () => {
         token: {
           colorPrimary: '#7551FF', // Brand Purple
           fontFamily: "'DM Sans', sans-serif",
-          
+
           // Dynamic Colors based on mode
           ...(darkMode ? {
             colorBgLayout: '#0b1437',     // Main Background
@@ -69,25 +70,28 @@ const MainLayout: React.FC = () => {
       }}
     >
       <Layout style={{ minHeight: '100vh', margin: 0 }}>
-        
+
         {/* --- SIDEBAR --- */}
         <Sidebar collapsed={collapsed} darkMode={darkMode} />
 
         {/* --- MAIN CONTENT AREA --- */}
-        <Layout style={{ background: 'var(--bg-primary)', transition: 'background 0.3s ease' }}> 
+        <Layout style={{ background: 'var(--bg-primary)', transition: 'background 0.3s ease' }}>
           {/* TOP HEADER */}
-          <Navbar 
-            collapsed={collapsed} 
-            setCollapsed={setCollapsed} 
-            darkMode={darkMode} 
-            toggleTheme={toggleTheme} 
+          <Navbar
+            collapsed={collapsed}
+            setCollapsed={setCollapsed}
+            darkMode={darkMode}
+            toggleTheme={toggleTheme}
           />
-          
+
           {/* PAGE CONTENT */}
           <Content style={{ margin: '24px', minHeight: 280 }}>
             <Outlet />
           </Content>
         </Layout>
+
+        {/* AI VOICE ASSISTANT */}
+        <VoiceAssistant />
       </Layout>
     </ConfigProvider>
   );

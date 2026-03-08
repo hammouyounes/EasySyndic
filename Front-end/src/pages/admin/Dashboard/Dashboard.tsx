@@ -1,17 +1,17 @@
 import React, { useMemo } from 'react';
-import { Row, Col, Typography, Card, Spin, List, Avatar } from 'antd';
-import { 
+import { Row, Col, Typography, Card, Spin } from 'antd';
+import {
   ClockCircleOutlined,
   CheckCircleOutlined,
   SyncOutlined
 } from '@ant-design/icons';
 import { IncomeExpenseChart } from '../../../components/Charts/IncomeExpenseChart';
 import { PaymentMethodChart } from '../../../components/Charts/PaymentMethodChart';
-import { 
-  useGetBuildingsQuery, 
-  useGetApartmentsQuery, 
-  useGetAppelChargesQuery, 
-  useGetPaiementsQuery 
+import {
+  useGetBuildingsQuery,
+  useGetApartmentsQuery,
+  useGetAppelChargesQuery,
+  useGetPaiementsQuery
 } from '../../../features/api/apiSlice';
 
 import './DashboardStats.css';
@@ -71,48 +71,48 @@ const Dashboard: React.FC = () => {
     const lastMonthsLen = 4; // User requested 4 months
     const last4Months = [];
     for (let i = lastMonthsLen - 1; i >= 0; i--) {
-        const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-        last4Months.push({
-            monthName: months[d.getMonth()],
-            monthIndex: d.getMonth(),
-            year: d.getFullYear(),
-            key: `${d.getFullYear()}-${d.getMonth()}`
-        });
+      const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      last4Months.push({
+        monthName: months[d.getMonth()],
+        monthIndex: d.getMonth(),
+        year: d.getFullYear(),
+        key: `${d.getFullYear()}-${d.getMonth()}`
+      });
     }
 
     const aggregatedChartData = last4Months.map(m => {
-        const income = paiements
-            .filter((p: any) => {
-                const d = new Date(p.datePaiement);
-                return d.getMonth() === m.monthIndex && d.getFullYear() === m.year;
-            })
-            .reduce((sum: number, p: any) => sum + p.montant, 0);
-        
-        const expense = appelCharges
-            .filter((ac: any) => {
-                const d = new Date(ac.dateEmission);
-                return d.getMonth() === m.monthIndex && d.getFullYear() === m.year;
-            })
-            .reduce((sum: number, ac: any) => sum + ac.total, 0);
+      const income = paiements
+        .filter((p: any) => {
+          const d = new Date(p.datePaiement);
+          return d.getMonth() === m.monthIndex && d.getFullYear() === m.year;
+        })
+        .reduce((sum: number, p: any) => sum + p.montant, 0);
 
-        return { month: m.monthName, income, expense };
+      const expense = appelCharges
+        .filter((ac: any) => {
+          const d = new Date(ac.dateEmission);
+          return d.getMonth() === m.monthIndex && d.getFullYear() === m.year;
+        })
+        .reduce((sum: number, ac: any) => sum + ac.total, 0);
+
+      return { month: m.monthName, income, expense };
     });
 
     // 4. Payment Method Distribution
     const methodsMapAmount: Record<string, number> = {};
-     paiements.forEach((p: any) => {
-        let method = p.modePaiement || 'Inconnu';
-        // Map to display names
-        if (method === 'ESPECE') method = 'Espèces';
-        else if (method === 'VIREMENT') method = 'Virement';
-        else if (method === 'CHEQUE') method = 'Chèque';
+    paiements.forEach((p: any) => {
+      let method = p.modePaiement || 'Inconnu';
+      // Map to display names
+      if (method === 'ESPECE') method = 'Espèces';
+      else if (method === 'VIREMENT') method = 'Virement';
+      else if (method === 'CHEQUE') method = 'Chèque';
 
-        methodsMapAmount[method] = (methodsMapAmount[method] || 0) + p.montant;
+      methodsMapAmount[method] = (methodsMapAmount[method] || 0) + p.montant;
     });
 
     const paymentMethodData = Object.keys(methodsMapAmount).map(key => ({
-        name: key,
-        value: methodsMapAmount[key]
+      name: key,
+      value: methodsMapAmount[key]
     }));
 
 
@@ -132,7 +132,7 @@ const Dashboard: React.FC = () => {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Spin size="large" tip="Chargement des données..." />
+        <Spin size="large" description="Chargement des données..." />
       </div>
     );
   }
@@ -140,7 +140,7 @@ const Dashboard: React.FC = () => {
   return (
     <div style={{ padding: '24px' }}>
       <Title level={2} style={{ marginBottom: '24px' }}>Tableau de Bord</Title>
-      
+
       {/* Top Section: Stats + Activities */}
       <Row gutter={[24, 24]}>
         {/* Left Column: Statistics Cards (Now 2x2 grid) */}
@@ -156,7 +156,7 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="card-body">
                 <p className="stat-label">Revenus du Mois</p>
-                <h2 className="stat-value">{Number(stats.revenue).toFixed(2)} <span className="stat-trend" style={{fontSize: '14px'}}>MAD</span></h2>
+                <h2 className="stat-value">{Number(stats.revenue).toFixed(2)} <span className="stat-trend" style={{ fontSize: '14px' }}>MAD</span></h2>
                 <p className="stat-subtext">Encaissés ce mois-ci</p>
               </div>
             </div>
@@ -171,7 +171,7 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="card-body">
                 <p className="stat-label">Dettes Impayées</p>
-                <h2 className="stat-value">{Number(stats.debt).toFixed(2)} <span className="stat-trend" style={{fontSize: '14px'}}>MAD</span></h2>
+                <h2 className="stat-value">{Number(stats.debt).toFixed(2)} <span className="stat-trend" style={{ fontSize: '14px' }}>MAD</span></h2>
                 <p className="stat-subtext">Reste à payer</p>
               </div>
             </div>
@@ -210,47 +210,47 @@ const Dashboard: React.FC = () => {
 
         {/* Right Column: Recent Activities Table */}
         <Col xs={24} xl={10} style={{ display: 'flex' }}>
-          <Card 
-            title={<span><ClockCircleOutlined /> Activités Récentes</span>} 
-            bordered={false} 
+          <Card
+            title={<span><ClockCircleOutlined /> Activités Récentes</span>}
+            variant="borderless"
             className="activities-card"
             style={{ width: '100%', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
-            bodyStyle={{ padding: '0 12px' }}
+            styles={{ body: { padding: '0 12px' } }}
           >
-            <List
-              itemLayout="horizontal"
-              dataSource={recentActivities}
-              renderItem={(item: any) => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar 
-                        icon={item.type === 'PAYMENT' ? <CheckCircleOutlined /> : <SyncOutlined />} 
-                        style={{ backgroundColor: item.type === 'PAYMENT' ? '#f6ffed' : '#e6f7ff', color: item.type === 'PAYMENT' ? '#52c41a' : '#1890ff' }}
-                        size="small"
-                      />
-                    }
-                    title={<Text strong style={{ fontSize: '13px' }}>{item.description.slice(0, 30)}...</Text>}
-                    description={<Text type="secondary" style={{ fontSize: '11px' }}>{new Date(item.date).toLocaleDateString()}</Text>}
-                  />
-                  <div style={{ textAlign: 'right' }}>
+            <div>
+              {recentActivities.map((item: any) => (
+                <div key={item.id} style={{ display: 'flex', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--border-color, rgba(0,0,0,0.06))' }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: '50%',
+                    backgroundColor: item.type === 'PAYMENT' ? '#f6ffed' : '#e6f7ff',
+                    color: item.type === 'PAYMENT' ? '#52c41a' : '#1890ff',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginRight: 12, flexShrink: 0, fontSize: 14
+                  }}>
+                    {item.type === 'PAYMENT' ? <CheckCircleOutlined /> : <SyncOutlined />}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <Text strong style={{ fontSize: '13px', display: 'block' }}>{item.description.slice(0, 30)}...</Text>
+                    <Text type="secondary" style={{ fontSize: '11px' }}>{new Date(item.date).toLocaleDateString()}</Text>
+                  </div>
+                  <div style={{ textAlign: 'right', marginLeft: 8 }}>
                     <Text strong style={{ fontSize: '12px', color: item.type === 'PAYMENT' ? '#52c41a' : '#faad14' }}>
                       {item.type === 'PAYMENT' ? '+' : ''}{Number(item.amount).toFixed(2)}
                     </Text>
                   </div>
-                </List.Item>
-              )}
-            />
+                </div>
+              ))}
+            </div>
           </Card>
         </Col>
       </Row>
 
       <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
         <Col xs={24} lg={16}>
-           <IncomeExpenseChart data={chartData} />
+          <IncomeExpenseChart data={chartData} />
         </Col>
         <Col xs={24} lg={8}>
-           <PaymentMethodChart data={paymentMethodData} />
+          <PaymentMethodChart data={paymentMethodData} />
         </Col>
       </Row>
     </div>

@@ -22,68 +22,67 @@ const BuildingList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
-  
+
   const { data: buildings, isLoading } = useGetBuildingsQuery({});
   const { data: apartments } = useGetApartmentsQuery({});
   const { data: charges } = useGetChargesQuery({}); // Fetch charges
-  
+
   const [addBuilding] = useAddBuildingMutation();
   const [updateBuilding] = useUpdateBuildingMutation();
   const [deleteBuilding] = useDeleteBuildingMutation();
+
+  const [messageApi, msgContextHolder] = message.useMessage();
+  const [modal, modalContextHolder] = Modal.useModal();
 
   const tableRef = useRef<HTMLTableElement>(null);
   const dataTableInstance = useRef<any>(null);
 
   useEffect(() => {
     if (!isLoading && buildings && tableRef.current) {
+      if (dataTableInstance.current) {
+        dataTableInstance.current.destroy();
+      }
+
+      const timer = setTimeout(() => {
+        dataTableInstance.current = new DataTable(tableRef.current!, {
+          language: {
+            processing: "Traitement en cours...",
+            search: "Rechercher&nbsp;:",
+            lengthMenu: "Afficher _MENU_ &eacute;l&eacute;ments",
+            info: "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+            infoEmpty: "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
+            infoFiltered: "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            infoPostFix: "",
+            loadingRecords: "Chargement en cours...",
+            zeroRecords: "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            emptyTable: "Aucune donnée disponible dans le tableau",
+            paginate: {
+              first: "Premier",
+              previous: "Pr&eacute;c&eacute;dent",
+              next: "Suivant",
+              last: "Dernier"
+            }
+          },
+          destroy: true,
+          autoWidth: false,
+          stateSave: true,
+          paging: true,
+          pageLength: 5,
+          lengthMenu: [5, 10, 25, 50],
+          columnDefs: [
+            { className: "dt-head-center dt-body-center", targets: "_all" },
+            { orderable: false, targets: -1, width: '1%' }
+          ]
+        });
+      }, 100);
+
+      return () => {
+        clearTimeout(timer);
         if (dataTableInstance.current) {
           dataTableInstance.current.destroy();
+          dataTableInstance.current = null;
         }
-  
-        const timer = setTimeout(() => {
-           dataTableInstance.current = new DataTable(tableRef.current!, {
-              language: {
-                  processing:     "Traitement en cours...",
-                  search:         "Rechercher&nbsp;:",
-                  lengthMenu:    "Afficher _MENU_ &eacute;l&eacute;ments",
-                  info:           "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
-                  infoEmpty:      "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
-                  infoFiltered:   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-                  infoPostFix:    "",
-                  loadingRecords: "Chargement en cours...",
-                  zeroRecords:    "Aucun &eacute;l&eacute;ment &agrave; afficher",
-                  emptyTable:     "Aucune donnée disponible dans le tableau",
-                  paginate: {
-                      first:      "Premier",
-                      previous:   "Pr&eacute;c&eacute;dent",
-                      next:       "Suivant",
-                      last:       "Dernier"
-                  },
-                  aria: {
-                      sortAscending:  ": activer pour trier la colonne par ordre croissant",
-                      sortDescending: ": activer pour trier la colonne par ordre décroissant"
-                  }
-              },
-              destroy: true,
-              autoWidth: false,
-              stateSave: true,
-              paging: true,
-              pageLength: 5,
-              lengthMenu: [5, 10, 25, 50],
-              columnDefs: [
-                  { className: "dt-head-center dt-body-center", targets: "_all" },
-                  { orderable: false, targets: -1, width: '1%' }
-              ]
-           });
-        }, 100);
-  
-        return () => {
-          clearTimeout(timer);
-          if (dataTableInstance.current) {
-               dataTableInstance.current.destroy();
-               dataTableInstance.current = null;
-          }
-        };
+      };
     }
   }, [buildings, isLoading]);
 
@@ -102,9 +101,9 @@ const BuildingList: React.FC = () => {
   const handleDelete = (record: Building) => {
     // Check for linked apartments
     const linkedApartments = apartments?.filter((appt: any) => String(appt.immeuble?.id) === String(record.id));
-    
+
     if (linkedApartments && linkedApartments.length > 0) {
-      Modal.error({
+      modal.error({
         title: 'Action impossible',
         icon: <ExclamationCircleOutlined />,
         content: `Ce bâtiment contient ${linkedApartments.length} appartement(s). Veuillez d'abord les supprimer.`,
@@ -112,7 +111,7 @@ const BuildingList: React.FC = () => {
       return;
     }
 
-    Modal.confirm({
+    modal.confirm({
       title: 'Êtes-vous sûr de vouloir supprimer ce bâtiment ?',
       icon: <ExclamationCircleOutlined />,
       content: 'Cette action est irréversible.',
@@ -122,10 +121,10 @@ const BuildingList: React.FC = () => {
       onOk: async () => {
         try {
           await deleteBuilding(record.id).unwrap();
-          message.success('Bâtiment supprimé avec succès');
+          messageApi.success('Bâtiment supprimé avec succès');
         } catch (error) {
           console.error("Failed to delete building", error);
-          message.error("Erreur lors de la suppression du bâtiment");
+          messageApi.error("Erreur lors de la suppression du bâtiment");
         }
       },
     });
@@ -147,27 +146,29 @@ const BuildingList: React.FC = () => {
         nombreAppartementsMax: Number(values.nombreAppartementsMax),
         nombreAppartement: 0 // Initialize to 0 for new buildings
       };
-      
+
       console.log("Sending Payload:", payload);
 
       if (editingId) {
         await updateBuilding({ id: editingId, ...payload }).unwrap();
-        message.success('Bâtiment modifié avec succès');
+        messageApi.success('Bâtiment modifié avec succès');
       } else {
         await addBuilding(payload).unwrap();
-        message.success('Bâtiment ajouté avec succès');
+        messageApi.success('Bâtiment ajouté avec succès');
       }
       setIsModalOpen(false);
       setEditingId(null);
       form.resetFields();
     } catch (error) {
-       console.error("Failed to save building", error);
-       message.error(editingId ? 'Erreur lors de la modification' : 'Erreur lors de l\'ajout du bâtiment');
+      console.error("Failed to save building", error);
+      messageApi.error(editingId ? 'Erreur lors de la modification' : 'Erreur lors de l\'ajout du bâtiment');
     }
   };
 
   return (
     <Card title="Gestion des Bâtiments" extra={<AddButton onClick={showModal} />}>
+      {msgContextHolder}
+      {modalContextHolder}
       <div style={{ padding: '20px' }}>
         <table ref={tableRef} id="buildingsTable" className="display" style={{ width: '100%' }}>
           <thead>
@@ -183,11 +184,11 @@ const BuildingList: React.FC = () => {
           </thead>
           <tbody>
             {buildings?.map((building: Building) => {
-               const count = apartments?.filter((appt: any) => String(appt.immeuble?.id) === String(building.id)).length ?? building.nombreAppartement ?? 0;
-               const buildingCharges = charges?.filter((c: any) => c.immeuble?.id === building.id) || [];
-               const total = buildingCharges.reduce((sum: number, c: any) => sum + (c.montant || 0), 0);
+              const count = apartments?.filter((appt: any) => String(appt.immeuble?.id) === String(building.id)).length ?? building.nombreAppartement ?? 0;
+              const buildingCharges = charges?.filter((c: any) => c.immeuble?.id === building.id) || [];
+              const total = buildingCharges.reduce((sum: number, c: any) => sum + (c.montant || 0), 0);
 
-               return (
+              return (
                 <tr key={building.id}>
                   <td>{building.id}</td>
                   <td><Space><HomeOutlined /> <b>{building.nom}</b></Space></td>
@@ -198,22 +199,22 @@ const BuildingList: React.FC = () => {
                   <td>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                       <EditButton onClick={() => handleEdit(building)} />
-                      <DeleteButton 
+                      <DeleteButton
                         onClick={() => handleDelete(building)}
                         style={{ marginLeft: 8 }}
                       />
                     </div>
                   </td>
                 </tr>
-               )
+              )
             })}
           </tbody>
         </table>
       </div>
 
-      <Modal 
-        title={editingId ? "Modifier le bâtiment" : "Ajouter un nouveau bâtiment"} 
-        open={isModalOpen} 
+      <Modal
+        title={editingId ? "Modifier le bâtiment" : "Ajouter un nouveau bâtiment"}
+        open={isModalOpen}
         onCancel={handleCancel}
         footer={null} // We use the form submit button
       >
@@ -276,7 +277,7 @@ const BuildingList: React.FC = () => {
           </div>
 
           <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
-             <Button onClick={handleCancel} style={{ marginRight: 8 }}>
+            <Button onClick={handleCancel} style={{ marginRight: 8 }}>
               Annuler
             </Button>
             <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>

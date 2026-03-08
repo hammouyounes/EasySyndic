@@ -10,45 +10,44 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-                // 🔥 Disable CSRF completely
-                .csrf(csrf -> csrf.disable())
-                
-                // 🌍 Enable CORS
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                http
+                                // 🔥 Disable CSRF completely
+                                .csrf(csrf -> csrf.disable())
 
-                // 🔥 Disable sessions (REST API)
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(
-                                org.springframework.security.config.http.SessionCreationPolicy.STATELESS
-                        )
-                )
+                                // 🌍 Enable CORS
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // 🔥 Disable default login & basic auth
-                .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable())
+                                // 🔥 Disable sessions (REST API)
+                                .sessionManagement(session -> session.sessionCreationPolicy(
+                                                org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
 
-                // 🔥 Authorization rules
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/**").permitAll()
-                        .anyRequest().permitAll()
-                );
+                                // 🔥 Disable default login & basic auth
+                                .formLogin(form -> form.disable())
+                                .httpBasic(basic -> basic.disable())
 
-        return http.build();
-    }
+                                // 🔥 Authorization rules
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/api/users/**").permitAll()
+                                                .anyRequest().permitAll());
 
-    @Bean
-    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
-        org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
-        configuration.setAllowedOrigins(java.util.Arrays.asList("http://localhost:5173", "http://localhost:3000", "http://localhost:5174", "https://esyndic.vercel.app"));
-        configuration.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(java.util.Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+                return http.build();
+        }
+
+        @Bean
+        public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+                org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+                configuration.setAllowedOriginPatterns(java.util.Arrays.asList("http://localhost:*",
+                                "http://127.0.0.1:*", "https://*.vercel.app"));
+                configuration.setAllowedMethods(
+                                java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+                configuration.setAllowedHeaders(java.util.Arrays.asList("*"));
+                configuration.setAllowCredentials(true);
+                configuration.setExposedHeaders(java.util.Arrays.asList("Authorization"));
+                org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
 }

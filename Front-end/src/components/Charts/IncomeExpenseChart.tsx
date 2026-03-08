@@ -13,7 +13,7 @@ const defaultData = [
 const { Title, Text } = Typography;
 
 interface ChartProps {
-    data?: any[];
+  data?: any[];
 }
 
 export function IncomeExpenseChart({ data = defaultData }: ChartProps) {
@@ -24,9 +24,9 @@ export function IncomeExpenseChart({ data = defaultData }: ChartProps) {
   const percentage = prevMonth.income ? ((lastMonth.income - prevMonth.income) / prevMonth.income * 100).toFixed(1) : "0";
 
   return (
-    <Card 
-        style={{ width: '100%', height: '100%', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-        bodyStyle={{ padding: '24px', height: '100%', display: 'flex', flexDirection: 'column' }}
+    <Card
+      style={{ width: '100%', height: '100%', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+      styles={{ body: { padding: '24px', height: '100%', display: 'flex', flexDirection: 'column' } }}
     >
       <div className="mb-6">
         <Title level={4} style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Revenus vs Dépenses</Title>
@@ -46,12 +46,12 @@ export function IncomeExpenseChart({ data = defaultData }: ChartProps) {
           >
             <defs>
               <linearGradient id="fillIncome" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--chart-2)" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="var(--chart-2)" stopOpacity={0.1}/>
+                <stop offset="5%" stopColor="var(--chart-2)" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="var(--chart-2)" stopOpacity={0.1} />
               </linearGradient>
               <linearGradient id="fillExpense" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0.1}/>
+                <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0.1} />
               </linearGradient>
             </defs>
             <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -71,10 +71,10 @@ export function IncomeExpenseChart({ data = defaultData }: ChartProps) {
                       <p style={{ margin: 0, fontWeight: 'bold', marginBottom: '4px' }}>{label}</p>
                       {payload.map((entry: any, index: number) => (
                         <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: entry.color }}></div>
-                            <span style={{ fontSize: '12px', color: '#555', textTransform: 'capitalize' }}>
-                                {entry.name}: <span style={{ fontWeight: 600 }}>{entry.value} MAD</span>
-                            </span>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: entry.color }}></div>
+                          <span style={{ fontSize: '12px', color: '#555', textTransform: 'capitalize' }}>
+                            {entry.name}: <span style={{ fontWeight: 600 }}>{entry.value} MAD</span>
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -109,13 +109,13 @@ export function IncomeExpenseChart({ data = defaultData }: ChartProps) {
 
       <div style={{ marginTop: '24px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', gap: '8px', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500, fontSize: '14px' }}>
-              {trend === 'up' ? 'Tendance à la hausse' : 'Tendance à la baisse'} de {Math.abs(Number(percentage))}% ce mois
-              {trend === 'up' ? <TrendingUp className="h-4 w-4 text-green-500" /> : <TrendingDown className="h-4 w-4 text-red-500" />}
-            </div>
-            <div style={{ color: '#888', fontSize: '12px' }}>
-              4 derniers mois
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500, fontSize: '14px' }}>
+            {trend === 'up' ? 'Tendance à la hausse' : 'Tendance à la baisse'} de {Math.abs(Number(percentage))}% ce mois
+            {trend === 'up' ? <TrendingUp className="h-4 w-4 text-green-500" /> : <TrendingDown className="h-4 w-4 text-red-500" />}
+          </div>
+          <div style={{ color: '#888', fontSize: '12px' }}>
+            4 derniers mois
+          </div>
         </div>
       </div>
     </Card>

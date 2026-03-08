@@ -1,0 +1,588 @@
+/* ═══════════════════════════════════════════════════════
+   VoiceAssistant.css — Premium Floating Chat + Voice AI
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Floating Trigger Button ─── */
+.va-trigger {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 9999;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #7551FF 0%, #a855f7 100%);
+    box-shadow: 0 8px 32px rgba(117, 81, 255, 0.45);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: va-pulse 2.5s infinite;
+}
+
+.va-trigger:hover {
+    transform: scale(1.12);
+    box-shadow: 0 12px 40px rgba(117, 81, 255, 0.55);
+}
+
+.va-trigger svg {
+    width: 26px;
+    height: 26px;
+    color: #fff;
+    transition: transform 0.3s ease;
+}
+
+.va-trigger:hover svg {
+    transform: scale(1.1);
+}
+
+@keyframes va-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 8px 32px rgba(117, 81, 255, 0.45);
+    }
+
+    50% {
+        box-shadow: 0 8px 32px rgba(117, 81, 255, 0.25),
+            0 0 0 12px rgba(117, 81, 255, 0.08);
+    }
+}
+
+/* ─── Chat Panel ─── */
+.va-panel {
+    position: fixed;
+    bottom: 100px;
+    right: 28px;
+    z-index: 9998;
+    width: 400px;
+    max-height: 600px;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary, #ffffff);
+    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(117, 81, 255, 0.1);
+    animation: va-slide-up 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes va-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ─── Panel Header ─── */
+.va-header {
+    background: linear-gradient(135deg, #7551FF 0%, #a855f7 50%, #6366f1 100%);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.va-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle,
+            rgba(255, 255, 255, 0.08) 0%,
+            transparent 60%);
+    animation: va-shimmer 4s linear infinite;
+}
+
+@keyframes va-shimmer {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.va-header-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.va-header-info {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.va-header-title {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.3px;
+}
+
+.va-header-status {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.va-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: va-blink 1.5s infinite;
+}
+
+@keyframes va-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+.va-close-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    position: relative;
+    z-index: 1;
+}
+
+.va-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ─── Messages Area ─── */
+.va-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 380px;
+    min-height: 200px;
+    scroll-behavior: smooth;
+}
+
+.va-messages::-webkit-scrollbar {
+    width: 4px;
+}
+
+.va-messages::-webkit-scrollbar-thumb {
+    background: rgba(117, 81, 255, 0.3);
+    border-radius: 4px;
+}
+
+.va-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ── Message Bubbles ── */
+.va-msg {
+    max-width: 85%;
+    padding: 10px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    animation: va-msg-in 0.25s ease-out;
+    position: relative;
+    word-wrap: break-word;
+}
+
+@keyframes va-msg-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.va-msg.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #7551FF, #a855f7);
+    color: #fff;
+    border-bottom-right-radius: 6px;
+}
+
+.va-msg.assistant {
+    align-self: flex-start;
+    background: var(--bg-input, #f4f7fe);
+    color: var(--text-primary, #1b2559);
+    border-bottom-left-radius: 6px;
+}
+
+.va-msg.system {
+    align-self: center;
+    background: transparent;
+    color: var(--text-secondary, #a0aec0);
+    font-size: 12px;
+    font-style: italic;
+    padding: 4px 12px;
+}
+
+/* ── Typing Indicator ── */
+.va-typing {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    align-self: flex-start;
+    background: var(--bg-input, #f4f7fe);
+    border-radius: 18px;
+    border-bottom-left-radius: 6px;
+}
+
+.va-typing-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #7551FF;
+    animation: va-typing-bounce 1.2s infinite;
+}
+
+.va-typing-dot:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.va-typing-dot:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes va-typing-bounce {
+
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+
+    30% {
+        transform: translateY(-8px);
+        opacity: 1;
+    }
+}
+
+/* ─── Voice Status Bar ─── */
+.va-voice-status {
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    animation: va-msg-in 0.3s ease-out;
+}
+
+.va-voice-status.listening {
+    background: linear-gradient(90deg,
+            rgba(239, 68, 68, 0.08),
+            rgba(239, 68, 68, 0.15),
+            rgba(239, 68, 68, 0.08));
+    color: #ef4444;
+}
+
+.va-voice-status.thinking {
+    background: linear-gradient(90deg,
+            rgba(117, 81, 255, 0.08),
+            rgba(117, 81, 255, 0.15),
+            rgba(117, 81, 255, 0.08));
+    color: #7551FF;
+}
+
+.va-voice-status.speaking {
+    background: linear-gradient(90deg,
+            rgba(34, 197, 94, 0.08),
+            rgba(34, 197, 94, 0.15),
+            rgba(34, 197, 94, 0.08));
+    color: #22c55e;
+}
+
+/* Soundwave animation */
+.va-soundwave {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 18px;
+}
+
+.va-soundwave-bar {
+    width: 3px;
+    background: currentColor;
+    border-radius: 2px;
+    animation: va-soundwave-anim 0.8s infinite ease-in-out;
+}
+
+.va-soundwave-bar:nth-child(1) {
+    height: 6px;
+    animation-delay: 0s;
+}
+
+.va-soundwave-bar:nth-child(2) {
+    height: 12px;
+    animation-delay: 0.1s;
+}
+
+.va-soundwave-bar:nth-child(3) {
+    height: 18px;
+    animation-delay: 0.2s;
+}
+
+.va-soundwave-bar:nth-child(4) {
+    height: 12px;
+    animation-delay: 0.3s;
+}
+
+.va-soundwave-bar:nth-child(5) {
+    height: 6px;
+    animation-delay: 0.4s;
+}
+
+@keyframes va-soundwave-anim {
+
+    0%,
+    100% {
+        transform: scaleY(0.5);
+    }
+
+    50% {
+        transform: scaleY(1.4);
+    }
+}
+
+/* ─── Input Area ─── */
+.va-input-area {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
+    background: var(--bg-secondary, #ffffff);
+}
+
+.va-text-input {
+    flex: 1;
+    padding: 10px 16px;
+    border: 1.5px solid var(--border-color, rgba(0, 0, 0, 0.1));
+    border-radius: 24px;
+    background: var(--bg-input, #f4f7fe);
+    color: var(--text-primary, #1b2559);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.va-text-input:focus {
+    border-color: #7551FF;
+    box-shadow: 0 0 0 3px rgba(117, 81, 255, 0.12);
+}
+
+.va-text-input::placeholder {
+    color: var(--text-secondary, #a0aec0);
+}
+
+.va-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.va-send-btn {
+    background: linear-gradient(135deg, #7551FF, #a855f7);
+    color: #fff;
+}
+
+.va-send-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(117, 81, 255, 0.4);
+}
+
+.va-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.va-mic-btn {
+    background: transparent;
+    border: 2px solid var(--border-color, rgba(0, 0, 0, 0.1));
+    color: var(--text-secondary, #a0aec0);
+}
+
+.va-mic-btn:hover {
+    border-color: #7551FF;
+    color: #7551FF;
+    background: rgba(117, 81, 255, 0.06);
+}
+
+.va-mic-btn.recording {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+    animation: va-mic-pulse 1s infinite;
+}
+
+@keyframes va-mic-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+    }
+}
+
+.va-stop-btn {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+}
+
+.va-stop-btn:hover {
+    background: #dc2626;
+}
+
+/* ─── Welcome Message ─── */
+.va-welcome {
+    text-align: center;
+    padding: 24px 16px;
+}
+
+.va-welcome-emoji {
+    font-size: 40px;
+    margin-bottom: 12px;
+    animation: va-wave 1.5s ease-in-out infinite;
+}
+
+@keyframes va-wave {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(20deg);
+    }
+
+    75% {
+        transform: rotate(-10deg);
+    }
+}
+
+.va-welcome h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary, #1b2559);
+    margin: 0 0 6px 0;
+}
+
+.va-welcome p {
+    font-size: 13px;
+    color: var(--text-secondary, #a0aec0);
+    margin: 0;
+}
+
+/* ─── Quick Actions ─── */
+.va-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 16px 12px;
+    justify-content: center;
+}
+
+.va-quick-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    background: var(--bg-input, #f4f7fe);
+    color: var(--text-primary, #1b2559);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.va-quick-btn:hover {
+    border-color: #7551FF;
+    color: #7551FF;
+    background: rgba(117, 81, 255, 0.06);
+    transform: translateY(-1px);
+}
+
+/* ─── Responsive ─── */
+@media screen and (max-width: 480px) {
+    .va-panel {
+        width: calc(100vw - 24px);
+        right: 12px;
+        bottom: 86px;
+        max-height: 70vh;
+    }
+
+    .va-trigger {
+        right: 16px;
+        bottom: 16px;
+        width: 54px;
+        height: 54px;
+    }
+}

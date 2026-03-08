@@ -3,6 +3,7 @@ import { Layout, ConfigProvider, theme } from 'antd';
 import { Outlet } from 'react-router-dom';
 import ProprietaireSidebar from './Sidebar/ProprietaireSidebar';
 import Navbar from './Navbar/Navbar'; // Reusing the main navbar for now
+import VoiceAssistant from '../Chat/VoiceAssistant';
 
 const { Content } = Layout;
 
@@ -41,7 +42,7 @@ const ProprietaireLayout: React.FC = () => {
         token: {
           colorPrimary: '#10B981', // Emerald Green for Owners to distinguish from Admin
           fontFamily: "'DM Sans', sans-serif",
-          
+
           // Dynamic Colors based on mode
           ...(darkMode ? {
             colorBgLayout: '#0b1437',     // Main Background
@@ -69,26 +70,29 @@ const ProprietaireLayout: React.FC = () => {
       }}
     >
       <Layout style={{ minHeight: '100vh', margin: 0 }}>
-        
+
         {/* --- SIDEBAR --- */}
         <ProprietaireSidebar collapsed={collapsed} darkMode={darkMode} />
 
         {/* --- MAIN CONTENT AREA --- */}
-        <Layout style={{ background: 'var(--bg-primary)', transition: 'background 0.3s ease' }}> 
+        <Layout style={{ background: 'var(--bg-primary)', transition: 'background 0.3s ease' }}>
           {/* TOP HEADER */}
-          <Navbar 
+          <Navbar
             brandText="Espace Propriétaire"
-            collapsed={collapsed} 
-            setCollapsed={setCollapsed} 
-            darkMode={darkMode} 
-            toggleTheme={toggleTheme} 
+            collapsed={collapsed}
+            setCollapsed={setCollapsed}
+            darkMode={darkMode}
+            toggleTheme={toggleTheme}
           />
-          
+
           {/* PAGE CONTENT */}
           <Content style={{ margin: '24px', minHeight: 280 }}>
             <Outlet />
           </Content>
         </Layout>
+
+        {/* AI VOICE ASSISTANT */}
+        <VoiceAssistant />
       </Layout>
     </ConfigProvider>
   );
