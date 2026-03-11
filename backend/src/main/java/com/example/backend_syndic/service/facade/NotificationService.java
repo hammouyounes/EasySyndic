@@ -1,6 +1,5 @@
 package com.example.backend_syndic.service.facade;
 
-import com.example.backend_syndic.entity.Notification;
 
 public interface NotificationService {
 
@@ -18,4 +17,7 @@ public interface NotificationService {
 
     // Message personnalisé
     void sendCustomMessage(Long userId, String message);
+
+    // Envoi d'email à un propriétaire (avec validation active + role)
+    void sendToOwner(String targetEmail, String subject, String body);
 }

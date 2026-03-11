@@ -76,4 +76,42 @@ public class NotificationServiceImpl implements NotificationService {
         User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         sendEmail(user, "Custom Message", message);
     }
+
+    @Override
+    public void sendToOwner(String targetEmail, String subject, String body) {
+        // Validate: only send to active PROPRIETAIRE
+        User user = userRepo.findByEmail(targetEmail)
+                .orElseThrow(() -> new RuntimeException("Aucun utilisateur trouvé avec cet email: " + targetEmail));
+
+        if (!Boolean.TRUE.equals(user.getActive())) {
+            throw new RuntimeException("L'utilisateur n'est pas actif.");
+        }
+        if (user.getRole() != User.Role.PROPRIETAIRE) {
+            throw new RuntimeException("L'utilisateur n'est pas un propriétaire.");
+        }
+
+        try {
+            jakarta.mail.internet.MimeMessage mimeMessage = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper =
+                    new org.springframework.mail.javamail.MimeMessageHelper(mimeMessage, "utf-8");
+            helper.setTo(targetEmail);
+            helper.setSubject(subject);
+            helper.setText(body, false);
+            helper.setFrom("younesshamou013@gmail.com");
+            mailSender.send(mimeMessage);
+
+            // Log notification in DB
+            Notification notif = new Notification();
+            notif.setUser(user);
+            notif.setEmail(targetEmail);
+            notif.setType(subject);
+            notif.setDateEnvoi(new Date());
+            notificationRepo.save(notif);
+
+            System.out.println("Email envoyé à " + targetEmail + " : " + subject);
+        } catch (Exception e) {
+            System.err.println("Échec d'envoi à " + targetEmail + ": " + e.getMessage());
+            throw new RuntimeException("Échec d'envoi de l'email: " + e.getMessage());
+        }
+    }
 }

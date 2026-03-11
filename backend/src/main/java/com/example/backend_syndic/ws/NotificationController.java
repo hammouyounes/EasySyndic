@@ -1,11 +1,16 @@
 package com.example.backend_syndic.ws;
 
+import com.example.backend_syndic.dto.MailRequest;
 import com.example.backend_syndic.service.facade.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/notifications")
+@CrossOrigin(origins = "http://localhost:5173")
 public class NotificationController {
 
     @Autowired
@@ -41,7 +46,7 @@ public class NotificationController {
         notificationService.notifyNewCharge(userId, message);
     }
 
-    // 🆕 Création d’un compte utilisateur
+    // 🆕 Création d'un compte utilisateur
     // POST /api/notifications/new-user/{userId}
     @PostMapping("/new-user/{userId}")
     public void notifyNewUserCredentials(
@@ -60,4 +65,21 @@ public class NotificationController {
     ) {
         notificationService.sendCustomMessage(userId, message);
     }
+
+    // ✉️ Envoi d'email à un propriétaire (charge notification)
+    // POST /api/notifications/send-to-owner
+    @PostMapping("/send-to-owner")
+    public ResponseEntity<Map<String, String>> sendToOwner(@RequestBody MailRequest request) {
+        try {
+            notificationService.sendToOwner(
+                    request.getTargetEmail(),
+                    request.getSubject(),
+                    request.getBody()
+            );
+            return ResponseEntity.ok(Map.of("message", "Email envoyé avec succès à " + request.getTargetEmail()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
 }
+

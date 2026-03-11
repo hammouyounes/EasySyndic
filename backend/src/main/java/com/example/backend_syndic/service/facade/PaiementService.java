@@ -1,7 +1,6 @@
 package com.example.backend_syndic.service.facade;
 
 import com.example.backend_syndic.entity.Paiement;
-import java.util.Date;
 import java.util.List;
 
 public interface PaiementService {

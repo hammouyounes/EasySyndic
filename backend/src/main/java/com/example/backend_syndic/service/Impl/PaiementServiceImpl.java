@@ -1,6 +1,5 @@
 package com.example.backend_syndic.service.Impl;
 
-import com.example.backend_syndic.Dao.AppartementRepository;
 import com.example.backend_syndic.Dao.PaiementRepository;
 import com.example.backend_syndic.entity.Appartement;
 import com.example.backend_syndic.entity.Paiement;

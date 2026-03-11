@@ -21,8 +21,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AppartementRepository appartementRepository;
 
-    @Autowired
-    private AppelChargeRepository appelChargeRepository;
 
     @Autowired
     private PaiementRepository paiementRepository;

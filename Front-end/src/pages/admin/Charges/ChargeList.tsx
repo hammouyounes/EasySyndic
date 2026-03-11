@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Card, Tag, Modal, Form, Input, InputNumber, Select, message, Progress, Switch } from 'antd';
-import { DollarOutlined, ExclamationCircleOutlined, SendOutlined, UndoOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Button, Card, Tag, Modal, Form, Input, InputNumber, Select, message, Progress, Switch, Tooltip, Spin } from 'antd';
+import { DollarOutlined, ExclamationCircleOutlined, SendOutlined, UndoOutlined, CheckCircleOutlined, CloseCircleOutlined, MailOutlined, LoadingOutlined } from '@ant-design/icons';
 import DataTable from 'datatables.net-dt';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import { 
@@ -10,7 +10,10 @@ import {
   useDeleteChargeMutation,
   useGetBuildingsQuery,
   useDistributeChargeMutation,
-  useUndoDistributeChargeMutation
+  useUndoDistributeChargeMutation,
+  useGetUsersQuery,
+  useGetApartmentsQuery,
+  useSendNotificationMutation
 } from '../../../features/api/apiSlice';
 import EditButton from '../../../components/common/EditButton';
 import DeleteButton from '../../../components/common/DeleteButton';
@@ -30,23 +33,50 @@ interface Charge {
   isRecurring?: boolean;
 }
 
+interface UserInfo {
+  id: number;
+  nom: string;
+  prenom: string;
+  email: string;
+  role: string;
+  active: boolean;
+}
+
+interface Appartement {
+  id: number;
+  immeuble: { id: number };
+  proprietaire?: UserInfo;
+}
+
 
 const ChargeList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
   
+  // ─── Email Modal State ───
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [emailForm] = Form.useForm();
+  const [selectedCharge, setSelectedCharge] = useState<Charge | null>(null);
+  const [isSending, setIsSending] = useState(false);
+  
   const { data: charges, isLoading } = useGetChargesQuery({});
   const { data: buildings } = useGetBuildingsQuery({});
+  const { data: users } = useGetUsersQuery({});
+  const { data: apartments } = useGetApartmentsQuery({});
   
   const [addCharge] = useAddChargeMutation();
   const [updateCharge] = useUpdateChargeMutation();
   const [deleteCharge] = useDeleteChargeMutation();
   const [distributeCharge] = useDistributeChargeMutation();
   const [undoDistributeCharge] = useUndoDistributeChargeMutation();
+<<<<<<< HEAD
   
   const userString = localStorage.getItem('user');
   const currentUser = userString ? JSON.parse(userString) : null;
+=======
+  const [sendNotification] = useSendNotificationMutation();
+>>>>>>> 0078b1beeec60e6462d834dbcbf3718e693aae46
 
   const tableRef = useRef<HTMLTableElement>(null);
   const dataTableInstance = useRef<any>(null);
@@ -219,7 +249,68 @@ const ChargeList: React.FC = () => {
       form.resetFields();
     } catch (error) {
        console.error("Failed to save charge", error);
-       message.error(editingId ? 'Erreur lors de la modification' : 'Erreur lors de l\'ajout de la charge');
+       message.error(editingId ? 'Erreur lors de la modification' : "Erreur lors de l'ajout de la charge");
+    }
+  };
+
+  // ─── Email Notification Logic ───
+  const getProprietairesForCharge = (charge: Charge): UserInfo[] => {
+    if (!apartments || !users) return [];
+    const immeubleId = charge.immeuble?.id;
+    if (!immeubleId) return [];
+    
+    // Get proprietaire IDs from apartments in this building
+    const proprietaireIds = new Set<number>();
+    apartments.forEach((apt: Appartement) => {
+      if (apt.immeuble?.id === immeubleId && apt.proprietaire?.id) {
+        proprietaireIds.add(apt.proprietaire.id);
+      }
+    });
+
+    // Filter users: active PROPRIETAIRE only
+    return users.filter((u: UserInfo) => 
+      proprietaireIds.has(u.id) && u.active && u.role === 'PROPRIETAIRE'
+    );
+  };
+
+  const handleOpenEmailModal = (charge: Charge) => {
+    setSelectedCharge(charge);
+    emailForm.resetFields();
+    emailForm.setFieldsValue({
+      subject: `Avis de Charge - ${charge.type}`,
+      body: `Bonjour, vous avez une nouvelle charge de ${charge.montant} DH pour ${charge.type}.`,
+    });
+    setIsEmailModalOpen(true);
+  };
+
+  const handleOwnerSelect = (userId: number) => {
+    if (!users || !selectedCharge) return;
+    const owner = users.find((u: UserInfo) => u.id === userId);
+    if (owner) {
+      emailForm.setFieldsValue({
+        targetEmail: owner.email,
+        body: `Bonjour ${owner.prenom}, vous avez une nouvelle charge de ${selectedCharge.montant} DH pour ${selectedCharge.type}.`,
+      });
+    }
+  };
+
+  const handleSendEmail = async (values: any) => {
+    setIsSending(true);
+    try {
+      await sendNotification({
+        targetEmail: values.targetEmail,
+        subject: values.subject,
+        body: values.body,
+      }).unwrap();
+      message.success('Email envoyé avec succès !');
+      setIsEmailModalOpen(false);
+      emailForm.resetFields();
+      setSelectedCharge(null);
+    } catch (error: any) {
+      console.error('Failed to send email', error);
+      message.error(error?.data?.error || "Erreur lors de l'envoi de l'email.");
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -271,6 +362,7 @@ const ChargeList: React.FC = () => {
                   />
                 </td>
                 <td style={{ display: 'flex', gap: '8px' }}>
+<<<<<<< HEAD
                    {currentUser?.role === 'SUPERADMIN' && (
                      <DistributeButton 
                         onClick={() => handleDistributeToggle(charge)} 
@@ -294,6 +386,34 @@ const ChargeList: React.FC = () => {
                         />
                       </>
                     )}
+=======
+                   <DistributeButton 
+                      onClick={() => handleDistributeToggle(charge)} 
+                      disabled={charge.locked}
+                      title={charge.locked ? "Charge verrouillée (paiements existants)" : (charge.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
+                      label={charge.diviser === 1 ? "Annuler" : "Distribuer"}
+                      isUndo={charge.diviser === 1}
+                    />
+                    <Tooltip title="Envoyer par email">
+                      <Button
+                        type="primary"
+                        ghost
+                        icon={<MailOutlined />}
+                        onClick={() => handleOpenEmailModal(charge)}
+                        style={{ borderColor: '#1890ff', color: '#1890ff' }}
+                      />
+                    </Tooltip>
+                    <EditButton 
+                      onClick={() => handleEdit(charge)} 
+                      disabled={charge.locked}
+                      title={charge.locked ? "Impossible de modifier (paiements en cours)" : "Modifier"}
+                    />
+                    <DeleteButton 
+                      onClick={() => handleDelete(charge)}
+                      disabled={charge.locked}
+                      title={charge.locked ? "Impossible de supprimer (paiements en cours)" : "Supprimer"}
+                    />
+>>>>>>> 0078b1beeec60e6462d834dbcbf3718e693aae46
                 </td>
               </tr>
             ))}
@@ -383,6 +503,108 @@ const ChargeList: React.FC = () => {
             </Button>
             <Button type="primary" htmlType="submit" icon={<DollarOutlined />}>
               Enregistrer
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* ─── Email Notification Modal ─── */}
+      <Modal
+        title={
+          <span>
+            <MailOutlined style={{ marginRight: 8, color: '#1890ff' }} />
+            Envoyer une notification par email
+          </span>
+        }
+        open={isEmailModalOpen}
+        onCancel={() => {
+          setIsEmailModalOpen(false);
+          emailForm.resetFields();
+          setSelectedCharge(null);
+        }}
+        footer={null}
+        width={600}
+      >
+        <Form
+          form={emailForm}
+          layout="vertical"
+          onFinish={handleSendEmail}
+          autoComplete="off"
+        >
+          {/* Owner Select */}
+          <Form.Item
+            label="Propriétaire"
+            name="ownerId"
+            rules={[{ required: true, message: 'Veuillez sélectionner un propriétaire!' }]}
+          >
+            <Select
+              showSearch
+              placeholder="Sélectionner un propriétaire"
+              optionFilterProp="children"
+              onChange={(value: number) => handleOwnerSelect(value)}
+              filterOption={(input, option) =>
+                (String(option?.label ?? '')).toLowerCase().includes(input.toLowerCase())
+              }
+              options={selectedCharge ? getProprietairesForCharge(selectedCharge).map((u: UserInfo) => ({
+                value: u.id,
+                label: `${u.prenom} ${u.nom} (${u.email})`,
+              })) : []}
+            />
+          </Form.Item>
+
+          {/* Target Email (auto-filled, read-only) */}
+          <Form.Item
+            label="Email du destinataire"
+            name="targetEmail"
+            rules={[
+              { required: true, message: "L'email est obligatoire!" },
+              { type: 'email', message: 'Veuillez entrer un email valide!' },
+            ]}
+          >
+            <Input readOnly placeholder="Sélectionnez un propriétaire ci-dessus" />
+          </Form.Item>
+
+          {/* Subject */}
+          <Form.Item
+            label="Sujet"
+            name="subject"
+            rules={[{ required: true, message: 'Le sujet est obligatoire!' }]}
+          >
+            <Input placeholder="Sujet de l'email" />
+          </Form.Item>
+
+          {/* Message Body */}
+          <Form.Item
+            label="Message"
+            name="body"
+            rules={[{ required: true, message: 'Le message est obligatoire!' }]}
+          >
+            <Input.TextArea
+              rows={5}
+              placeholder="Votre message..."
+              style={{ resize: 'vertical' }}
+            />
+          </Form.Item>
+
+          <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
+            <Button
+              onClick={() => {
+                setIsEmailModalOpen(false);
+                emailForm.resetFields();
+                setSelectedCharge(null);
+              }}
+              style={{ marginRight: 8 }}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isSending}
+              icon={<SendOutlined />}
+              style={{ background: '#1890ff' }}
+            >
+              {isSending ? 'Envoi en cours...' : 'Envoyer'}
             </Button>
           </Form.Item>
         </Form>
