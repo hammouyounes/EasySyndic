@@ -69,15 +69,13 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
         theme={darkMode ? "dark" : "light"} // Toggle Ant Design Menu theme
 
         items={[
-          // SECTION 1: MAIN
-          // Only show Dashboard for non-SUPERADMIN
-          ...(currentUser?.role !== 'SUPERADMIN' ? [{ 
+          { 
             key: 'g1', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1 }}>MENU</span>, 
             type: 'group',
             children: [
               { key: '/', icon: <AppstoreOutlined />, label: 'Dashboard' },
             ]
-          }] : []),
+          },
 
           // SECTION 2: MANAGEMENT
           { 

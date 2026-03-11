@@ -2,6 +2,7 @@ package com.example.backend_syndic.entity;
 
 import jakarta.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import com.example.backend_syndic.enums.ChargeType;
 
@@ -24,14 +25,26 @@ public class Charge {
     @OneToMany(mappedBy = "charge")
     private List<AppelCharge> appelCharges;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name = "immeuble_id",
             nullable = false   
     )
+    @JsonIgnoreProperties({"charges", "appartements", "hibernateLazyInitializer", "handler"})
     private Immeuble immeuble;
 
     private Integer diviser = 0;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String recu; // stores Base64 content of the image/pdf
+
+    public String getRecu() {
+        return recu;
+    }
+
+    public void setRecu(String recu) {
+        this.recu = recu;
+    }
 
     @PrePersist
     public void prePersist() {

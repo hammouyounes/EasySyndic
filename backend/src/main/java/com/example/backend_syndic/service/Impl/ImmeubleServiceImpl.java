@@ -1,8 +1,10 @@
 package com.example.backend_syndic.service.Impl;
 
 import com.example.backend_syndic.Dao.ImmeubleRepository;
+import com.example.backend_syndic.Dao.UserRepository;
 import com.example.backend_syndic.entity.Appartement;
 import com.example.backend_syndic.entity.Immeuble;
+import com.example.backend_syndic.entity.User;
 import com.example.backend_syndic.service.facade.ImmeubleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +23,17 @@ public class ImmeubleServiceImpl implements ImmeubleService {
     @Autowired
     private com.example.backend_syndic.service.facade.ActivityLogService activityLogService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     // ➕ Create
     @Override
     public Immeuble CreateImmeuble(Immeuble immeuble) {
+        if (immeuble.getSyndic() != null && immeuble.getSyndic().getId() != null) {
+            User syndic = userRepository.findById(immeuble.getSyndic().getId())
+                    .orElseThrow(() -> new RuntimeException("Syndic not found"));
+            immeuble.setSyndic(syndic);
+        }
         Immeuble saved = immeubleRepository.save(immeuble);
         activityLogService.log("CREATE", "IMMEUBLE", 
             "Création de l'immeuble " + saved.getNom(), 
@@ -39,9 +49,22 @@ public class ImmeubleServiceImpl implements ImmeubleService {
 
         existing.setNom(updatedImmeuble.getNom());
         existing.setAdress(updatedImmeuble.getAdress());
-        existing.setNombreAppartement(updatedImmeuble.getNombreAppartement());
+        // We preserve the existing nombreAppartement count
         existing.setNombreEtages(updatedImmeuble.getNombreEtages());
         existing.setNombreAppartementsMax(updatedImmeuble.getNombreAppartementsMax());
+        
+        if (updatedImmeuble.getSyndic() != null) {
+            Long sId = updatedImmeuble.getSyndic().getId();
+            if (sId != null) {
+                User syndic = userRepository.findById(sId)
+                        .orElseThrow(() -> new RuntimeException("Syndic not found"));
+                existing.setSyndic(syndic);
+            } else {
+                existing.setSyndic(null);
+            }
+        } else {
+            existing.setSyndic(null);
+        }
 
         Immeuble saved = immeubleRepository.save(existing);
         activityLogService.log("UPDATE", "IMMEUBLE", 
@@ -89,5 +112,23 @@ public class ImmeubleServiceImpl implements ImmeubleService {
         return immeuble.getAppartements() != null
                 ? immeuble.getAppartements().size()
                 : 0;
+    }
+
+    @Override
+    public Immeuble assignSyndic(Long immeubleId, Long syndicId) {
+        Immeuble immeuble = immeubleRepository.findById(immeubleId)
+                .orElseThrow(() -> new RuntimeException("Immeuble not found"));
+        
+        User syndic = userRepository.findById(syndicId)
+                .orElseThrow(() -> new RuntimeException("Syndic not found"));
+        
+        immeuble.setSyndic(syndic);
+        Immeuble saved = immeubleRepository.save(immeuble);
+        
+        activityLogService.log("ASSIGN", "IMMEUBLE", 
+            "Affectation de l'immeuble " + saved.getNom() + " au syndic " + syndic.getNom(), 
+            "SuperAdmin");
+            
+        return saved;
     }
 }

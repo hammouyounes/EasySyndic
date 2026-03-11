@@ -26,4 +26,6 @@ public interface ImmeubleService {
 
     // 🔢 Count appartements (optionnel)
     int countAppartementsInImmeuble(Long immeubleId);
+
+    Immeuble assignSyndic(Long immeubleId, Long syndicId);
 }

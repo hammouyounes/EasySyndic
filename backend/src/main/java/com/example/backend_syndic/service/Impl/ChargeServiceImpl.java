@@ -100,6 +100,7 @@ public class ChargeServiceImpl implements ChargeService {
         existing.setType(updatedCharge.getType());
         existing.setMontant(updatedCharge.getMontant());
         existing.setPeriode(updatedCharge.getPeriode());
+        existing.setRecu(updatedCharge.getRecu());
         Charge saved = repo.save(existing);
         
         activityLogService.log("UPDATE", "CHARGE", 

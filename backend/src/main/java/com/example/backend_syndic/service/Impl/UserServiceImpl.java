@@ -9,6 +9,8 @@ import com.example.backend_syndic.service.facade.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.backend_syndic.entity.Immeuble;
+import com.example.backend_syndic.Dao.ImmeubleRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private com.example.backend_syndic.service.facade.ActivityLogService activityLogService;
+
+    @Autowired
+    private ImmeubleRepository immeubleRepository;
 
     // ➕ Create
     @Override
@@ -132,11 +137,20 @@ public class UserServiceImpl implements UserService {
         return repo.save(user);
     }
 
-    // 🔄 Activer/Désactiver
     @Override
     public User toggleStatus(Long id) {
         User user = getUtilisateurById(id);
         user.setActive(!user.getActive());
+        
+        // If the user is a Syndic (ADMIN) and is being deactivated
+        if (!user.getActive() && user.getRole() == User.Role.ADMIN) {
+            List<Immeuble> buildings = immeubleRepository.findBySyndicId(user.getId());
+            for (Immeuble b : buildings) {
+                b.setSyndic(null);
+                immeubleRepository.save(b);
+            }
+        }
+        
         User saved = repo.save(user);
         activityLogService.log("UPDATE", "USER", 
             (saved.getActive() ? "Activation" : "Désactivation") + " de l'utilisateur " + saved.getNom(), 

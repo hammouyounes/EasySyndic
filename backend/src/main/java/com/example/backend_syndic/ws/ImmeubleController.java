@@ -42,4 +42,10 @@ public class ImmeubleController {
     public void deleteImmeuble(@PathVariable Long id) {
         immeubleService.deleteImmeuble(id);
     }
+
+    // PUT /api/immeubles/{id}/assign-syndic/{syndicId}
+    @PutMapping("/{id}/assign-syndic/{syndicId}")
+    public Immeuble assignSyndic(@PathVariable Long id, @PathVariable Long syndicId) {
+        return immeubleService.assignSyndic(id, syndicId);
+    }
 }

@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl:'http://localhost:8080/api'}),
-  tagTypes: ['Buildings', 'Users', 'Apartments', 'Charges', 'AppelCharges', 'Paiements'],
+  tagTypes: ['Buildings', 'Users', 'Apartments', 'Charges', 'AppelCharges', 'Paiements', 'ActivityLogs'],
   endpoints: (builder) => ({
     getBuildings: builder.query({
       query: () => '/immeubles',
@@ -18,10 +18,10 @@ export const apiSlice = createApi({
       invalidatesTags: ['Buildings'],
     }),
     updateBuilding: builder.mutation({
-      query: ({ id, ...initialBuilding }) => ({
+      query: ({ id, ...body }) => ({
         url: `/immeubles/${id}`,
         method: 'PUT',
-        body: initialBuilding,
+        body,
       }),
       invalidatesTags: ['Buildings'],
     }),
@@ -155,6 +155,17 @@ export const apiSlice = createApi({
         body: mailRequest,
       }),
     }),
+    getActivityLogs: builder.query({
+      query: () => '/activities',
+      providesTags: ['ActivityLogs'],
+    }),
+    assignSyndic: builder.mutation({
+      query: ({ id, syndicId }) => ({
+        url: `/immeubles/${id}/assign-syndic/${syndicId}`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Buildings'],
+    }),
   }),
 });
 
@@ -182,4 +193,6 @@ export const {
   useGetPaiementsQuery,
   useGetPaiementsByProprietaireQuery,
   useSendNotificationMutation,
+  useGetActivityLogsQuery,
+  useAssignSyndicMutation,
 } = apiSlice;

@@ -26,6 +26,11 @@ public class Immeuble {
     private int nombreEtages;
     private int nombreAppartementsMax;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "syndic_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private User syndic;
+
     @OneToMany(mappedBy = "immeuble", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Appartement> appartements;
 

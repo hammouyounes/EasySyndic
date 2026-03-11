@@ -31,6 +31,7 @@ interface Charge {
   progress: number;
   chargeType?: string;
   isRecurring?: boolean;
+  recu?: string; // Base64 content of the receipt
 }
 
 interface UserInfo {
@@ -53,6 +54,11 @@ const ChargeList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
+  const [recuBase64, setRecuBase64] = useState<string | null>(null);
+  
+  // ─── Receipt View Modal State ───
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [currentReceipt, setCurrentReceipt] = useState<string | null>(null);
   
   // ─── Email Modal State ───
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
@@ -70,13 +76,9 @@ const ChargeList: React.FC = () => {
   const [deleteCharge] = useDeleteChargeMutation();
   const [distributeCharge] = useDistributeChargeMutation();
   const [undoDistributeCharge] = useUndoDistributeChargeMutation();
-<<<<<<< HEAD
-  
   const userString = localStorage.getItem('user');
   const currentUser = userString ? JSON.parse(userString) : null;
-=======
   const [sendNotification] = useSendNotificationMutation();
->>>>>>> 0078b1beeec60e6462d834dbcbf3718e693aae46
 
   const tableRef = useRef<HTMLTableElement>(null);
   const dataTableInstance = useRef<any>(null);
@@ -145,6 +147,7 @@ const ChargeList: React.FC = () => {
 
   const handleEdit = (record: Charge) => {
     setEditingId(record.id);
+    setRecuBase64(record.recu || null);
     form.setFieldsValue({
       ...record,
       immeubleId: record.immeuble?.id
@@ -223,6 +226,7 @@ const ChargeList: React.FC = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
     setEditingId(null);
+    setRecuBase64(null);
     form.resetFields();
   };
 
@@ -234,7 +238,8 @@ const ChargeList: React.FC = () => {
          montant: Number(values.montant),
          periode: values.periode,
          chargeType: values.chargeType,
-         isRecurring: values.isRecurring
+         isRecurring: values.isRecurring,
+         recu: recuBase64
       };
 
       if (editingId) {
@@ -328,6 +333,7 @@ const ChargeList: React.FC = () => {
               <th>Période</th>
               <th>Immeuble</th>
               <th>Progression</th>
+              <th>Reçu</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -361,8 +367,23 @@ const ChargeList: React.FC = () => {
                     format={(percent) => charge.diviser !== 1 ? 'ND' : `${percent}%`}
                   />
                 </td>
+                <td>
+                  {charge.recu ? (
+                    <Button 
+                      type="link" 
+                      size="small" 
+                      onClick={() => {
+                        setCurrentReceipt(charge.recu!);
+                        setIsReceiptModalOpen(true);
+                      }}
+                    >
+                      Voir Reçu
+                    </Button>
+                  ) : (
+                    <Tag color="default">Aucun</Tag>
+                  )}
+                </td>
                 <td style={{ display: 'flex', gap: '8px' }}>
-<<<<<<< HEAD
                    {currentUser?.role === 'SUPERADMIN' && (
                      <DistributeButton 
                         onClick={() => handleDistributeToggle(charge)} 
@@ -374,6 +395,15 @@ const ChargeList: React.FC = () => {
                     )}
                     {currentUser?.role !== 'SUPERADMIN' && (
                       <>
+                        <Tooltip title="Envoyer par email">
+                          <Button
+                            type="primary"
+                            ghost
+                            icon={<MailOutlined />}
+                            onClick={() => handleOpenEmailModal(charge)}
+                            style={{ borderColor: '#1890ff', color: '#1890ff' }}
+                          />
+                        </Tooltip>
                         <EditButton 
                           onClick={() => handleEdit(charge)} 
                           disabled={charge.locked}
@@ -386,34 +416,6 @@ const ChargeList: React.FC = () => {
                         />
                       </>
                     )}
-=======
-                   <DistributeButton 
-                      onClick={() => handleDistributeToggle(charge)} 
-                      disabled={charge.locked}
-                      title={charge.locked ? "Charge verrouillée (paiements existants)" : (charge.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
-                      label={charge.diviser === 1 ? "Annuler" : "Distribuer"}
-                      isUndo={charge.diviser === 1}
-                    />
-                    <Tooltip title="Envoyer par email">
-                      <Button
-                        type="primary"
-                        ghost
-                        icon={<MailOutlined />}
-                        onClick={() => handleOpenEmailModal(charge)}
-                        style={{ borderColor: '#1890ff', color: '#1890ff' }}
-                      />
-                    </Tooltip>
-                    <EditButton 
-                      onClick={() => handleEdit(charge)} 
-                      disabled={charge.locked}
-                      title={charge.locked ? "Impossible de modifier (paiements en cours)" : "Modifier"}
-                    />
-                    <DeleteButton 
-                      onClick={() => handleDelete(charge)}
-                      disabled={charge.locked}
-                      title={charge.locked ? "Impossible de supprimer (paiements en cours)" : "Supprimer"}
-                    />
->>>>>>> 0078b1beeec60e6462d834dbcbf3718e693aae46
                 </td>
               </tr>
             ))}
@@ -495,6 +497,30 @@ const ChargeList: React.FC = () => {
             initialValue={false}
           >
              <Switch checkedChildren="Oui" unCheckedChildren="Non" />
+          </Form.Item>
+
+          <Form.Item label="Reçu (Image ou PDF)">
+            <Input 
+              type="file" 
+              accept="image/*,application/pdf" 
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (event) => {
+                    setRecuBase64(event.target?.result as string);
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+            {recuBase64 && (
+              <div style={{ marginTop: 8 }}>
+                <Tag color="blue" closable onClose={() => setRecuBase64(null)}>
+                  Fichier chargé
+                </Tag>
+              </div>
+            )}
           </Form.Item>
 
           <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
@@ -608,6 +634,44 @@ const ChargeList: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* ─── Receipt View Modal ─── */}
+      <Modal
+        title="Visualisation du Reçu"
+        open={isReceiptModalOpen}
+        onCancel={() => {
+          setIsReceiptModalOpen(false);
+          setCurrentReceipt(null);
+        }}
+        footer={[
+          <Button key="close" onClick={() => {
+            setIsReceiptModalOpen(false);
+            setCurrentReceipt(null);
+          }}>
+            Fermer
+          </Button>
+        ]}
+        width={800}
+      >
+        {currentReceipt ? (
+          currentReceipt.startsWith('data:application/pdf') ? (
+            <iframe 
+              src={currentReceipt} 
+              width="100%" 
+              height="600px" 
+              title="Receipt PDF"
+            />
+          ) : (
+            <img 
+              src={currentReceipt} 
+              alt="Receipt" 
+              style={{ width: '100%', maxHeight: '600px', objectFit: 'contain' }} 
+            />
+          )
+        ) : (
+          <p>Chargement du reçu...</p>
+        )}
       </Modal>
     </Card>
   );
