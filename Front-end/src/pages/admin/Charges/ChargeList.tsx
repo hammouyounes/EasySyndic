@@ -60,6 +60,9 @@ const ChargeList: React.FC = () => {
   const [selectedCharge, setSelectedCharge] = useState<Charge | null>(null);
   const [isSending, setIsSending] = useState(false);
   
+  // ─── Distribution Loading State (per charge ID) ───
+  const [distributingIds, setDistributingIds] = useState<Set<number>>(new Set());
+  
   const { data: charges, isLoading } = useGetChargesQuery({});
   const { data: buildings } = useGetBuildingsQuery({});
   const { data: users } = useGetUsersQuery({});
@@ -70,13 +73,10 @@ const ChargeList: React.FC = () => {
   const [deleteCharge] = useDeleteChargeMutation();
   const [distributeCharge] = useDistributeChargeMutation();
   const [undoDistributeCharge] = useUndoDistributeChargeMutation();
-<<<<<<< HEAD
+  const [sendNotification] = useSendNotificationMutation();
   
   const userString = localStorage.getItem('user');
   const currentUser = userString ? JSON.parse(userString) : null;
-=======
-  const [sendNotification] = useSendNotificationMutation();
->>>>>>> 0078b1beeec60e6462d834dbcbf3718e693aae46
 
   const tableRef = useRef<HTMLTableElement>(null);
   const dataTableInstance = useRef<any>(null);
@@ -203,17 +203,28 @@ const ChargeList: React.FC = () => {
             <br /><br />
             <span style={{ fontSize: 16 }}>Montant total : </span>
             <span style={{ color: '#52c41a', fontWeight: 'bold', fontSize: 18 }}>{record.montant} MAD</span>
+            <br /><br />
+            <span style={{ color: '#1890ff', fontSize: 13 }}>📧 Des emails en arabe seront générés par IA et envoyés automatiquement aux propriétaires.</span>
           </div>
         ),
         okText: 'Oui, distribuer',
         cancelText: 'Annuler',
         onOk: async () => {
+          // Add to loading set
+          setDistributingIds(prev => new Set(prev).add(record.id));
           try {
             await distributeCharge(record.id).unwrap();
-            message.success('Charge distribuée avec succès! Appels de fonds générés.');
+            message.success('Charge distribuée avec succès! Emails IA en cours d\'envoi aux propriétaires... 📧');
           } catch (error: any) {
             console.error("Failed to distribute charge", error);
             message.error(error?.data?.message || "Erreur lors de la distribution de la charge");
+          } finally {
+            // Remove from loading set
+            setDistributingIds(prev => {
+              const next = new Set(prev);
+              next.delete(record.id);
+              return next;
+            });
           }
         },
       });
@@ -362,16 +373,25 @@ const ChargeList: React.FC = () => {
                   />
                 </td>
                 <td style={{ display: 'flex', gap: '8px' }}>
-<<<<<<< HEAD
                    {currentUser?.role === 'SUPERADMIN' && (
                      <DistributeButton 
                         onClick={() => handleDistributeToggle(charge)} 
                         disabled={charge.locked}
+                        loading={distributingIds.has(charge.id)}
                         title={charge.locked ? "Charge verrouillée (paiements existants)" : (charge.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
                         label={charge.diviser === 1 ? "Annuler" : "Distribuer"}
                         isUndo={charge.diviser === 1}
                       />
                     )}
+                    <Tooltip title="Envoyer par email">
+                      <Button
+                        type="primary"
+                        ghost
+                        icon={<MailOutlined />}
+                        onClick={() => handleOpenEmailModal(charge)}
+                        style={{ borderColor: '#1890ff', color: '#1890ff' }}
+                      />
+                    </Tooltip>
                     {currentUser?.role !== 'SUPERADMIN' && (
                       <>
                         <EditButton 
@@ -386,34 +406,6 @@ const ChargeList: React.FC = () => {
                         />
                       </>
                     )}
-=======
-                   <DistributeButton 
-                      onClick={() => handleDistributeToggle(charge)} 
-                      disabled={charge.locked}
-                      title={charge.locked ? "Charge verrouillée (paiements existants)" : (charge.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
-                      label={charge.diviser === 1 ? "Annuler" : "Distribuer"}
-                      isUndo={charge.diviser === 1}
-                    />
-                    <Tooltip title="Envoyer par email">
-                      <Button
-                        type="primary"
-                        ghost
-                        icon={<MailOutlined />}
-                        onClick={() => handleOpenEmailModal(charge)}
-                        style={{ borderColor: '#1890ff', color: '#1890ff' }}
-                      />
-                    </Tooltip>
-                    <EditButton 
-                      onClick={() => handleEdit(charge)} 
-                      disabled={charge.locked}
-                      title={charge.locked ? "Impossible de modifier (paiements en cours)" : "Modifier"}
-                    />
-                    <DeleteButton 
-                      onClick={() => handleDelete(charge)}
-                      disabled={charge.locked}
-                      title={charge.locked ? "Impossible de supprimer (paiements en cours)" : "Supprimer"}
-                    />
->>>>>>> 0078b1beeec60e6462d834dbcbf3718e693aae46
                 </td>
               </tr>
             ))}

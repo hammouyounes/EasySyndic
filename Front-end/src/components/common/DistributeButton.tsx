@@ -8,21 +8,24 @@ interface DistributeButtonProps {
   style?: React.CSSProperties;
   label?: string;
   isUndo?: boolean; // To handle the "Undo" state style
+  loading?: boolean; // Show spinner during distribution
 }
 
-const DistributeButton: React.FC<DistributeButtonProps> = ({ onClick, disabled, title, style, label = "Distribuer", isUndo = false }) => {
+const DistributeButton: React.FC<DistributeButtonProps> = ({ onClick, disabled, title, style, label = "Distribuer", isUndo = false, loading = false }) => {
   return (
     <StyledWrapper style={style} $isUndo={isUndo}>
       <button 
-        className={`noselect distribute-button ${isUndo ? 'undo' : ''}`} 
+        className={`noselect distribute-button ${isUndo ? 'undo' : ''} ${loading ? 'loading' : ''}`} 
         onClick={onClick} 
-        disabled={disabled}
-        title={title}
+        disabled={disabled || loading}
+        title={loading ? 'Distribution en cours...' : title}
         type="button"
       >
-        <span className="text">{label}</span>
+        <span className="text">{loading ? 'En cours...' : label}</span>
         <span className="icon">
-           {isUndo ? (
+           {loading ? (
+              <span className="spinner" />
+           ) : isUndo ? (
               // Undo Icon
                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9 14L4 9L9 4" stroke="#eee" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -127,6 +130,27 @@ const StyledWrapper = styled.div<{ $isUndo: boolean }>`
 
   .distribute-button:active:not(:disabled) .icon svg {
     transform: scale(0.8);
+  }
+
+  /* Loading spinner */
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(238, 238, 238, 0.3);
+    border-top: 2px solid #eee;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .distribute-button.loading {
+    opacity: 0.8;
+    cursor: wait;
   }`;
 
 export default DistributeButton;

@@ -33,6 +33,9 @@ public class AppelChargeServiceImpl implements AppelChargeService {
     @Autowired
     private PaiementRepository paiementRepository;
 
+    @Autowired
+    private ChargeEmailService chargeEmailService;
+
     @Override
     public void distributeCharge(Long chargeId) {
         Charge charge = chargeRepository.findById(chargeId)
@@ -57,6 +60,9 @@ public class AppelChargeServiceImpl implements AppelChargeService {
         Status statusEnAttente = statusRepository.findByLabel("EN_ATTENTE")
                 .orElseGet(() -> statusRepository.save(new Status(null, "EN_ATTENTE")));
 
+        // Collect saved AppelCharge records for email sending
+        java.util.ArrayList<AppelCharge> savedAppels = new java.util.ArrayList<>();
+
         for (Appartement appt : appartements) {
             double surface = appt.getSurface() != null ? appt.getSurface() : 0.0;
             double shareAmount = (surface / surfaceTotale) * charge.getMontant();
@@ -68,11 +74,16 @@ public class AppelChargeServiceImpl implements AppelChargeService {
             appel.setTotal(shareAmount);
             appel.setDateEmission(new Date());
 
-            repo.save(appel);
+            AppelCharge savedAppel = repo.save(appel);
+            savedAppels.add(savedAppel);
         }
 
         charge.setDiviser(1);
         chargeRepository.save(charge);
+
+        // 🚀 Trigger async AI email generation + sending
+        // This runs on a separate thread so the API response returns immediately
+        chargeEmailService.sendDistributionEmails(savedAppels, charge);
     }
 
     @Override
