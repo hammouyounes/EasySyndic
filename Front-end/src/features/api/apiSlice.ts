@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+  baseQuery: fetchBaseQuery({ baseUrl:'http://localhost:8080/api'}),
   tagTypes: ['Buildings', 'Users', 'Apartments', 'Charges', 'AppelCharges', 'Paiements'],
   endpoints: (builder) => ({
     getBuildings: builder.query({
@@ -147,6 +147,14 @@ export const apiSlice = createApi({
       query: (proprietaireId) => `/paiements/proprietaire/${proprietaireId}`,
       providesTags: ['Paiements'],
     }),
+    // ─── NEW: Send Email Notification to Owner ───
+    sendNotification: builder.mutation({
+      query: (mailRequest) => ({
+        url: '/notifications/send-to-owner',
+        method: 'POST',
+        body: mailRequest,
+      }),
+    }),
   }),
 });
 
@@ -173,4 +181,5 @@ export const {
   useAddPaymentMutation,
   useGetPaiementsQuery,
   useGetPaiementsByProprietaireQuery,
+  useSendNotificationMutation,
 } = apiSlice;
