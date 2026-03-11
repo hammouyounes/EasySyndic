@@ -24,6 +24,9 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
   const navigate = useNavigate();
   const location = useLocation();
   
+  const userString = localStorage.getItem('user');
+  const currentUser = userString ? JSON.parse(userString) : null;
+  
   // --- DESIGN SYSTEM ---
   // Using CSS variables for dynamic theming
   const sidebarColor = 'var(--bg-secondary)'; 
@@ -67,24 +70,28 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, darkMode }) => {
 
         items={[
           // SECTION 1: MAIN
-          { 
+          // Only show Dashboard for non-SUPERADMIN
+          ...(currentUser?.role !== 'SUPERADMIN' ? [{ 
             key: 'g1', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1 }}>MENU</span>, 
             type: 'group',
             children: [
               { key: '/', icon: <AppstoreOutlined />, label: 'Dashboard' },
             ]
-          },
+          }] : []),
 
-          // SECTION 2: MANAGEMENT (Your Core Features)
+          // SECTION 2: MANAGEMENT
           { 
             key: 'g2', label: <span style={{ color: sidebarTextColor, fontSize: 11, fontWeight: 700, letterSpacing: 1, marginTop: 20 }}>ESTATE</span>, 
             type: 'group',
             children: [
               { key: '/buildings', icon: <ShopOutlined />, label: 'Buildings' },
-              { key: '/apartments', icon: <TeamOutlined />, label: 'Apartments & Owners' },
+              // Hide Apartments for Super Admin
+              ...(currentUser?.role !== 'SUPERADMIN' ? [{ key: '/apartments', icon: <TeamOutlined />, label: 'Apartments & Owners' }] : []),
               { key: '/charges', icon: <WalletOutlined />, label: 'Charges' },
+              // Super Admin manages Syndics, Normal Admin manages Owners
               { key: '/users', icon: <UserOutlined />, label: 'Users' },
-              { key: '/appel-charges', icon: <WalletOutlined />, label: 'Appels & Paiements' },
+              // Hide Appels for Super Admin
+              ...(currentUser?.role !== 'SUPERADMIN' ? [{ key: '/appel-charges', icon: <WalletOutlined />, label: 'Appels & Paiements' }] : []),
             ]
           },
         ]}

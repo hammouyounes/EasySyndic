@@ -44,6 +44,9 @@ const ChargeList: React.FC = () => {
   const [deleteCharge] = useDeleteChargeMutation();
   const [distributeCharge] = useDistributeChargeMutation();
   const [undoDistributeCharge] = useUndoDistributeChargeMutation();
+  
+  const userString = localStorage.getItem('user');
+  const currentUser = userString ? JSON.parse(userString) : null;
 
   const tableRef = useRef<HTMLTableElement>(null);
   const dataTableInstance = useRef<any>(null);
@@ -221,7 +224,7 @@ const ChargeList: React.FC = () => {
   };
 
   return (
-    <Card title="Gestion des Charges" extra={<AddButton onClick={showModal} />}>
+    <Card title="Gestion des Charges" extra={currentUser?.role !== 'SUPERADMIN' && <AddButton onClick={showModal} />}>
       <div style={{ padding: '20px' }}>
         <table ref={tableRef} id="myTable" className="display" style={{ width: '100%' }}>
           <thead>
@@ -268,23 +271,29 @@ const ChargeList: React.FC = () => {
                   />
                 </td>
                 <td style={{ display: 'flex', gap: '8px' }}>
-                   <DistributeButton 
-                      onClick={() => handleDistributeToggle(charge)} 
-                      disabled={charge.locked}
-                      title={charge.locked ? "Charge verrouillée (paiements existants)" : (charge.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
-                      label={charge.diviser === 1 ? "Annuler" : "Distribuer"}
-                      isUndo={charge.diviser === 1}
-                    />
-                    <EditButton 
-                      onClick={() => handleEdit(charge)} 
-                      disabled={charge.locked}
-                      title={charge.locked ? "Impossible de modifier (paiements en cours)" : "Modifier"}
-                    />
-                    <DeleteButton 
-                      onClick={() => handleDelete(charge)}
-                      disabled={charge.locked}
-                      title={charge.locked ? "Impossible de supprimer (paiements en cours)" : "Supprimer"}
-                    />
+                   {currentUser?.role === 'SUPERADMIN' && (
+                     <DistributeButton 
+                        onClick={() => handleDistributeToggle(charge)} 
+                        disabled={charge.locked}
+                        title={charge.locked ? "Charge verrouillée (paiements existants)" : (charge.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
+                        label={charge.diviser === 1 ? "Annuler" : "Distribuer"}
+                        isUndo={charge.diviser === 1}
+                      />
+                    )}
+                    {currentUser?.role !== 'SUPERADMIN' && (
+                      <>
+                        <EditButton 
+                          onClick={() => handleEdit(charge)} 
+                          disabled={charge.locked}
+                          title={charge.locked ? "Impossible de modifier (paiements en cours)" : "Modifier"}
+                        />
+                        <DeleteButton 
+                          onClick={() => handleDelete(charge)}
+                          disabled={charge.locked}
+                          title={charge.locked ? "Impossible de supprimer (paiements en cours)" : "Supprimer"}
+                        />
+                      </>
+                    )}
                 </td>
               </tr>
             ))}

@@ -34,6 +34,19 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        // ALWAYS check for superadmin regardless of other data
+        if (userRepository.findByEmail("superadmin@easysyndic.ma").isEmpty()) {
+            User superAdmin = new User();
+            superAdmin.setNom("System");
+            superAdmin.setPrenom("SuperAdmin");
+            superAdmin.setEmail("superadmin@easysyndic.ma");
+            superAdmin.setMotDePasse("super");
+            superAdmin.setRole(User.Role.SUPERADMIN);
+            superAdmin.setActive(true);
+            userRepository.save(superAdmin);
+            System.out.println(">>> User SUPERADMIN created successfully!");
+        }
+
         if (userRepository.findByEmail("admin@easysyndic.ma").isPresent()) {
             System.out.println("Base de données déjà initialisée avec les données de test.");
             return;

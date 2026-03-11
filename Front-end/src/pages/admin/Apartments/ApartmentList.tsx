@@ -28,6 +28,9 @@ const ApartmentList: React.FC = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
 
+  const userString = localStorage.getItem('user');
+  const currentUser = userString ? JSON.parse(userString) : null;
+
   // Fetch Data
   const { data: apartments, isLoading: isLoadingApartments } = useGetApartmentsQuery({});
   const { data: buildings } = useGetBuildingsQuery({});
@@ -145,7 +148,7 @@ const ApartmentList: React.FC = () => {
   };
 
   return (
-    <Card title="Gestion des Appartements" extra={<AddButton onClick={showModal} />}>
+    <Card title="Gestion des Appartements" extra={currentUser?.role !== 'SUPERADMIN' && <AddButton onClick={showModal} />}>
       <div style={{ padding: '20px' }}>
         <table ref={tableRef} id="apartmentsTable" className="display" style={{ width: '100%' }}>
           <thead>
@@ -169,7 +172,9 @@ const ApartmentList: React.FC = () => {
                 <td><Tag color="blue">{appt.immeuble ? appt.immeuble.nom : 'N/A'}</Tag></td>
                 <td><span>{appt.proprietaire ? `${appt.proprietaire.nom} ${appt.proprietaire.prenom}` : 'Aucun'}</span></td>
                 <td>
-                   <EditButton onClick={() => handleEdit(appt)} />
+                   {currentUser?.role !== 'SUPERADMIN' && (
+                     <EditButton onClick={() => handleEdit(appt)} />
+                   )}
                 </td>
               </tr>
             ))}

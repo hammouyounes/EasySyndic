@@ -24,12 +24,14 @@ public class User {
     private String motDePasse;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 25)
     private Role role;
 
     @Column(columnDefinition = "boolean default true")
     private Boolean active = true;
 
     public enum Role {
+        SUPERADMIN,
         ADMIN,
         PROPRIETAIRE,
         LOCATAIRE

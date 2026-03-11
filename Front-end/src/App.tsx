@@ -31,7 +31,7 @@ const App: React.FC = () => {
         {/* PROTECTED ROUTES (Sidebar Layout) */}
 
         {/* ADMIN SIDE */}
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+        <Route element={<ProtectedRoute allowedRoles={['admin', 'superadmin']} />}>
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="dashboard" element={<Dashboard />} />
@@ -40,6 +40,13 @@ const App: React.FC = () => {
             <Route path="users" element={<UserList />} />
             <Route path="charges" element={<ChargeList />} />
             <Route path="appel-charges" element={<AppelChargeList />} />
+          </Route>
+        </Route>
+
+        {/* SUPERADMIN ONLY (Specific pages if any) */}
+        <Route element={<ProtectedRoute allowedRoles={['superadmin']} />}>
+          <Route path="/" element={<MainLayout />}>
+            {/* Super Admin specific routes could go here */}
           </Route>
         </Route>
 

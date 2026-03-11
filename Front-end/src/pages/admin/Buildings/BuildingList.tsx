@@ -23,6 +23,9 @@ const BuildingList: React.FC = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
 
+  const userString = localStorage.getItem('user');
+  const currentUser = userString ? JSON.parse(userString) : null;
+
   const { data: buildings, isLoading } = useGetBuildingsQuery({});
   const { data: apartments } = useGetApartmentsQuery({});
   const { data: charges } = useGetChargesQuery({}); // Fetch charges
@@ -166,7 +169,7 @@ const BuildingList: React.FC = () => {
   };
 
   return (
-    <Card title="Gestion des Bâtiments" extra={<AddButton onClick={showModal} />}>
+    <Card title="Gestion des Bâtiments" extra={currentUser?.role === 'SUPERADMIN' && <AddButton onClick={showModal} />}>
       {msgContextHolder}
       {modalContextHolder}
       <div style={{ padding: '20px' }}>
@@ -197,13 +200,17 @@ const BuildingList: React.FC = () => {
                   <td>{building.nombreEtages}</td>
                   <td><DefaultButton>{total} MAD</DefaultButton></td>
                   <td>
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                      <EditButton onClick={() => handleEdit(building)} />
-                      <DeleteButton
-                        onClick={() => handleDelete(building)}
-                        style={{ marginLeft: 8 }}
-                      />
-                    </div>
+                    {currentUser?.role === 'SUPERADMIN' ? (
+                      <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <EditButton onClick={() => handleEdit(building)} />
+                        <DeleteButton
+                          onClick={() => handleDelete(building)}
+                          style={{ marginLeft: 8 }}
+                        />
+                      </div>
+                    ) : (
+                      <Tag color="default">Consultation uniquement</Tag>
+                    )}
                   </td>
                 </tr>
               )

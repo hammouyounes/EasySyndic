@@ -28,7 +28,21 @@ const UserList: React.FC = () => {
   const userString = localStorage.getItem('user');
   const currentUser = userString ? JSON.parse(userString) : null;
 
-  const filteredUsers = users?.filter((user: User) => user.id !== currentUser?.id);
+  const filteredUsers = users?.filter((user: User) => {
+    if (user.id === currentUser?.id) return false;
+    
+    // Normal Admin (Syndic) should only see Owners
+    if (currentUser?.role === 'ADMIN') {
+      return user.role === 'PROPRIETAIRE';
+    }
+    
+    // SuperAdmin should only see Syndics (ADMIN)
+    if (currentUser?.role === 'SUPERADMIN') {
+      return user.role === 'ADMIN';
+    }
+    
+    return true;
+  });
 
   const tableRef = useRef<HTMLTableElement>(null);
   const dataTableInstance = useRef<any>(null);
@@ -123,7 +137,7 @@ const UserList: React.FC = () => {
   };
 
   return (
-    <Card title="Gestion des Utilisateurs" extra={<AddButton onClick={showModal} />}>
+    <Card title="Gestion des Utilisateurs" extra={(currentUser?.role === 'SUPERADMIN' || currentUser?.role === 'ADMIN') && <AddButton onClick={showModal} />}>
       <div style={{ padding: '20px' }}>
         <table ref={tableRef} id="usersTable" className="display" style={{ width: '100%' }}>
           <thead>
@@ -144,7 +158,7 @@ const UserList: React.FC = () => {
                 <td><Space><UserOutlined /> <b>{user.nom}</b></Space></td>
                 <td>{user.prenom}</td>
                 <td>
-                  <Tag color={user.role === 'ADMIN' ? 'red' : (user.role === 'PROPRIETAIRE' ? 'blue' : 'green')}>
+                  <Tag color={user.role === 'SUPERADMIN' ? 'purple' : (user.role === 'ADMIN' ? 'red' : (user.role === 'PROPRIETAIRE' ? 'blue' : 'green'))}>
                     {user.role}
                   </Tag>
                 </td>
@@ -214,9 +228,12 @@ const UserList: React.FC = () => {
             rules={[{ required: true, message: 'Veuillez sélectionner un rôle!' }]}
           >
             <Select placeholder="Sélectionner un rôle">
-              <Select.Option value="ADMIN">Administrateur</Select.Option>
-              <Select.Option value="PROPRIETAIRE">Propriétaire</Select.Option>
-              <Select.Option value="LOCATAIRE">Locataire</Select.Option>
+              {currentUser?.role === 'SUPERADMIN' && (
+                <Select.Option value="ADMIN">Administrateur (Syndic)</Select.Option>
+              )}
+              {currentUser?.role === 'ADMIN' && (
+                <Select.Option value="PROPRIETAIRE">Propriétaire</Select.Option>
+              )}
             </Select>
           </Form.Item>
 
