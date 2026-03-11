@@ -1,6 +1,5 @@
 package com.example.backend_syndic.service.facade;
 
-import com.example.backend_syndic.entity.Notification;
 
 public interface NotificationService {
 

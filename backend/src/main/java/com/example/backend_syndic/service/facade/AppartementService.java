@@ -1,7 +1,6 @@
 package com.example.backend_syndic.service.facade;
 
 import com.example.backend_syndic.entity.Appartement;
-import com.example.backend_syndic.entity.User;
 
 import java.util.List;
 
