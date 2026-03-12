@@ -53,37 +53,67 @@ const Dashboard: React.FC = () => {
 
     const syndics = users.filter((u: any) => u.role === 'ADMIN');
     
-    // Map syndics to their stats
+    // Map syndics to their stats using real backend data
     const syndicStats = syndics.map((s: any) => {
-      const syndicBuildings = buildings.filter((b: any) => b.syndic?.id === s.id);
-      const buildingIds = new Set(syndicBuildings.map((b: any) => b.id));
-      const syndicCharges = charges.filter((c: any) => buildingIds.has(c.immeuble?.id));
+      const sId = String(s.id);
       
+      // Buildings assigned to this syndic
+      const syndicBuildings = buildings.filter((b: any) => b.syndic && String(b.syndic.id) === sId);
+      const buildingIds = new Set(syndicBuildings.map((b: any) => String(b.id)));
+      
+      // Charges for these buildings
+      const syndicCharges = charges.filter((c: any) => c.immeuble && buildingIds.has(String(c.immeuble.id)));
+      
+      // Apartments for these buildings
+      const syndicApartments = apartments.filter((a: any) => a.immeuble && buildingIds.has(String(a.immeuble.id)));
+      const apartmentIds = new Set(syndicApartments.map((a: any) => String(a.id)));
+
+      // Total charge montant (base charges)
+      const totalChargeAmount = syndicCharges.reduce((sum: number, c: any) => sum + (Number(c.montant) || 0), 0);
+      
+      // Distributed calls (AppelCharge)
+      const syndicAppelCharges = appelCharges.filter((ac: any) => ac.appartement?.id && apartmentIds.has(String(ac.appartement.id)));
+      const totalDistributed = syndicAppelCharges.reduce((sum: number, ac: any) => sum + (Number(ac.total) || 0), 0);
+
+      // Payments received
+      const syndicPaiements = paiements.filter((p: any) => p.appartement?.id && apartmentIds.has(String(p.appartement.id)));
+      const totalPaid = syndicPaiements.reduce((sum: number, p: any) => sum + (Number(p.montant) || 0), 0);
+
+      const collectionRate = totalDistributed > 0 ? Math.round((totalPaid / totalDistributed) * 100) : 0;
+      const proprietaireIds = new Set(syndicApartments.filter((a: any) => a.proprietaire?.id).map((a: any) => String(a.proprietaire.id)));
+
       return {
         key: s.id,
-        name: `${s.prenom} ${s.nom}`,
+        name: `${s.prenom || ''} ${s.nom || ''}`.trim(),
         email: s.email,
         buildingCount: syndicBuildings.length,
+        apartmentCount: syndicApartments.length,
+        proprietaireCount: proprietaireIds.size,
         chargeCount: syndicCharges.length,
+        totalChargeAmount,
+        totalPaid,
+        totalDistributed,
+        collectionRate,
         active: s.active
       };
     });
 
-    // Chart Data: Buildings per Syndic
-    const syndicChartData = syndicStats.map((s: any) => ({
-      name: s.name.split(' ')[0],
-      buildings: s.buildingCount,
-      charges: s.chargeCount
-    }));
+    const totalPaidAll = syndicStats.reduce((sum: number, s: any) => sum + s.totalPaid, 0);
+    const totalDistributedAll = syndicStats.reduce((sum: number, s: any) => sum + s.totalDistributed, 0);
+    const globalCollectionRate = totalDistributedAll > 0 ? Math.round((totalPaidAll / totalDistributedAll) * 100) : 0;
 
     return {
       syndicsCount: syndics.length,
       totalBuildings: buildings.length,
       totalCharges: charges.length,
+      totalPaidAll,
+      totalDistributedAll,
+      globalCollectionRate,
       syndicStats,
-      syndicChartData
     };
-  }, [isSuperAdmin, users, buildings, charges]);
+  }, [isSuperAdmin, users, buildings, charges, apartments, appelCharges, paiements]);
+
+
 
   // ─── Normal Admin (Syndic) Logic ───
   const { stats, recentActivities, chartData, paymentMethodData } = useMemo(() => {
@@ -232,27 +262,63 @@ const Dashboard: React.FC = () => {
         <Row gutter={[24, 24]} style={{ marginTop: '24px' }}>
           <Col xs={24} lg={16}>
             <Card title="Performance des Syndics (Immeubles & Charges)" style={{ borderRadius: '16px' }}>
-              <div style={{ marginBottom: '20px', display: 'flex', gap: '20px' }}>
-                 <Tag color="blue">Immeubles</Tag>
-                 <Tag color="cyan">Charges</Tag>
+              <div style={{ marginBottom: '16px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+                 <Tag color="green">Taux de recouvrement global : {superAdminData.globalCollectionRate}%</Tag>
+                 <Tag color="blue">Total distribué : {superAdminData.totalDistributedAll.toFixed(2)} MAD</Tag>
+                 <Tag color="gold">Total payé : {superAdminData.totalPaidAll.toFixed(2)} MAD</Tag>
               </div>
               <Table 
                 dataSource={superAdminData.syndicStats} 
                 pagination={false}
                 size="small"
+                scroll={{ x: 800 }}
                 columns={[
-                  { title: 'Syndic', dataIndex: 'name', key: 'name' },
-                  { title: 'Immeubles', dataIndex: 'buildingCount', key: 'buildingCount' },
-                  { title: 'Charges', dataIndex: 'chargeCount', key: 'chargeCount' },
-                  { title: 'Progression', key: 'progress', render: (_, record: any) => (
-                    <div style={{ width: '100%', height: '8px', background: '#f0f0f0', borderRadius: '4px', overflow: 'hidden', display: 'flex' }}>
-                       <div style={{ width: `${(record.buildingCount / (superAdminData.totalBuildings || 1)) * 100}%`, background: '#3b82f6' }}></div>
-                       <div style={{ width: `${(record.chargeCount / (superAdminData.totalCharges || 1)) * 100}%`, background: '#06b6d4', opacity: 0.6 }}></div>
-                    </div>
-                  )},
-                  { title: 'Statut', dataIndex: 'active', key: 'active', render: (active) => (
-                    <Tag color={active ? 'green' : 'red'}>{active ? 'Actif' : 'Inactif'}</Tag>
-                  )},
+                  { title: 'Syndic', dataIndex: 'name', key: 'name', fixed: 'left' as const, width: 140,
+                    render: (name: string, record: any) => (
+                      <div>
+                        <div style={{ fontWeight: 600 }}>{name}</div>
+                        <div style={{ fontSize: '11px', color: '#888' }}>{record.email}</div>
+                      </div>
+                    )
+                  },
+                  { title: '🏢 Immeubles', dataIndex: 'buildingCount', key: 'buildingCount', width: 100, align: 'center' as const },
+                  { title: '🏠 Apparts', dataIndex: 'apartmentCount', key: 'apartmentCount', width: 90, align: 'center' as const },
+                  { title: '👥 Propriét.', dataIndex: 'proprietaireCount', key: 'proprietaireCount', width: 90, align: 'center' as const },
+                  { title: '💰 Charges (MAD)', key: 'totalChargeAmount', width: 130, align: 'right' as const,
+                    render: (_: any, record: any) => (
+                      <span style={{ fontWeight: 500 }}>{record.totalChargeAmount.toFixed(2)}</span>
+                    )
+                  },
+                  { title: '✅ Payé (MAD)', key: 'totalPaid', width: 120, align: 'right' as const,
+                    render: (_: any, record: any) => (
+                      <span style={{ fontWeight: 500, color: '#52c41a' }}>{record.totalPaid.toFixed(2)}</span>
+                    )
+                  },
+                  { title: 'Recouvrement', key: 'collectionRate', width: 140,
+                    render: (_: any, record: any) => (
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: record.collectionRate >= 70 ? '#52c41a' : record.collectionRate >= 40 ? '#faad14' : '#ff4d4f' }}>
+                            {record.collectionRate}%
+                          </span>
+                        </div>
+                        <div style={{ width: '100%', height: '8px', background: '#f0f0f0', borderRadius: '4px', overflow: 'hidden' }}>
+                          <div style={{ 
+                            width: `${record.collectionRate}%`, 
+                            height: '100%',
+                            background: record.collectionRate >= 70 ? '#52c41a' : record.collectionRate >= 40 ? '#faad14' : '#ff4d4f',
+                            borderRadius: '4px',
+                            transition: 'width 0.5s ease'
+                          }}></div>
+                        </div>
+                      </div>
+                    )
+                  },
+                  { title: 'Statut', dataIndex: 'active', key: 'active', width: 80, align: 'center' as const,
+                    render: (active: boolean) => (
+                      <Tag color={active ? 'green' : 'red'}>{active ? 'Actif' : 'Inactif'}</Tag>
+                    )
+                  },
                 ]}
               />
             </Card>

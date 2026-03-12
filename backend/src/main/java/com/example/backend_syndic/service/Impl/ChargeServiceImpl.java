@@ -86,10 +86,10 @@ public class ChargeServiceImpl implements ChargeService {
                 long paid = appelChargeRepository.countByChargeIdAndStatusLabel(charge.getId(), "PAYÉ");
                 charge.setProgress((double) paid / total * 100);
             } else {
-                charge.setProgress(0);
+                charge.setProgress(0.0);
             }
         } else {
-            charge.setProgress(0);
+            charge.setProgress(0.0);
         }
     }
 
@@ -101,6 +101,19 @@ public class ChargeServiceImpl implements ChargeService {
         existing.setMontant(updatedCharge.getMontant());
         existing.setPeriode(updatedCharge.getPeriode());
         existing.setRecu(updatedCharge.getRecu());
+        existing.setChargeType(updatedCharge.getChargeType());
+        existing.setIsRecurring(updatedCharge.getIsRecurring());
+        
+        // Also handle immeuble update if needed 
+        if (updatedCharge.getImmeuble() != null && updatedCharge.getImmeuble().getId() != null) {
+            Long newImmeubleId = updatedCharge.getImmeuble().getId();
+            if (existing.getImmeuble() == null || !newImmeubleId.equals(existing.getImmeuble().getId())) {
+                Immeuble newImmeuble = immeubleRepository.findById(newImmeubleId)
+                        .orElseThrow(() -> new RuntimeException("Immeuble not found"));
+                existing.setImmeuble(newImmeuble);
+            }
+        }
+        
         Charge saved = repo.save(existing);
         
         activityLogService.log("UPDATE", "CHARGE", 

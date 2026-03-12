@@ -6,7 +6,8 @@ public class MailRequest {
     private String subject;
     private String body;
 
-    public MailRequest() {}
+    public MailRequest() {
+    }
 
     public MailRequest(String targetEmail, String subject, String body) {
         this.targetEmail = targetEmail;

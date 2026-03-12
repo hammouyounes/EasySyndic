@@ -2,6 +2,7 @@ package com.example.backend_syndic.ws;
 
 import com.example.backend_syndic.dto.MailRequest;
 import com.example.backend_syndic.service.facade.NotificationService;
+import com.example.backend_syndic.service.Impl.GeminiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,6 +67,9 @@ public class NotificationController {
         notificationService.sendCustomMessage(userId, message);
     }
 
+    @Autowired
+    private GeminiService geminiService;
+
     // ✉️ Envoi d'email à un propriétaire (charge notification)
     // POST /api/notifications/send-to-owner
     @PostMapping("/send-to-owner")
@@ -79,6 +83,23 @@ public class NotificationController {
             return ResponseEntity.ok(Map.of("message", "Email envoyé avec succès à " + request.getTargetEmail()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // 🤖 Générer un email via Gemini AI
+    // POST /api/notifications/generate-email
+    @PostMapping("/generate-email")
+    public ResponseEntity<Map<String, String>> generateEmail(@RequestBody Map<String, Object> params) {
+        try {
+            String ownerName = (String) params.get("ownerName");
+            String chargeType = (String) params.get("chargeType");
+            Double amount = Double.valueOf(params.get("amount").toString());
+            String periode = (String) params.get("periode");
+
+            String content = geminiService.generateChargeEmail(ownerName, chargeType, amount, periode);
+            return ResponseEntity.ok(Map.of("content", content));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to generate email content: " + e.getMessage()));
         }
     }
 }

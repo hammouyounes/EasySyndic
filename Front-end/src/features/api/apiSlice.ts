@@ -51,6 +51,14 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Users'],
     }),
+    updateUser: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/users/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Users'],
+    }),
     loginUser: builder.mutation({
       query: (credentials) => ({
         url: '/users/login',
@@ -155,6 +163,13 @@ export const apiSlice = createApi({
         body: mailRequest,
       }),
     }),
+    generateEmail: builder.mutation({
+      query: (params) => ({
+        url: '/notifications/generate-email',
+        method: 'POST',
+        body: params,
+      }),
+    }),
     getActivityLogs: builder.query({
       query: () => '/activities',
       providesTags: ['ActivityLogs'],
@@ -177,6 +192,7 @@ export const {
   useGetUsersQuery,
   useAddUserMutation,
   useToggleUserStatusMutation,
+  useUpdateUserMutation,
   useGetApartmentsQuery,
   useAddApartmentMutation,
   useUpdateApartmentMutation,
@@ -193,6 +209,7 @@ export const {
   useGetPaiementsQuery,
   useGetPaiementsByProprietaireQuery,
   useSendNotificationMutation,
+  useGenerateEmailMutation,
   useGetActivityLogsQuery,
   useAssignSyndicMutation,
 } = apiSlice;

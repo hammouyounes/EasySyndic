@@ -128,23 +128,23 @@ public class Charge {
     }
 
     @Transient
-    private boolean locked;
+    private Boolean locked;
 
-    public boolean isLocked() {
+    public Boolean isLocked() {
         return locked;
     }
 
-    public void setLocked(boolean locked) {
+    public void setLocked(Boolean locked) {
         this.locked = locked;
     }
     @Transient
-    private double progress;
+    private Double progress;
 
-    public double getProgress() {
+    public Double getProgress() {
         return progress;
     }
 
-    public void setProgress(double progress) {
+    public void setProgress(Double progress) {
         this.progress = progress;
     }
 }

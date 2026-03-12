@@ -32,6 +32,9 @@ public class ImmeubleServiceImpl implements ImmeubleService {
         if (immeuble.getSyndic() != null && immeuble.getSyndic().getId() != null) {
             User syndic = userRepository.findById(immeuble.getSyndic().getId())
                     .orElseThrow(() -> new RuntimeException("Syndic not found"));
+            if (!Boolean.TRUE.equals(syndic.getActive())) {
+                throw new RuntimeException("Impossible d'assigner un syndic désactivé.");
+            }
             immeuble.setSyndic(syndic);
         }
         Immeuble saved = immeubleRepository.save(immeuble);
@@ -58,6 +61,9 @@ public class ImmeubleServiceImpl implements ImmeubleService {
             if (sId != null) {
                 User syndic = userRepository.findById(sId)
                         .orElseThrow(() -> new RuntimeException("Syndic not found"));
+                if (!Boolean.TRUE.equals(syndic.getActive())) {
+                    throw new RuntimeException("Impossible d'assigner un syndic désactivé.");
+                }
                 existing.setSyndic(syndic);
             } else {
                 existing.setSyndic(null);
@@ -121,6 +127,10 @@ public class ImmeubleServiceImpl implements ImmeubleService {
         
         User syndic = userRepository.findById(syndicId)
                 .orElseThrow(() -> new RuntimeException("Syndic not found"));
+        
+        if (!Boolean.TRUE.equals(syndic.getActive())) {
+            throw new RuntimeException("Impossible d'assigner un syndic désactivé.");
+        }
         
         immeuble.setSyndic(syndic);
         Immeuble saved = immeubleRepository.save(immeuble);

@@ -283,7 +283,7 @@ const BuildingList: React.FC = () => {
               filterOption={(input, option) =>
                 String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
-              options={users?.filter((u: any) => u.role === 'ADMIN').map((u: any) => ({
+              options={users?.filter((u: any) => u.role === 'ADMIN' && u.active !== false).map((u: any) => ({
                 value: u.id,
                 label: `${u.nom} ${u.prenom} (${u.email})`
               }))}
