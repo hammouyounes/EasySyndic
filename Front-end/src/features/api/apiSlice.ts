@@ -64,10 +64,10 @@ export const apiSlice = createApi({
     updateUser: builder.mutation({
       query: ({ id, ...body }) => ({
         url: `/users/${id}`,
-        method: 'PUT',
+        method: "PUT",
         body,
       }),
-      invalidatesTags: ['Users'],
+      invalidatesTags: ["Users"],
     }),
     loginUser: builder.mutation({
       query: (credentials) => ({
@@ -175,21 +175,21 @@ export const apiSlice = createApi({
     }),
     generateEmail: builder.mutation({
       query: (params) => ({
-        url: '/notifications/generate-email',
-        method: 'POST',
+        url: "/notifications/generate-email",
+        method: "POST",
         body: params,
       }),
     }),
     getActivityLogs: builder.query({
-      query: () => '/activities',
-      providesTags: ['ActivityLogs'],
+      query: () => "/activities",
+      providesTags: ["ActivityLogs"],
     }),
     assignSyndic: builder.mutation({
       query: ({ id, syndicId }) => ({
         url: `/immeubles/${id}/assign-syndic/${syndicId}`,
-        method: 'PUT',
+        method: "PUT",
       }),
-      invalidatesTags: ['Buildings'],
+      invalidatesTags: ["Buildings"],
     }),
   }),
 });

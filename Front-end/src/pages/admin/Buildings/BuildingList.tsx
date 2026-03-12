@@ -1,13 +1,37 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Button, Card, Tag, Space, Modal, Form, Input, InputNumber, message, Select } from 'antd';
-import { HomeOutlined, SaveOutlined, ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
-import { useGetBuildingsQuery, useAddBuildingMutation, useUpdateBuildingMutation, useGetApartmentsQuery, useDeleteBuildingMutation, useGetChargesQuery, useGetUsersQuery } from '../../../features/api/apiSlice';
-import DefaultButton from '../../../components/common/DefaultButton';
-import EditButton from '../../../components/common/EditButton';
-import DeleteButton from '../../../components/common/DeleteButton';
-import AddButton from '../../../components/common/AddButton';
-import DataTable from 'datatables.net-dt';
-import 'datatables.net-dt/css/dataTables.dataTables.css';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Button,
+  Card,
+  Tag,
+  Space,
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Select,
+} from "antd";
+import {
+  HomeOutlined,
+  SaveOutlined,
+  ExclamationCircleOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import {
+  useGetBuildingsQuery,
+  useAddBuildingMutation,
+  useUpdateBuildingMutation,
+  useGetApartmentsQuery,
+  useDeleteBuildingMutation,
+  useGetChargesQuery,
+  useGetUsersQuery,
+} from "../../../features/api/apiSlice";
+import DefaultButton from "../../../components/common/DefaultButton";
+import EditButton from "../../../components/common/EditButton";
+import DeleteButton from "../../../components/common/DeleteButton";
+import AddButton from "../../../components/common/AddButton";
+import DataTable from "datatables.net-dt";
+import "datatables.net-dt/css/dataTables.dataTables.css";
 
 interface Building {
   id: number;
@@ -28,13 +52,19 @@ const BuildingList: React.FC = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
 
-  const userString = localStorage.getItem('user');
+  const userString = localStorage.getItem("user");
   const currentUser = userString ? JSON.parse(userString) : null;
 
-  const { data: buildings, isLoading } = useGetBuildingsQuery({});
+  const { data: allBuildings, isLoading } = useGetBuildingsQuery({});
   const { data: apartments } = useGetApartmentsQuery({});
   const { data: charges } = useGetChargesQuery({}); // Fetch charges
   const { data: users } = useGetUsersQuery({}); // Fetch all users
+
+  // ADMIN (syndic) only sees buildings assigned to them
+  const buildings =
+    currentUser?.role === "ADMIN"
+      ? allBuildings?.filter((b: Building) => b.syndic?.id === currentUser?.id)
+      : allBuildings;
 
   const [addBuilding] = useAddBuildingMutation();
   const [updateBuilding] = useUpdateBuildingMutation();
@@ -59,8 +89,10 @@ const BuildingList: React.FC = () => {
             search: "Rechercher&nbsp;:",
             lengthMenu: "Afficher _MENU_ &eacute;l&eacute;ments",
             info: "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
-            infoEmpty: "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
-            infoFiltered: "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            infoEmpty:
+              "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
+            infoFiltered:
+              "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
             infoPostFix: "",
             loadingRecords: "Chargement en cours...",
             zeroRecords: "Aucun &eacute;l&eacute;ment &agrave; afficher",
@@ -69,8 +101,8 @@ const BuildingList: React.FC = () => {
               first: "Premier",
               previous: "Pr&eacute;c&eacute;dent",
               next: "Suivant",
-              last: "Dernier"
-            }
+              last: "Dernier",
+            },
           },
           destroy: true,
           autoWidth: false,
@@ -80,8 +112,8 @@ const BuildingList: React.FC = () => {
           lengthMenu: [5, 10, 25, 50],
           columnDefs: [
             { className: "dt-head-center dt-body-center", targets: "_all" },
-            { orderable: false, targets: -1, width: '1%' }
-          ]
+            { orderable: false, targets: -1, width: "1%" },
+          ],
         });
       }, 100);
 
@@ -105,18 +137,20 @@ const BuildingList: React.FC = () => {
     setEditingId(record.id);
     form.setFieldsValue({
       ...record,
-      syndicId: record.syndic?.id
+      syndicId: record.syndic?.id,
     });
     setIsModalOpen(true);
   };
 
   const handleDelete = (record: Building) => {
     // Check for linked apartments
-    const linkedApartments = apartments?.filter((appt: any) => String(appt.immeuble?.id) === String(record.id));
+    const linkedApartments = apartments?.filter(
+      (appt: any) => String(appt.immeuble?.id) === String(record.id),
+    );
 
     if (linkedApartments && linkedApartments.length > 0) {
       modal.error({
-        title: 'Action impossible',
+        title: "Action impossible",
         icon: <ExclamationCircleOutlined />,
         content: `Ce bâtiment contient ${linkedApartments.length} appartement(s). Veuillez d'abord les supprimer.`,
       });
@@ -124,16 +158,16 @@ const BuildingList: React.FC = () => {
     }
 
     modal.confirm({
-      title: 'Êtes-vous sûr de vouloir supprimer ce bâtiment ?',
+      title: "Êtes-vous sûr de vouloir supprimer ce bâtiment ?",
       icon: <ExclamationCircleOutlined />,
-      content: 'Cette action est irréversible.',
-      okText: 'Oui, supprimer',
-      okType: 'danger',
-      cancelText: 'Annuler',
+      content: "Cette action est irréversible.",
+      okText: "Oui, supprimer",
+      okType: "danger",
+      cancelText: "Annuler",
       onOk: async () => {
         try {
           await deleteBuilding(record.id).unwrap();
-          messageApi.success('Bâtiment supprimé avec succès');
+          messageApi.success("Bâtiment supprimé avec succès");
         } catch (error) {
           console.error("Failed to delete building", error);
           messageApi.error("Erreur lors de la suppression du bâtiment");
@@ -152,7 +186,9 @@ const BuildingList: React.FC = () => {
     console.log("Form Values:", values);
     try {
       // Get the existing building data to preserve fields like nombreAppartement
-      const existingBuilding = editingId ? buildings?.find((b: Building) => b.id === editingId) : null;
+      const existingBuilding = editingId
+        ? buildings?.find((b: Building) => b.id === editingId)
+        : null;
 
       const payload: any = {
         nom: values.nom,
@@ -160,33 +196,49 @@ const BuildingList: React.FC = () => {
         nombreEtages: Number(values.nombreEtages),
         nombreAppartementsMax: Number(values.nombreAppartementsMax),
         syndic: values.syndicId ? { id: Number(values.syndicId) } : null,
-        nombreAppartement: existingBuilding?.nombreAppartement ?? 0
+        nombreAppartement: existingBuilding?.nombreAppartement ?? 0,
       };
 
       console.log("Sending Payload:", payload);
 
       if (editingId) {
         await updateBuilding({ id: editingId, ...payload }).unwrap();
-        messageApi.success('Bâtiment modifié avec succès');
+        messageApi.success("Bâtiment modifié avec succès");
       } else {
         await addBuilding(payload).unwrap();
-        messageApi.success('Bâtiment ajouté avec succès');
+        messageApi.success("Bâtiment ajouté avec succès");
       }
       setIsModalOpen(false);
       setEditingId(null);
       form.resetFields();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save building", error);
-      messageApi.error(editingId ? 'Erreur lors de la modification' : 'Erreur lors de l\'ajout du bâtiment');
+      const serverMsg = error?.data?.message;
+      messageApi.error(
+        serverMsg ||
+          (editingId
+            ? "Erreur lors de la modification"
+            : "Erreur lors de l'ajout du bâtiment"),
+      );
     }
   };
 
   return (
-    <Card title="Gestion des Bâtiments" extra={currentUser?.role === 'SUPERADMIN' && <AddButton onClick={showModal} />}>
+    <Card
+      title="Gestion des Bâtiments"
+      extra={
+        currentUser?.role === "SUPERADMIN" && <AddButton onClick={showModal} />
+      }
+    >
       {msgContextHolder}
       {modalContextHolder}
-      <div style={{ padding: '20px' }}>
-        <table ref={tableRef} id="buildingsTable" className="display" style={{ width: '100%' }}>
+      <div style={{ padding: "20px" }}>
+        <table
+          ref={tableRef}
+          id="buildingsTable"
+          className="display"
+          style={{ width: "100%" }}
+        >
           <thead>
             <tr>
               <th>ID</th>
@@ -195,25 +247,46 @@ const BuildingList: React.FC = () => {
               <th>Appartements</th>
               <th>Étages</th>
               <th>Total Charges</th>
-              {currentUser?.role === 'SUPERADMIN' && <th>Syndic Affecté</th>}
+              {currentUser?.role === "SUPERADMIN" && <th>Syndic Affecté</th>}
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {buildings?.map((building: Building) => {
-              const count = apartments?.filter((appt: any) => String(appt.immeuble?.id) === String(building.id)).length ?? building.nombreAppartement ?? 0;
-              const buildingCharges = charges?.filter((c: any) => c.immeuble?.id === building.id) || [];
-              const total = buildingCharges.reduce((sum: number, c: any) => sum + (c.montant || 0), 0);
+              const count =
+                apartments?.filter(
+                  (appt: any) =>
+                    String(appt.immeuble?.id) === String(building.id),
+                ).length ??
+                building.nombreAppartement ??
+                0;
+              const buildingCharges =
+                charges?.filter((c: any) => c.immeuble?.id === building.id) ||
+                [];
+              const total = buildingCharges.reduce(
+                (sum: number, c: any) => sum + (c.montant || 0),
+                0,
+              );
 
               return (
                 <tr key={building.id}>
                   <td>{building.id}</td>
-                  <td><Space><HomeOutlined /> <b>{building.nom}</b></Space></td>
+                  <td>
+                    <Space>
+                      <HomeOutlined /> <b>{building.nom}</b>
+                    </Space>
+                  </td>
                   <td>{building.adress}</td>
-                  <td><Tag color="blue">{count} / {building.nombreAppartementsMax || '?'} </Tag></td>
+                  <td>
+                    <Tag color="blue">
+                      {count} / {building.nombreAppartementsMax || "?"}{" "}
+                    </Tag>
+                  </td>
                   <td>{building.nombreEtages}</td>
-                  <td><DefaultButton>{total} MAD</DefaultButton></td>
-                  {currentUser?.role === 'SUPERADMIN' && (
+                  <td>
+                    <DefaultButton>{total} MAD</DefaultButton>
+                  </td>
+                  {currentUser?.role === "SUPERADMIN" && (
                     <td>
                       {building.syndic ? (
                         <Tag icon={<UserOutlined />} color="cyan">
@@ -225,8 +298,10 @@ const BuildingList: React.FC = () => {
                     </td>
                   )}
                   <td>
-                    {currentUser?.role === 'SUPERADMIN' ? (
-                      <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    {currentUser?.role === "SUPERADMIN" ? (
+                      <div
+                        style={{ display: "flex", justifyContent: "center" }}
+                      >
                         <EditButton onClick={() => handleEdit(building)} />
                         <DeleteButton
                           onClick={() => handleDelete(building)}
@@ -238,14 +313,16 @@ const BuildingList: React.FC = () => {
                     )}
                   </td>
                 </tr>
-              )
+              );
             })}
           </tbody>
         </table>
       </div>
 
       <Modal
-        title={editingId ? "Modifier le bâtiment" : "Ajouter un nouveau bâtiment"}
+        title={
+          editingId ? "Modifier le bâtiment" : "Ajouter un nouveau bâtiment"
+        }
         open={isModalOpen}
         onCancel={handleCancel}
         footer={null} // We use the form submit button
@@ -259,7 +336,12 @@ const BuildingList: React.FC = () => {
           <Form.Item
             label="Nom du bâtiment"
             name="nom"
-            rules={[{ required: true, message: 'Veuillez entrer le nom du bâtiment!' }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez entrer le nom du bâtiment!",
+              },
+            ]}
           >
             <Input placeholder="Ex: Residence Al-Yassmine" />
           </Form.Item>
@@ -267,7 +349,7 @@ const BuildingList: React.FC = () => {
           <Form.Item
             label="Adresse"
             name="adress"
-            rules={[{ required: true, message: 'Veuillez entrer l\'adresse!' }]}
+            rules={[{ required: true, message: "Veuillez entrer l'adresse!" }]}
           >
             <Input placeholder="Ex: 12 Av Mohammed V" />
           </Form.Item>
@@ -275,29 +357,42 @@ const BuildingList: React.FC = () => {
           <Form.Item
             label="Affecter un Syndic"
             name="syndicId"
-            rules={[{ required: true, message: 'Veuillez affecter un syndic à cet immeuble!' }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez affecter un syndic à cet immeuble!",
+              },
+            ]}
           >
             <Select
               placeholder="Sélectionner un syndic"
               showSearch
               filterOption={(input, option) =>
-                String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                String(option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
-              options={users?.filter((u: any) => u.role === 'ADMIN' && u.active !== false).map((u: any) => ({
-                value: u.id,
-                label: `${u.nom} ${u.prenom} (${u.email})`
-              }))}
+              options={users
+                ?.filter((u: any) => u.role === "ADMIN" && u.active !== false)
+                .map((u: any) => ({
+                  value: u.id,
+                  label: `${u.nom} ${u.prenom} (${u.email})`,
+                }))}
             />
           </Form.Item>
 
-          <div style={{ display: 'flex', gap: '16px' }}>
+          <div style={{ display: "flex", gap: "16px" }}>
             <Form.Item
               label="Nombre d'étages"
               name="nombreEtages"
               style={{ flex: 1 }}
-              rules={[{ required: true, message: 'Requis!' }]}
+              rules={[{ required: true, message: "Requis!" }]}
             >
-              <InputNumber min={1} style={{ width: '100%' }} placeholder="Ex: 5" />
+              <InputNumber
+                min={1}
+                style={{ width: "100%" }}
+                placeholder="Ex: 5"
+              />
             </Form.Item>
 
             <Form.Item
@@ -305,16 +400,23 @@ const BuildingList: React.FC = () => {
               name="nombreAppartementsMax"
               style={{ flex: 1 }}
               rules={[
-                { required: true, message: 'Requis!' },
+                { required: true, message: "Requis!" },
                 () => ({
                   validator(_, value) {
                     if (!value) {
                       return Promise.resolve();
                     }
                     if (editingId && apartments) {
-                      const currentCount = apartments.filter((appt: any) => String(appt.immeuble?.id) === String(editingId)).length;
+                      const currentCount = apartments.filter(
+                        (appt: any) =>
+                          String(appt.immeuble?.id) === String(editingId),
+                      ).length;
                       if (value < currentCount) {
-                        return Promise.reject(new Error(`Le max doit être >= au nombre actuel (${currentCount})`));
+                        return Promise.reject(
+                          new Error(
+                            `Le max doit être >= au nombre actuel (${currentCount})`,
+                          ),
+                        );
                       }
                     }
                     return Promise.resolve();
@@ -322,11 +424,15 @@ const BuildingList: React.FC = () => {
                 }),
               ]}
             >
-              <InputNumber min={1} style={{ width: '100%' }} placeholder="Ex: 20" />
+              <InputNumber
+                min={1}
+                style={{ width: "100%" }}
+                placeholder="Ex: 20"
+              />
             </Form.Item>
           </div>
 
-          <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
+          <Form.Item style={{ textAlign: "right", marginBottom: 0 }}>
             <Button onClick={handleCancel} style={{ marginRight: 8 }}>
               Annuler
             </Button>

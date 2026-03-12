@@ -2,7 +2,6 @@ package com.example.backend_syndic.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,8 +10,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@JsonIgnoreProperties({"appartements", "charges"})
+@JsonIgnoreProperties(value = {"appartements", "charges"}, ignoreUnknown = true)
 @Entity
 public class Immeuble {
 
