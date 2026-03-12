@@ -119,4 +119,92 @@ public class GeminiService {
             ownerName, chargeType, amount, periode
         );
     }
+
+    /**
+     * Generate a late payment reminder email using Gemini AI.
+     * Called by the scheduler when a charge has been unpaid for 30+ days.
+     */
+    public String generateLatePaymentReminder(String ownerName, String chargeType, double amount, String periode) {
+        try {
+            String userPrompt = String.format(
+                "Write a LATE PAYMENT REMINDER email to the owner named '%s'. " +
+                "The charge type is '%s', the amount is %.2f MAD, and the period is '%s'. " +
+                "The charge has been unpaid for over 30 days. " +
+                "Be polite but firm about the urgency of payment. " +
+                "The email must be entirely in Arabic.",
+                ownerName, chargeType, amount, periode
+            );
+
+            Map<String, Object> requestBody = Map.of(
+                "system_instruction", Map.of(
+                    "parts", List.of(Map.of("text", systemPrompt))
+                ),
+                "contents", List.of(
+                    Map.of("parts", List.of(Map.of("text", userPrompt)))
+                ),
+                "generationConfig", Map.of(
+                    "temperature", 0.7,
+                    "maxOutputTokens", 1024
+                )
+            );
+
+            String url = String.format(
+                "/v1beta/models/%s:generateContent?key=%s",
+                model, apiKey
+            );
+
+            Map response = webClient.post()
+                    .uri(url)
+                    .header("Content-Type", "application/json")
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block();
+
+            if (response != null && response.containsKey("candidates")) {
+                List<Map> candidates = (List<Map>) response.get("candidates");
+                if (!candidates.isEmpty()) {
+                    Map content = (Map) candidates.get(0).get("content");
+                    if (content != null) {
+                        List<Map> parts = (List<Map>) content.get("parts");
+                        if (parts != null && !parts.isEmpty()) {
+                            String generatedText = (String) parts.get(0).get("text");
+                            if (generatedText != null && !generatedText.isBlank()) {
+                                System.out.println("✅ Gemini AI generated late payment reminder for: " + ownerName);
+                                return generatedText;
+                            }
+                        }
+                    }
+                }
+            }
+
+            System.err.println("⚠️ Gemini response empty for reminder. Using fallback.");
+            return getLatePaymentFallback(ownerName, chargeType, amount, periode);
+
+        } catch (Exception e) {
+            System.err.println("❌ Gemini API call failed for reminder: " + e.getMessage());
+            return getLatePaymentFallback(ownerName, chargeType, amount, periode);
+        }
+    }
+
+    /**
+     * Hardcoded Arabic fallback template for late payment reminders.
+     */
+    private String getLatePaymentFallback(String ownerName, String chargeType, double amount, String periode) {
+        System.out.println("📧 Using fallback Arabic late payment reminder for: " + ownerName);
+        return String.format(
+            "بسم الله الرحمن الرحيم\n\n" +
+            "السيد(ة) %s المحترم(ة)،\n\n" +
+            "تحية طيبة وبعد،\n\n" +
+            "نود تذكيركم بأن لديكم مستحقات متأخرة لم يتم تسويتها بعد مرور 30 يوماً على تاريخ الإصدار:\n\n" +
+            "• نوع المستحقات: %s\n" +
+            "• المبلغ المستحق: %.2f درهم مغربي\n" +
+            "• الفترة المعنية: %s\n\n" +
+            "نرجو منكم التكرم بتسوية هذا المبلغ في أقرب وقت ممكن تجنباً لأي إجراءات إضافية.\n\n" +
+            "وتفضلوا بقبول فائق التقدير والاحترام.\n\n" +
+            "إدارة السنديك",
+            ownerName, chargeType, amount, periode
+        );
+    }
 }
+

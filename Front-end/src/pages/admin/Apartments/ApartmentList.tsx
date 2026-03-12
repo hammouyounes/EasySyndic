@@ -109,7 +109,7 @@ const ApartmentList: React.FC = () => {
     form.setFieldsValue({
       ...record,
       immeuble_id: record.immeuble?.id,
-      propretaire_id: record.proprietaire?.id
+      proprietaire_id: record.proprietaire?.id
     });
     setIsModalOpen(true);
   };
@@ -122,18 +122,18 @@ const ApartmentList: React.FC = () => {
 
   const onFinish = async (values: any) => {
     try {
-      const { immeuble_id, propretaire_id, ...apartmentData } = values;
+      const { immeuble_id, proprietaire_id, ...apartmentData } = values;
       
       if (editingId) {
         await updateApartment({ id: editingId, ...apartmentData }).unwrap();
-        if (propretaire_id) {
-           await assignProprietaire({ id: editingId, proprietaireId: propretaire_id }).unwrap();
+        if (proprietaire_id) {
+           await assignProprietaire({ id: editingId, proprietaireId: proprietaire_id }).unwrap();
         }
         message.success('Appartement modifié avec succès');
       } else {
         const newAppt = await addApartment({ immeubleId: immeuble_id, ...apartmentData }).unwrap();
-        if (propretaire_id) {
-           await assignProprietaire({ id: newAppt.id, proprietaireId: propretaire_id }).unwrap();
+        if (proprietaire_id) {
+           await assignProprietaire({ id: newAppt.id, proprietaireId: proprietaire_id }).unwrap();
         }
         message.success('Appartement ajouté avec succès');
       }
@@ -240,7 +240,7 @@ const ApartmentList: React.FC = () => {
 
           <Form.Item
             label="Propriétaire"
-            name="propretaire_id"
+            name="proprietaire_id"
             rules={[{ required: true, message: 'Veuillez sélectionner un propriétaire!' }]}
           >
              <Select

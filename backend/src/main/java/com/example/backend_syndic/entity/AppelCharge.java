@@ -31,4 +31,6 @@ public class AppelCharge {
     @ManyToOne
     @JoinColumn(name = "status_id")
     private Status status;
+
+    private Boolean reminderSent = false;
 }

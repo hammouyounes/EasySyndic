@@ -12,6 +12,7 @@ export const apiSlice = createApi({
     "Charges",
     "AppelCharges",
     "Paiements",
+    "ActivityLogs",
   ],
   endpoints: (builder) => ({
     getBuildings: builder.query({
@@ -27,10 +28,10 @@ export const apiSlice = createApi({
       invalidatesTags: ["Buildings"],
     }),
     updateBuilding: builder.mutation({
-      query: ({ id, ...initialBuilding }) => ({
+      query: ({ id, ...body }) => ({
         url: `/immeubles/${id}`,
         method: "PUT",
-        body: initialBuilding,
+        body,
       }),
       invalidatesTags: ["Buildings"],
     }),
@@ -59,6 +60,14 @@ export const apiSlice = createApi({
         method: "PUT",
       }),
       invalidatesTags: ["Users"],
+    }),
+    updateUser: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/users/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Users'],
     }),
     loginUser: builder.mutation({
       query: (credentials) => ({
@@ -164,6 +173,24 @@ export const apiSlice = createApi({
         body: mailRequest,
       }),
     }),
+    generateEmail: builder.mutation({
+      query: (params) => ({
+        url: '/notifications/generate-email',
+        method: 'POST',
+        body: params,
+      }),
+    }),
+    getActivityLogs: builder.query({
+      query: () => '/activities',
+      providesTags: ['ActivityLogs'],
+    }),
+    assignSyndic: builder.mutation({
+      query: ({ id, syndicId }) => ({
+        url: `/immeubles/${id}/assign-syndic/${syndicId}`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Buildings'],
+    }),
   }),
 });
 
@@ -175,6 +202,7 @@ export const {
   useGetUsersQuery,
   useAddUserMutation,
   useToggleUserStatusMutation,
+  useUpdateUserMutation,
   useGetApartmentsQuery,
   useAddApartmentMutation,
   useUpdateApartmentMutation,
@@ -191,4 +219,7 @@ export const {
   useGetPaiementsQuery,
   useGetPaiementsByProprietaireQuery,
   useSendNotificationMutation,
+  useGenerateEmailMutation,
+  useGetActivityLogsQuery,
+  useAssignSyndicMutation,
 } = apiSlice;

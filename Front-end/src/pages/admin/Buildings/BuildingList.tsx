@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Card, Tag, Space, Modal, Form, Input, InputNumber, message } from 'antd';
-import { HomeOutlined, SaveOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { useGetBuildingsQuery, useAddBuildingMutation, useUpdateBuildingMutation, useGetApartmentsQuery, useDeleteBuildingMutation, useGetChargesQuery } from '../../../features/api/apiSlice';
+import { Button, Card, Tag, Space, Modal, Form, Input, InputNumber, message, Select } from 'antd';
+import { HomeOutlined, SaveOutlined, ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { useGetBuildingsQuery, useAddBuildingMutation, useUpdateBuildingMutation, useGetApartmentsQuery, useDeleteBuildingMutation, useGetChargesQuery, useGetUsersQuery } from '../../../features/api/apiSlice';
 import DefaultButton from '../../../components/common/DefaultButton';
 import EditButton from '../../../components/common/EditButton';
 import DeleteButton from '../../../components/common/DeleteButton';
@@ -16,6 +16,11 @@ interface Building {
   nombreAppartement: number;
   nombreEtages: number;
   nombreAppartementsMax: number;
+  syndic?: {
+    id: number;
+    nom: string;
+    prenom: string;
+  };
 }
 
 const BuildingList: React.FC = () => {
@@ -29,6 +34,7 @@ const BuildingList: React.FC = () => {
   const { data: buildings, isLoading } = useGetBuildingsQuery({});
   const { data: apartments } = useGetApartmentsQuery({});
   const { data: charges } = useGetChargesQuery({}); // Fetch charges
+  const { data: users } = useGetUsersQuery({}); // Fetch all users
 
   const [addBuilding] = useAddBuildingMutation();
   const [updateBuilding] = useUpdateBuildingMutation();
@@ -97,7 +103,10 @@ const BuildingList: React.FC = () => {
 
   const handleEdit = (record: Building) => {
     setEditingId(record.id);
-    form.setFieldsValue(record);
+    form.setFieldsValue({
+      ...record,
+      syndicId: record.syndic?.id
+    });
     setIsModalOpen(true);
   };
 
@@ -142,12 +151,16 @@ const BuildingList: React.FC = () => {
   const onFinish = async (values: any) => {
     console.log("Form Values:", values);
     try {
-      const payload = {
+      // Get the existing building data to preserve fields like nombreAppartement
+      const existingBuilding = editingId ? buildings?.find((b: Building) => b.id === editingId) : null;
+
+      const payload: any = {
         nom: values.nom,
         adress: values.adress,
         nombreEtages: Number(values.nombreEtages),
         nombreAppartementsMax: Number(values.nombreAppartementsMax),
-        nombreAppartement: 0 // Initialize to 0 for new buildings
+        syndic: values.syndicId ? { id: Number(values.syndicId) } : null,
+        nombreAppartement: existingBuilding?.nombreAppartement ?? 0
       };
 
       console.log("Sending Payload:", payload);
@@ -182,6 +195,7 @@ const BuildingList: React.FC = () => {
               <th>Appartements</th>
               <th>Étages</th>
               <th>Total Charges</th>
+              {currentUser?.role === 'SUPERADMIN' && <th>Syndic Affecté</th>}
               <th>Actions</th>
             </tr>
           </thead>
@@ -199,6 +213,17 @@ const BuildingList: React.FC = () => {
                   <td><Tag color="blue">{count} / {building.nombreAppartementsMax || '?'} </Tag></td>
                   <td>{building.nombreEtages}</td>
                   <td><DefaultButton>{total} MAD</DefaultButton></td>
+                  {currentUser?.role === 'SUPERADMIN' && (
+                    <td>
+                      {building.syndic ? (
+                        <Tag icon={<UserOutlined />} color="cyan">
+                          {building.syndic.nom} {building.syndic.prenom}
+                        </Tag>
+                      ) : (
+                        <Tag color="warning">Non assigné</Tag>
+                      )}
+                    </td>
+                  )}
                   <td>
                     {currentUser?.role === 'SUPERADMIN' ? (
                       <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -245,6 +270,24 @@ const BuildingList: React.FC = () => {
             rules={[{ required: true, message: 'Veuillez entrer l\'adresse!' }]}
           >
             <Input placeholder="Ex: 12 Av Mohammed V" />
+          </Form.Item>
+
+          <Form.Item
+            label="Affecter un Syndic"
+            name="syndicId"
+            rules={[{ required: true, message: 'Veuillez affecter un syndic à cet immeuble!' }]}
+          >
+            <Select
+              placeholder="Sélectionner un syndic"
+              showSearch
+              filterOption={(input, option) =>
+                String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={users?.filter((u: any) => u.role === 'ADMIN' && u.active !== false).map((u: any) => ({
+                value: u.id,
+                label: `${u.nom} ${u.prenom} (${u.email})`
+              }))}
+            />
           </Form.Item>
 
           <div style={{ display: 'flex', gap: '16px' }}>

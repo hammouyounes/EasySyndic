@@ -7,14 +7,14 @@
 }
 
 :root {
-  --bg-dark: #2c2c35; 
-  --card-bg: #1e1e24; 
-  --input-bg: #2b2b36;
-  --text-main: #ffffff;
-  --text-muted: #a1a1aa;
+  --bg-dark: #f0f2f5; 
+  --card-bg: #ffffff; 
+  --input-bg: #f8f9fa;
+  --text-main: #1a1a1a;
+  --text-muted: #65676b;
   --primary-purple: #8b5cf6;
   --primary-purple-hover: #7c3aed;
-  --border-color: #3f3f46;
+  --border-color: #dddfe2;
 }
 
 
@@ -32,22 +32,22 @@
 
 .register-card {
   display: flex;
-  width: 850px;
+  width: 900px;
   max-width: 95%;
   height: 600px;
-  background-color: #1e1e24;
+  background-color: var(--card-bg);
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 .register-image-section {
-  flex: 1;
+  flex: 1.2;
   position: relative;
-  background-image: url(''); 
+  background-image: url('../../assets/login-bg.png'); 
   background-size: cover;
   background-position: center;
-  background-color: #333; /* Fallback color if image is missing */
+  background-color: #8b5cf6;
 }
 
 /* Purple Overlay on Image */
@@ -121,7 +121,7 @@
   flex-direction: column;
   justify-content: center;
   color: var(--text-main);
-  background-color: #1e1e24;
+  background-color: var(--card-bg);
 }
 
 .form-header h2 {
@@ -156,9 +156,9 @@
   width: 100%;
   padding: 14px 16px;
   background-color: var(--input-bg);
-  border: 1px solid transparent;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  color: white;
+  color: var(--text-main);
   font-size: 0.95rem;
   outline: none;
   transition: 0.3s;
@@ -170,7 +170,8 @@
 
 .input-group input:focus {
   border-color: var(--primary-purple);
-  background-color: #32323e;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
 }
 
 /* Password Eye Icon */
@@ -257,10 +258,10 @@
   align-items: center;
   justify-content: center;
   padding: 12px;
-  background-color: transparent;
+  background-color: white;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  color: white;
+  color: var(--text-main);
   cursor: pointer;
   transition: 0.3s;
   font-size: 0.95rem;

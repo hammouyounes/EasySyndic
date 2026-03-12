@@ -1,14 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Register.css'; // Reusing the same CSS file
-import { FcGoogle } from 'react-icons/fc';
+
+import bg1 from '../../assets/login-bg.png';
+import bg2 from '../../assets/login-bg-2.png';
+import bg3 from '../../assets/login-bg-3.png';
+
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
 import { useNavigate } from 'react-router-dom';
 import { useLoginUserMutation } from '../../features/api/apiSlice';
 
 const Login: React.FC = () => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const images = [bg1, bg2, bg3];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [images.length]);
+
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -62,17 +77,26 @@ const Login: React.FC = () => {
   return (
     <div className="register-container">
       <div className="register-card">
-        <div className="register-image-section">
+        <div
+          className="register-image-section"
+          style={{
+            backgroundImage: `url(${images[currentImageIndex]})`,
+            transition: 'background-image 0.5s ease-in-out'
+          }}
+        >
           <div className="image-overlay">
-            <div className="brand-logo">AMU</div>
+            <div className="brand-logo">Easy Syndic</div>
             {/* <a href="/" className="back-link">Back to website &rarr;</a> */}
 
             <div className="image-text">
-              <h2>Welcome Back,<br />Continue your journey</h2>
+              <h2>Simplifiez la gestion<br />de votre copropriété</h2>
               <div className="slider-dots">
-                <span className="dot active"></span>
-                <span className="dot"></span>
-                <span className="dot"></span>
+                {images.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`dot ${currentImageIndex === index ? 'active' : ''}`}
+                  ></span>
+                ))}
               </div>
             </div>
           </div>
@@ -135,15 +159,7 @@ const Login: React.FC = () => {
             </button>
           </form>
 
-          <div className="divider">
-            <span>Or log in with</span>
-          </div>
 
-          <div className="social-login">
-            <button className="social-btn google">
-              <FcGoogle size={20} style={{ marginRight: '10px' }} /> Google
-            </button>
-          </div>
         </div>
       </div>
     </div>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Card, Tag, Space, Modal, Form, Input, Select, message } from 'antd';
 import { UserOutlined, SaveOutlined } from '@ant-design/icons';
-import { useGetUsersQuery, useAddUserMutation, useToggleUserStatusMutation } from '../../features/api/apiSlice';
+import { useGetUsersQuery, useAddUserMutation, useToggleUserStatusMutation, useUpdateUserMutation } from '../../features/api/apiSlice';
 import Switch from '../../components/common/Switch';
 import AddButton from '../../components/common/AddButton';
+import EditButton from '../../components/common/EditButton';
 import DataTable from 'datatables.net-dt';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 
@@ -19,10 +20,12 @@ interface User {
 
 const UserList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
 
   const { data: users, isLoading } = useGetUsersQuery({});
   const [addUser] = useAddUserMutation();
+  const [updateUser] = useUpdateUserMutation();
   const [toggleUserStatus] = useToggleUserStatusMutation();
 
   const userString = localStorage.getItem('user');
@@ -101,28 +104,54 @@ const UserList: React.FC = () => {
   }, [filteredUsers, isLoading]);
 
   const showModal = () => {
+    setEditingId(null);
+    form.resetFields();
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (user: User) => {
+    setEditingId(user.id);
+    form.setFieldsValue({
+      nom: user.nom,
+      prenom: user.prenom,
+      email: user.email,
+    });
     setIsModalOpen(true);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setEditingId(null);
     form.resetFields();
   };
 
   const onFinish = async (values: any) => {
      try {
-       const userPayload = {
-         ...values,
-         motDePasse: values.mot_de_passe,
-         active: false
-       };
-       await addUser(userPayload).unwrap();
-       message.success('Utilisateur ajouté avec succès');
+       if (editingId) {
+         // Update existing user
+         await updateUser({
+           id: editingId,
+           nom: values.nom,
+           prenom: values.prenom,
+           email: values.email,
+         }).unwrap();
+         message.success('Utilisateur modifié avec succès');
+       } else {
+         // Create new user
+         const userPayload = {
+           ...values,
+           motDePasse: values.mot_de_passe,
+           active: false
+         };
+         await addUser(userPayload).unwrap();
+         message.success('Utilisateur ajouté avec succès');
+       }
        setIsModalOpen(false);
+       setEditingId(null);
        form.resetFields();
      } catch (error) {
         console.error("Failed to save user", error);
-        message.error('Erreur lors de l\'ajout de l\'utilisateur');
+        message.error(editingId ? 'Erreur lors de la modification' : 'Erreur lors de l\'ajout de l\'utilisateur');
      }
   };
 
@@ -147,7 +176,7 @@ const UserList: React.FC = () => {
               <th>Nom</th>
               <th>Prénom</th>
               <th>Rôle</th>
-              <th>Statut</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -162,12 +191,15 @@ const UserList: React.FC = () => {
                     {user.role}
                   </Tag>
                 </td>
-                <td style={{ display: 'flex', justifyContent: 'center' }}>
-                  <Switch 
-                    checked={user.active} 
-                    onChange={() => handleToggleStatus(user.id, user.active)} 
-                    disabled={!user.canToggleStatus}
-                  />
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <EditButton onClick={() => handleEdit(user)} />
+                    <Switch 
+                      checked={user.active} 
+                      onChange={() => handleToggleStatus(user.id, user.active)} 
+                      disabled={!user.canToggleStatus}
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
@@ -176,7 +208,7 @@ const UserList: React.FC = () => {
       </div>
 
       <Modal 
-        title="Ajouter un nouvel utilisateur" 
+        title={editingId ? "Modifier l'utilisateur" : "Ajouter un nouvel utilisateur"}
         open={isModalOpen} 
         onCancel={handleCancel}
         footer={null} 
@@ -214,28 +246,34 @@ const UserList: React.FC = () => {
             <Input placeholder="Ex: jean.dupont@example.com" />
           </Form.Item>
 
-          <Form.Item
-             label="Mot de passe"
-             name="mot_de_passe"
-             rules={[{ required: true, message: 'Veuillez entrer le mot de passe!' }]}
-          >
-            <Input.Password placeholder="********" />
-          </Form.Item>
+          {/* Password field only shown when creating a new user */}
+          {!editingId && (
+            <Form.Item
+               label="Mot de passe"
+               name="mot_de_passe"
+               rules={[{ required: true, message: 'Veuillez entrer le mot de passe!' }]}
+            >
+              <Input.Password placeholder="********" />
+            </Form.Item>
+          )}
 
-          <Form.Item
-            label="Rôle"
-            name="role"
-            rules={[{ required: true, message: 'Veuillez sélectionner un rôle!' }]}
-          >
-            <Select placeholder="Sélectionner un rôle">
-              {currentUser?.role === 'SUPERADMIN' && (
-                <Select.Option value="ADMIN">Administrateur (Syndic)</Select.Option>
-              )}
-              {currentUser?.role === 'ADMIN' && (
-                <Select.Option value="PROPRIETAIRE">Propriétaire</Select.Option>
-              )}
-            </Select>
-          </Form.Item>
+          {/* Role field only shown when creating a new user */}
+          {!editingId && (
+            <Form.Item
+              label="Rôle"
+              name="role"
+              rules={[{ required: true, message: 'Veuillez sélectionner un rôle!' }]}
+            >
+              <Select placeholder="Sélectionner un rôle">
+                {currentUser?.role === 'SUPERADMIN' && (
+                  <Select.Option value="ADMIN">Administrateur (Syndic)</Select.Option>
+                )}
+                {currentUser?.role === 'ADMIN' && (
+                  <Select.Option value="PROPRIETAIRE">Propriétaire</Select.Option>
+                )}
+              </Select>
+            </Form.Item>
+          )}
 
           <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
              <Button onClick={handleCancel} style={{ marginRight: 8 }}>

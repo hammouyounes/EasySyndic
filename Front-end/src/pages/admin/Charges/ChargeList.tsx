@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Card, Tag, Modal, Form, Input, InputNumber, Select, message, Progress, Switch, Tooltip, Spin } from 'antd';
-import { DollarOutlined, ExclamationCircleOutlined, SendOutlined, UndoOutlined, CheckCircleOutlined, CloseCircleOutlined, MailOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Button, Card, Tag, Modal, Form, Input, InputNumber, Select, message, Progress, Switch, Tooltip, Spin, Upload } from 'antd';
+import { DollarOutlined, ExclamationCircleOutlined, SendOutlined, UndoOutlined, CheckCircleOutlined, CloseCircleOutlined, MailOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons';
 import DataTable from 'datatables.net-dt';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import { 
@@ -13,7 +13,8 @@ import {
   useUndoDistributeChargeMutation,
   useGetUsersQuery,
   useGetApartmentsQuery,
-  useSendNotificationMutation
+  useSendNotificationMutation,
+  useGenerateEmailMutation
 } from '../../../features/api/apiSlice';
 import EditButton from '../../../components/common/EditButton';
 import DeleteButton from '../../../components/common/DeleteButton';
@@ -31,6 +32,7 @@ interface Charge {
   progress: number;
   chargeType?: string;
   isRecurring?: boolean;
+  recu?: string;
 }
 
 interface UserInfo {
@@ -58,98 +60,115 @@ const ChargeList: React.FC = () => {
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [emailForm] = Form.useForm();
   const [selectedCharge, setSelectedCharge] = useState<Charge | null>(null);
-  const [isSending, setIsSending] = useState(false);
-  
-  // ─── Distribution Loading State (per charge ID) ───
-  const [distributingIds, setDistributingIds] = useState<Set<number>>(new Set());
+
+  // ─── Receipt State ───
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [currentReceipt, setCurrentReceipt] = useState<string | null>(null);
+  const [recuBase64, setRecuBase64] = useState<string | null>(null);
+  const [messageApi, contextHolder] = message.useMessage();
   
   const { data: charges, isLoading } = useGetChargesQuery({});
   const { data: buildings } = useGetBuildingsQuery({});
   const { data: users } = useGetUsersQuery({});
   const { data: apartments } = useGetApartmentsQuery({});
   
-  const [addCharge] = useAddChargeMutation();
-  const [updateCharge] = useUpdateChargeMutation();
+  const [addCharge, { isLoading: isLoadingAdd }] = useAddChargeMutation();
+  const [updateCharge, { isLoading: isLoadingUpdate }] = useUpdateChargeMutation();
   const [deleteCharge] = useDeleteChargeMutation();
   const [distributeCharge] = useDistributeChargeMutation();
   const [undoDistributeCharge] = useUndoDistributeChargeMutation();
-  const [sendNotification] = useSendNotificationMutation();
-  
   const userString = localStorage.getItem('user');
   const currentUser = userString ? JSON.parse(userString) : null;
+  const [sendNotification, { isLoading: isSendingEmail }] = useSendNotificationMutation();
+  const [generateEmail, { isLoading: isGeneratingAI }] = useGenerateEmailMutation();
 
   const tableRef = useRef<HTMLTableElement>(null);
   const dataTableInstance = useRef<any>(null);
 
   useEffect(() => {
     if (!isLoading && charges && tableRef.current) {
-        // Destroy existing instance if it exists to prevent re-initialization error
+      if (dataTableInstance.current) {
+        dataTableInstance.current.destroy();
+      }
+
+      const timer = setTimeout(() => {
+        dataTableInstance.current = new DataTable(tableRef.current!, {
+          language: {
+            processing: "Traitement en cours...",
+            search: "Rechercher&nbsp;:",
+            lengthMenu: "Afficher _MENU_ &eacute;l&eacute;ments",
+            info: "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+            infoEmpty: "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
+            infoFiltered: "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            loadingRecords: "Chargement en cours...",
+            zeroRecords: "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            emptyTable: "Aucune donnée disponible dans le tableau",
+            paginate: {
+              first: "Premier",
+              previous: "Pr&eacute;c&eacute;dent",
+              next: "Suivant",
+              last: "Dernier"
+            }
+          },
+          destroy: true,
+          autoWidth: false,
+          stateSave: true,
+          paging: true,
+          pageLength: 5,
+          lengthMenu: [5, 10, 25, 50],
+          columnDefs: [
+            { className: "dt-head-center dt-body-center", targets: "_all" },
+            { orderable: false, targets: -1, width: "1%" }
+          ]
+        });
+      }, 100);
+
+      return () => {
+        clearTimeout(timer);
         if (dataTableInstance.current) {
           dataTableInstance.current.destroy();
+          dataTableInstance.current = null;
         }
-  
-        // Initialize DataTable
-        // We use a slight timeout to ensure React has rendered the DOM nodes
-        const timer = setTimeout(() => {
-           dataTableInstance.current = new DataTable(tableRef.current!, {
-              language: {
-                  processing:     "Traitement en cours...",
-                  search:         "Rechercher&nbsp;:",
-                  lengthMenu:    "Afficher _MENU_ &eacute;l&eacute;ments",
-                  info:           "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
-                  infoEmpty:      "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
-                  infoFiltered:   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-                  infoPostFix:    "",
-                  loadingRecords: "Chargement en cours...",
-                  zeroRecords:    "Aucun &eacute;l&eacute;ment &agrave; afficher",
-                  emptyTable:     "Aucune donnée disponible dans le tableau",
-                  paginate: {
-                      first:      "Premier",
-                      previous:   "Pr&eacute;c&eacute;dent",
-                      next:       "Suivant",
-                      last:       "Dernier"
-                  },
-                  aria: {
-                      sortAscending:  ": activer pour trier la colonne par ordre croissant",
-                      sortDescending: ": activer pour trier la colonne par ordre décroissant"
-                  }
-              },
-              destroy: true, // Allow re-initialization
-              autoWidth: false,
-              stateSave: true, // Remembers page number and length
-              paging: true,
-              pageLength: 5,
-              lengthMenu: [5, 10, 25, 50],
-               columnDefs: [
-                  { className: "dt-head-center dt-body-center", targets: "_all" },
-                  { orderable: false, targets: -1, width: '1%' } // Disable sorting and minimize width on Actions column
-               ]
-            });
-         }, 100);
-  
-        return () => {
-          clearTimeout(timer);
-          if (dataTableInstance.current) {
-               dataTableInstance.current.destroy();
-               dataTableInstance.current = null;
-          }
-        };
+      };
     }
   }, [charges, isLoading]);
 
   const showModal = () => {
     setEditingId(null);
+    setRecuBase64(null);
     form.resetFields();
     setIsModalOpen(true);
   };
 
   const handleEdit = (record: Charge) => {
     setEditingId(record.id);
+    setRecuBase64(record.recu || null);
     form.setFieldsValue({
       ...record,
       immeubleId: record.immeuble?.id
     });
     setIsModalOpen(true);
+  };
+
+  const handleFileUpload = (file: any) => {
+    const isLt10M = file.size / 1024 / 1024 < 10;
+    if (!isLt10M) {
+      message.error("Le fichier doit être inférieur à 10 Mo");
+      return Upload.LIST_IGNORE;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setRecuBase64(reader.result as string);
+      messageApi.success(`${file.name} chargé avec succès`);
+    };
+    reader.readAsDataURL(file);
+    return false; // Empêcher l'upload automatique
+  };
+
+  const handleViewReceipt = (recu: string) => {
+    setCurrentReceipt(recu);
+    setIsReceiptModalOpen(true);
   };
 
   const handleDelete = (record: Charge) => {
@@ -163,10 +182,10 @@ const ChargeList: React.FC = () => {
       onOk: async () => {
         try {
           await deleteCharge(record.id).unwrap();
-          message.success('Charge supprimée avec succès');
+          messageApi.success('Charge supprimée avec succès');
         } catch (error) {
           console.error("Failed to delete charge", error);
-          message.error("Erreur lors de la suppression de la charge");
+          messageApi.error("Erreur lors de la suppression de la charge");
         }
       },
     });
@@ -203,28 +222,17 @@ const ChargeList: React.FC = () => {
             <br /><br />
             <span style={{ fontSize: 16 }}>Montant total : </span>
             <span style={{ color: '#52c41a', fontWeight: 'bold', fontSize: 18 }}>{record.montant} MAD</span>
-            <br /><br />
-            <span style={{ color: '#1890ff', fontSize: 13 }}>📧 Des emails en arabe seront générés par IA et envoyés automatiquement aux propriétaires.</span>
           </div>
         ),
         okText: 'Oui, distribuer',
         cancelText: 'Annuler',
         onOk: async () => {
-          // Add to loading set
-          setDistributingIds(prev => new Set(prev).add(record.id));
           try {
             await distributeCharge(record.id).unwrap();
-            message.success('Charge distribuée avec succès! Emails IA en cours d\'envoi aux propriétaires... 📧');
+            message.success('Charge distribuée avec succès! Appels de fonds générés.');
           } catch (error: any) {
             console.error("Failed to distribute charge", error);
             message.error(error?.data?.message || "Erreur lors de la distribution de la charge");
-          } finally {
-            // Remove from loading set
-            setDistributingIds(prev => {
-              const next = new Set(prev);
-              next.delete(record.id);
-              return next;
-            });
           }
         },
       });
@@ -234,33 +242,37 @@ const ChargeList: React.FC = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
     setEditingId(null);
+    setRecuBase64(null);
     form.resetFields();
   };
 
   const onFinish = async (values: any) => {
-    console.log("Form Values:", values);
-    try {
-      const payload = {
-         type: values.type,
-         montant: Number(values.montant),
-         periode: values.periode,
-         chargeType: values.chargeType,
-         isRecurring: values.isRecurring
-      };
+    const payload = {
+      type: values.type,
+      montant: Number(values.montant),
+      periode: values.periode,
+      chargeType: values.chargeType,
+      isRecurring: !!values.isRecurring,
+      recu: recuBase64,
+      immeuble: values.immeubleId ? { id: Number(values.immeubleId) } : undefined
+    };
+    console.log("Final Payload for save:", payload);
 
+    try {
       if (editingId) {
-        await updateCharge({ id: editingId, ...payload, immeubleId: values.immeubleId }).unwrap();
-        message.success('Charge modifiée avec succès');
+        await updateCharge({ id: editingId, ...payload }).unwrap();
+        messageApi.success('Charge modifiée avec succès');
       } else {
         await addCharge({ immeubleId: values.immeubleId, ...payload }).unwrap();
-        message.success('Charge ajoutée avec succès');
+        messageApi.success('Charge ajoutée avec succès');
       }
       setIsModalOpen(false);
       setEditingId(null);
+      setRecuBase64(null);
       form.resetFields();
-    } catch (error) {
+    } catch (error: any) {
        console.error("Failed to save charge", error);
-       message.error(editingId ? 'Erreur lors de la modification' : "Erreur lors de l'ajout de la charge");
+       messageApi.error(error?.data?.message || (editingId ? 'Erreur lors de la modification' : "Erreur lors de l'ajout de la charge"));
     }
   };
 
@@ -294,39 +306,52 @@ const ChargeList: React.FC = () => {
     setIsEmailModalOpen(true);
   };
 
-  const handleOwnerSelect = (userId: number) => {
+  const handleOwnerSelect = async (userId: number) => {
     if (!users || !selectedCharge) return;
     const owner = users.find((u: UserInfo) => u.id === userId);
     if (owner) {
-      emailForm.setFieldsValue({
-        targetEmail: owner.email,
-        body: `Bonjour ${owner.prenom}, vous avez une nouvelle charge de ${selectedCharge.montant} DH pour ${selectedCharge.type}.`,
-      });
+      emailForm.setFieldsValue({ targetEmail: owner.email });
+      try {
+        const aiResponse = await generateEmail({
+          ownerName: `${owner.prenom} ${owner.nom}`,
+          chargeType: selectedCharge.type,
+          amount: selectedCharge.montant,
+          periode: selectedCharge.periode
+        }).unwrap();
+        
+        emailForm.setFieldsValue({
+          body: aiResponse.content
+        });
+      } catch (error) {
+        console.error("AI Generation failed", error);
+        // Fallback to simple French if AI fails
+        emailForm.setFieldsValue({
+          body: `Bonjour ${owner.prenom}, vous avez une nouvelle charge de ${selectedCharge.montant} DH pour ${selectedCharge.type}.`
+        });
+      }
     }
   };
-
   const handleSendEmail = async (values: any) => {
-    setIsSending(true);
     try {
       await sendNotification({
         targetEmail: values.targetEmail,
         subject: values.subject,
         body: values.body,
       }).unwrap();
-      message.success('Email envoyé avec succès !');
+      messageApi.success('Email envoyé avec succès !');
       setIsEmailModalOpen(false);
       emailForm.resetFields();
       setSelectedCharge(null);
     } catch (error: any) {
       console.error('Failed to send email', error);
-      message.error(error?.data?.error || "Erreur lors de l'envoi de l'email.");
-    } finally {
-      setIsSending(false);
+      messageApi.error(error?.data?.error || "Erreur lors de l'envoi de l'email.");
     }
   };
 
   return (
-    <Card title="Gestion des Charges" extra={currentUser?.role !== 'SUPERADMIN' && <AddButton onClick={showModal} />}>
+    <>
+      {contextHolder}
+      <Card title="Gestion des Charges" extra={currentUser?.role !== 'SUPERADMIN' && <AddButton onClick={showModal} />}>
       <div style={{ padding: '20px' }}>
         <table ref={tableRef} id="myTable" className="display" style={{ width: '100%' }}>
           <thead>
@@ -339,6 +364,7 @@ const ChargeList: React.FC = () => {
               <th>Période</th>
               <th>Immeuble</th>
               <th>Progression</th>
+              <th>Reçu</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -372,41 +398,60 @@ const ChargeList: React.FC = () => {
                     format={(percent) => charge.diviser !== 1 ? 'ND' : `${percent}%`}
                   />
                 </td>
-                <td style={{ display: 'flex', gap: '8px' }}>
-                   {currentUser?.role === 'SUPERADMIN' && (
-                     <DistributeButton 
-                        onClick={() => handleDistributeToggle(charge)} 
-                        disabled={charge.locked}
-                        loading={distributingIds.has(charge.id)}
-                        title={charge.locked ? "Charge verrouillée (paiements existants)" : (charge.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
-                        label={charge.diviser === 1 ? "Annuler" : "Distribuer"}
-                        isUndo={charge.diviser === 1}
-                      />
-                    )}
-                    <Tooltip title="Envoyer par email">
+                <td>
+                  {charge.recu ? (
+                    <Tooltip title="Voir le reçu (Photo/PDF)">
                       <Button
-                        type="primary"
-                        ghost
-                        icon={<MailOutlined />}
-                        onClick={() => handleOpenEmailModal(charge)}
-                        style={{ borderColor: '#1890ff', color: '#1890ff' }}
+                        icon={<EyeOutlined />}
+                        onClick={() => handleViewReceipt(charge.recu!)}
+                        style={{ color: '#eb2f96', borderColor: '#eb2f96' }}
                       />
                     </Tooltip>
+                  ) : (
+                    <span style={{ color: '#999', fontSize: '12px', fontStyle: 'italic' }}>Aucun reçu</span>
+                  )}
+                </td>
+                <td style={{ display: 'flex', gap: '8px' }}>
+                    {/* Distribute & Email: SUPERADMIN only */}
+                    {currentUser?.role === 'SUPERADMIN' && (
+                      <>
+                        <DistributeButton 
+                          onClick={() => handleDistributeToggle(charge)} 
+                          disabled={charge.locked}
+                          title={charge.locked ? "Charge verrouillée (paiements existants)" : (charge.diviser === 1 ? "Annuler la distribution" : "Distribuer aux appartements")}
+                          label={charge.diviser === 1 ? "Annuler" : "Distribuer"}
+                          isUndo={charge.diviser === 1}
+                        />
+                        <Tooltip title="Envoyer par email">
+                          <Button
+                            type="primary"
+                            ghost
+                            icon={<MailOutlined />}
+                            onClick={() => handleOpenEmailModal(charge)}
+                            style={{ borderColor: '#1890ff', color: '#1890ff' }}
+                            disabled={charge.diviser !== 1}
+                          />
+                        </Tooltip>
+                      </>
+                    )}
+
+                    {/* Edit & Delete: Syndic (ADMIN) only */}
                     {currentUser?.role !== 'SUPERADMIN' && (
                       <>
                         <EditButton 
                           onClick={() => handleEdit(charge)} 
-                          disabled={charge.locked}
-                          title={charge.locked ? "Impossible de modifier (paiements en cours)" : "Modifier"}
+                          disabled={charge.locked || charge.diviser === 1}
+                          title={charge.locked ? "Paiements en cours" : (charge.diviser === 1 ? "Charge déjà distribuée" : "Modifier")}
                         />
                         <DeleteButton 
                           onClick={() => handleDelete(charge)}
-                          disabled={charge.locked}
-                          title={charge.locked ? "Impossible de supprimer (paiements en cours)" : "Supprimer"}
+                          disabled={charge.locked || charge.diviser === 1}
+                          title={charge.locked ? "Paiements en cours" : (charge.diviser === 1 ? "Charge déjà distribuée" : "Supprimer")}
                         />
                       </>
                     )}
-                </td>
+
+                  </td>
               </tr>
             ))}
           </tbody>
@@ -489,11 +534,44 @@ const ChargeList: React.FC = () => {
              <Switch checkedChildren="Oui" unCheckedChildren="Non" />
           </Form.Item>
 
+          <Form.Item label="Pièce jointe (Reçu PDF/Image)">
+            <Upload 
+              beforeUpload={handleFileUpload} 
+              maxCount={1} 
+              showUploadList={false}
+              accept=".pdf,image/*"
+            >
+              <Button icon={<UploadOutlined />}>
+                {recuBase64 ? "Remplacer le fichier" : "Choisir un fichier"}
+              </Button>
+            </Upload>
+            {recuBase64 && (
+               <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                 <CheckCircleOutlined style={{ color: '#52c41a' }} /> 
+                 <span style={{ color: '#52c41a' }}>Fichier chargé</span>
+                 <Button 
+                    type="link" 
+                    danger 
+                    size="small" 
+                    onClick={() => setRecuBase64(null)}
+                    style={{ padding: 0 }}
+                 >
+                   Supprimer
+                 </Button>
+               </div>
+            )}
+          </Form.Item>
+
           <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
              <Button onClick={handleCancel} style={{ marginRight: 8 }}>
               Annuler
             </Button>
-            <Button type="primary" htmlType="submit" icon={<DollarOutlined />}>
+            <Button 
+               type="primary" 
+               htmlType="submit" 
+               icon={<DollarOutlined />}
+               loading={isLoadingAdd || isLoadingUpdate}
+            >
               Enregistrer
             </Button>
           </Form.Item>
@@ -571,11 +649,13 @@ const ChargeList: React.FC = () => {
             name="body"
             rules={[{ required: true, message: 'Le message est obligatoire!' }]}
           >
-            <Input.TextArea
-              rows={5}
-              placeholder="Votre message..."
-              style={{ resize: 'vertical' }}
-            />
+            <Spin spinning={isGeneratingAI} tip="IA génère le message en arabe...">
+              <Input.TextArea
+                rows={5}
+                placeholder="Votre message..."
+                style={{ resize: 'vertical' }}
+              />
+            </Spin>
           </Form.Item>
 
           <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
@@ -592,16 +672,50 @@ const ChargeList: React.FC = () => {
             <Button
               type="primary"
               htmlType="submit"
-              loading={isSending}
+              loading={isSendingEmail || isGeneratingAI}
               icon={<SendOutlined />}
               style={{ background: '#1890ff' }}
             >
-              {isSending ? 'Envoi en cours...' : 'Envoyer'}
+              {isSendingEmail ? 'Envoi en cours...' : 'Envoyer'}
             </Button>
           </Form.Item>
         </Form>
       </Modal>
     </Card>
+
+      {/* ─── Receipt Modal (Preview) ─── */}
+      <Modal
+        title="Justificatif de la Charge"
+        open={isReceiptModalOpen}
+        onCancel={() => setIsReceiptModalOpen(false)}
+        footer={[
+          <Button key="close" onClick={() => setIsReceiptModalOpen(false)}>Fermer</Button>
+        ]}
+        width={800}
+      >
+        {currentReceipt ? (
+          <div style={{ textAlign: 'center' }}>
+            {currentReceipt.startsWith('data:application/pdf') ? (
+              <iframe
+                src={currentReceipt}
+                width="100%"
+                height="600px"
+                style={{ border: 'none' }}
+                title="Reçu PDF"
+              />
+            ) : (
+              <img
+                src={currentReceipt}
+                alt="Justificatif"
+                style={{ maxWidth: '100%', maxHeight: '70vh' }}
+              />
+            )}
+          </div>
+        ) : (
+          <p>Aucun document à afficher.</p>
+        )}
+      </Modal>
+    </>
   );
 };
 

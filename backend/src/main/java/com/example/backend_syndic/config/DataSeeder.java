@@ -72,6 +72,15 @@ public class DataSeeder implements CommandLineRunner {
         admin.setActive(true);
         admin = userRepository.save(admin);
 
+        User admin2 = new User();
+        admin2.setNom("Lahlou");
+        admin2.setPrenom("Karim");
+        admin2.setEmail("syndic2@easysyndic.ma");
+        admin2.setMotDePasse("password");
+        admin2.setRole(User.Role.ADMIN);
+        admin2.setActive(true);
+        admin2 = userRepository.save(admin2);
+
         User prop1 = new User();
         prop1.setNom("Benali");
         prop1.setPrenom("Ahmed");
@@ -97,6 +106,7 @@ public class DataSeeder implements CommandLineRunner {
         immA.setNombreEtages(5);
         immA.setNombreAppartementsMax(15);
         immA.setNombreAppartement(2); // manually set as per dummy data
+        immA.setSyndic(admin);
         immA = immeubleRepository.save(immA);
 
         Immeuble immB = new Immeuble();
@@ -105,6 +115,7 @@ public class DataSeeder implements CommandLineRunner {
         immB.setNombreEtages(8);
         immB.setNombreAppartementsMax(30);
         immB.setNombreAppartement(1);
+        immB.setSyndic(admin2);
         immB = immeubleRepository.save(immB);
 
         // 4. Appartements

@@ -101,7 +101,7 @@ public class ChargeEmailService {
         helper.setSubject(subject);
         // Set as plain text (Arabic content from AI)
         helper.setText(body, false);
-        helper.setFrom("younesshamou013@gmail.com");
+        helper.setFrom("eloddysaadeddine@gmail.com");
         mailSender.send(mimeMessage);
     }
 }
