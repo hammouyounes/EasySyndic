@@ -1,11 +1,6 @@
 import React, { useMemo } from 'react';
-import { Card, Row, Col, Typography, Spin, Empty, List, Avatar, Tag, Table } from 'antd';
+import { Card, Row, Col, Typography, Spin, Empty, Tag, Table } from 'antd';
 import {
-  WalletOutlined,
-  HomeOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  SyncOutlined,
   DollarOutlined
 } from '@ant-design/icons';
 import { useGetApartmentsQuery, useGetAppelChargesQuery } from '../../features/api/apiSlice';
@@ -79,7 +74,7 @@ const ProprietaireDashboard: React.FC = () => {
   if (loadingApartments || loadingCharges) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Spin size="large" description="Chargement des données..." />
+        <Spin size="large" tip="Chargement des données..." />
       </div>
     );
   }

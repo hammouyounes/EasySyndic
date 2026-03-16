@@ -98,10 +98,6 @@ const ApartmentList: React.FC = () => {
               last: "Dernier",
             },
             aria: {
-              sortAscending:
-                ": activer pour trier la colonne par ordre croissant",
-              sortDescending:
-                ": activer pour trier la colonne par ordre décroissant",
             },
           },
           destroy: true,

@@ -173,8 +173,6 @@ public class DataSeeder implements CommandLineRunner {
         AppelCharge ac8 = createAppelCharge(a102, chAscenseurA, 250.0, enRetard);
         AppelCharge ac9 = createAppelCharge(a201, chAscenseurA, 250.0, enRetard);
         AppelCharge ac10 = createAppelCharge(a202, chAscenseurA, 250.0, paye);
-        AppelCharge ac11 = createAppelCharge(a301, chAscenseurA, 250.0, enAttente);
-        AppelCharge ac12 = createAppelCharge(a302, chAscenseurA, 250.0, enAttente);
 
         // -- Atlas: Sécurité (2000 / 6 ≈ 333.33 MAD each) --
         AppelCharge ac13 = createAppelCharge(a101, chSecuriteA, 333.33, paye);

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Card, Table, Tag, Empty, Spin, Typography, Row, Col, Statistic, Button, Modal, Descriptions, Input, DatePicker, Select, message, Tooltip } from 'antd';
+import { Card, Table, Tag, Empty, Spin, Typography, Row, Col, Statistic, Button, Modal, Descriptions, Input, Select, message, Tooltip } from 'antd';
 import {
     WalletOutlined,
     DownloadOutlined,
@@ -14,14 +14,13 @@ import {
 import { useGetPaiementsByProprietaireQuery } from '../../features/api/apiSlice';
 
 const { Title, Text } = Typography;
-const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const ProprietairePaymentHistory: React.FC = () => {
     const userString = localStorage.getItem('user');
     const user = userString ? JSON.parse(userString) : null;
 
-    const { data: payments = [], isLoading, isError } = useGetPaiementsByProprietaireQuery(
+    const { data: payments = [], isLoading } = useGetPaiementsByProprietaireQuery(
         user?.id,
         { skip: !user?.id }
     );
@@ -236,7 +235,7 @@ const ProprietairePaymentHistory: React.FC = () => {
     if (isLoading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-                <Spin size="large" description="Chargement de votre historique de paiements..." />
+                <Spin size="large" tip="Chargement de votre historique de paiements..." />
             </div>
         );
     }

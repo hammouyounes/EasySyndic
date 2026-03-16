@@ -8,10 +8,7 @@ import {
   ShopOutlined,
   WalletOutlined,
   HistoryOutlined,
-  UserOutlined,
-  HomeOutlined,
 } from "@ant-design/icons";
-import { Select, Button, message, Avatar, List } from "antd";
 import { IncomeExpenseChart } from "../../../components/Charts/IncomeExpenseChart";
 import { PaymentMethodChart } from "../../../components/Charts/PaymentMethodChart";
 import {
